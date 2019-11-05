@@ -1,6 +1,6 @@
 const User = require('./user')
 const Address = require('./address')
-const CartItems = require('./cart')
+const CartItems = require('./cart_item')
 const Category = require('./category')
 const Country = require('./country')
 const Merchant = require('./merchant')
@@ -21,8 +21,8 @@ Review.belongsTo(User)
 Review.belongsTo(Product)
 
 // Relations between CART and:
-CartItems.belongsTo(User)
-CartItems.hasMany(Product)
+// CartItems.belongsTo(User)
+// CartItems.hasMany(Product)
 
 // Relations between CATEGORY and:
 Category.belongsToMany(Product, {through: 'ProductCategory'})
@@ -33,8 +33,8 @@ Country.belongsTo(User)
 
 // Relations between PRODUCT and:
 Product.belongsToMany(Category, {through: 'ProductCategory'})
-Product.belongsToMany(OrderItem, {through: 'ProductOrderItem'})
-Product.belongsToMany(CartItems, {through: 'ProductCart'})
+Product.belongsToMany(Order, {through: OrderItem})
+Product.belongsToMany(User, {through: CartItems})
 Product.belongsTo(Merchant)
 
 // Relations between ADDRESS and:
@@ -49,17 +49,17 @@ Merchant.hasOne(Country)
 
 // Relations between ORDER_ITEM and:
 // Can we bring this up in code review?
-OrderItem.belongsToMany(Order, {through: 'OrderOrderItem'})
-OrderItem.belongsToMany(Product, {through: 'ProductOrderItem'})
+// OrderItem.belongsToMany(Order, {through: 'OrderOrderItem'})
+// OrderItem.belongsToMany(Product, {through: 'ProductOrderItem'})
 
 // Relations between ORDER and:
-Order.belongsToMany(OrderItem, {through: 'OrderOrderItem'})
+Order.belongsToMany(Product, {through: OrderItem})
 Order.belongsToMany(Address, {through: 'OrderAddress'})
 
 // Relations between USER and:
 User.belongsTo(Merchant)
 User.hasMany(Review)
-User.hasOne(CartItems)
+User.belongsToMany(Product, {through: CartItems})
 User.hasOne(Country)
 User.hasMany(Address)
 
