@@ -8,6 +8,24 @@ async function seed() {
   await db.sync({force: true})
   console.log('db synced!')
 
+  //Creates countries
+  let continents = [
+    'Asia',
+    'Africa',
+    'North America',
+    'South America',
+    'Antarctica',
+    'Australia'
+  ]
+  let allCountries = []
+  for (let i = 0; i < 300; i++) {
+    let newCountry = await Country.create({
+      name: faker.address.country(),
+      continentName: faker.random.arrayElement(continents)
+    })
+    allCountries.push(newCountry)
+  }
+
   // Creates random Users
   let allUsers = []
   for (let i = 0; i < 120; i++) {
@@ -17,6 +35,7 @@ async function seed() {
       password: faker.internet.password()
     })
     allUsers.push(newCustomer)
+    newCustomer.addCountry(allCountries[i])
   }
 
   // Creates Categories
@@ -61,6 +80,29 @@ async function seed() {
       quantity: Math.floor(Math.random() * 500)
     })
     newCart.addUser(allUsers[i])
+    newCart.addProducts([allProducts[0], allProducts[1], allProducts[2]])
+  }
+
+  //Creates random Merchants
+  for (let i = 0; i < 100; i++) {
+    let newMerchant = await Merchant.create({
+      merchantName: faker.company.companyName()
+    })
+    newMerchant.addUser(allUsers[i])
+    newMerchant.addCountry(allCountries[i])
+  }
+  //Creates random Addresses
+  let shipTypes = ['BILL_TO', 'SHIP_TO', 'BOTH']
+  for (let i = 0; i < 300; i++) {
+    let newAddress = await Address.create({
+      name: `${faker.name.firstName()} ${faker.name.lastName()}`,
+      street: faker.address.streetAddress(false),
+      city: faker.address.city(),
+      state: faker.address.state(),
+      zip: faker.address.zipCode(),
+      type: faker.random.arrayElement(shipTypes)
+    })
+    newAddress.addUser(allUsers[i])
   }
 
   console.log(`seeded successfully`)
