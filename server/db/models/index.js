@@ -1,6 +1,6 @@
 const User = require('./user')
 const Address = require('./address')
-const Cart = require('./cart')
+const CartItems = require('./cart')
 const Category = require('./category')
 const Country = require('./country')
 const Merchant = require('./merchant')
@@ -21,25 +21,25 @@ Review.belongsTo(User)
 Review.belongsTo(Product)
 
 // Relations between CART and:
-Cart.belongsTo(User)
-Cart.hasMany(Product)
+CartItems.belongsTo(User)
+CartItems.hasMany(Product)
 
 // Relations between CATEGORY and:
-Category.hasMany(Product, {through: 'ProductCategory'})
+Category.belongsToMany(Product, {through: 'ProductCategory'})
 
 // Relations between COUNTRY and:
 Country.belongsTo(Merchant)
 Country.belongsTo(User)
 
 // Relations between PRODUCT and:
-Product.hasMany(Category, {through: 'ProductCategory'})
-Product.hasMany(OrderItem, {through: 'ProductOrderItem'})
-Product.hasMany(Cart, {through: 'ProductCart'})
+Product.belongsToMany(Category, {through: 'ProductCategory'})
+Product.belongsToMany(OrderItem, {through: 'ProductOrderItem'})
+Product.belongsToMany(CartItems, {through: 'ProductCart'})
 Product.belongsTo(Merchant)
 
 // Relations between ADDRESS and:
 Address.belongsTo(User)
-Address.hasMany(Order, {through: 'OrderAddress'})
+Address.belongsToMany(Order, {through: 'OrderAddress'})
 // Address.belongsTo(Country)
 
 // Relations between MERCHANT and:
@@ -49,17 +49,17 @@ Merchant.hasOne(Country)
 
 // Relations between ORDER_ITEM and:
 // Can we bring this up in code review?
-OrderItem.hasMany(Order, {through: 'OrderOrderItem'})
-OrderItem.hasMany(Product, {through: 'ProductOrderItem'})
+OrderItem.belongsToMany(Order, {through: 'OrderOrderItem'})
+OrderItem.belongsToMany(Product, {through: 'ProductOrderItem'})
 
 // Relations between ORDER and:
-Order.hasMany(OrderItem, {through: 'OrderOrderItem'})
-Order.hasMany(Address, {through: 'OrderAddress'})
+Order.belongsToMany(OrderItem, {through: 'OrderOrderItem'})
+Order.belongsToMany(Address, {through: 'OrderAddress'})
 
 // Relations between USER and:
 User.belongsTo(Merchant)
 User.hasMany(Review)
-User.hasOne(Cart)
+User.hasOne(CartItems)
 User.hasOne(Country)
 User.hasMany(Address)
 
@@ -72,7 +72,7 @@ User.hasMany(Address)
 module.exports = {
   User,
   Address,
-  Cart,
+  CartItems,
   Category,
   Country,
   Merchant,

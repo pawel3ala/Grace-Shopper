@@ -40,12 +40,12 @@ async function seed() {
   let allUsers = []
   for (let i = 0; i < 120; i++) {
     let newCustomer = await User.create({
-      name: `${faker.name.firstName()} ${faker.name.lastName()}`,
+      fullName: `${faker.name.firstName()} ${faker.name.lastName()}`,
       email: faker.internet.email(),
       password: faker.internet.password()
     })
     allUsers.push(newCustomer)
-    newCustomer.addCountry(allCountries[i])
+    newCustomer.setCountry(allCountries[i])
   }
 
   // Creates Categories
@@ -80,8 +80,8 @@ async function seed() {
       stars: Math.ceil(Math.random() * 5),
       title: faker.lorem.sentence(contentAmount + 3)
     })
-    newReview.addUser(faker.random.arrayElement(allUsers))
-    newReview.addProduct(faker.random.arrayElement(allProducts))
+    newReview.setUser(faker.random.arrayElement(allUsers))
+    newReview.setProduct(faker.random.arrayElement(allProducts))
   }
 
   // Creates random Carts
@@ -89,7 +89,7 @@ async function seed() {
     let newCart = await CartItems.create({
       quantity: Math.floor(Math.random() * 500)
     })
-    newCart.addUser(allUsers[i])
+    newCart.setUser(allUsers[i])
     newCart.addProducts([allProducts[0], allProducts[1], allProducts[2]])
   }
 
@@ -98,8 +98,8 @@ async function seed() {
     let newMerchant = await Merchant.create({
       merchantName: faker.company.companyName()
     })
-    newMerchant.addUser(allUsers[i])
-    newMerchant.addCountry(allCountries[i])
+    newMerchant.setUser(allUsers[i])
+    newMerchant.setCountry(allCountries[i])
   }
   //Creates random Addresses
   let shipTypes = ['BILL_TO', 'SHIP_TO', 'BOTH']
@@ -112,7 +112,7 @@ async function seed() {
       zip: faker.address.zipCode(),
       type: faker.random.arrayElement(shipTypes)
     })
-    newAddress.addUser(allUsers[i])
+    newAddress.setUser(allUsers[i])
   }
 
   console.log(`seeded successfully`)

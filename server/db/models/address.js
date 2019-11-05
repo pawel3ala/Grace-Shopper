@@ -14,7 +14,7 @@ const Address = db.define('address', {
   state: {
     type: Sequelize.STRING
   },
-  zip: Sequelize.INTEGER,
+  zip: Sequelize.STRING,
   type: Sequelize.ENUM('BILL_TO', 'SHIP_TO', 'BOTH')
 })
 
