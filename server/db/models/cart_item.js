@@ -1,8 +1,8 @@
 const Sequelize = require('sequelize')
 const db = require('../db')
 
-const CartItems = db.define('cart', {
+const CartItem = db.define('cart_item', {
   quantity: Sequelize.STRING
 })
 
-module.exports = CartItems
+module.exports = CartItem

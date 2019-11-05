@@ -86,11 +86,21 @@ async function seed() {
 
   // Creates random Carts
   for (let i = 0; i < 120; i++) {
-    let newCart = await CartItems.create({
-      quantity: Math.floor(Math.random() * 500)
+    await CartItems.create({
+      quantity: Math.floor(Math.random() * 500),
+      userId: i + 1,
+      productId: 1
     })
-    newCart.setUser(allUsers[i])
-    newCart.addProducts([allProducts[0], allProducts[1], allProducts[2]])
+    await CartItems.create({
+      quantity: Math.floor(Math.random() * 500),
+      userId: i + 1,
+      productId: 2
+    })
+    await CartItems.create({
+      quantity: Math.floor(Math.random() * 500),
+      userId: i + 1,
+      productId: 3
+    })
   }
 
   //Creates random Merchants
