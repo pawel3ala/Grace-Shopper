@@ -1,9 +1,19 @@
 'use strict'
 
 const db = require('../server/db')
-const {User} = require('../server/db/models')
+const {
+  User,
+  Country,
+  Category,
+  Product,
+  Review,
+  CartItems,
+  Merchant,
+  Address
+} = require('../server/db/models')
 const faker = require('faker')
 
+// eslint-disable-next-line max-statements
 async function seed() {
   await db.sync({force: true})
   console.log('db synced!')
@@ -29,8 +39,8 @@ async function seed() {
   // Creates random Users
   let allUsers = []
   for (let i = 0; i < 120; i++) {
-    let newCustomer = await Customer.create({
-      name: `${faker.name.firstName()} ${fake.name.lastName()}`,
+    let newCustomer = await User.create({
+      name: `${faker.name.firstName()} ${faker.name.lastName()}`,
       email: faker.internet.email(),
       password: faker.internet.password()
     })
@@ -76,7 +86,7 @@ async function seed() {
 
   // Creates random Carts
   for (let i = 0; i < 120; i++) {
-    let newCart = await Cart.create({
+    let newCart = await CartItems.create({
       quantity: Math.floor(Math.random() * 500)
     })
     newCart.addUser(allUsers[i])
@@ -84,7 +94,7 @@ async function seed() {
   }
 
   //Creates random Merchants
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 10; i++) {
     let newMerchant = await Merchant.create({
       merchantName: faker.company.companyName()
     })
