@@ -14,7 +14,7 @@ export const getProducts = products => {
 const catalogReducer = (state = [], action) => {
   switch (action.type) {
     case GET_PRODUCTS:
-      return [...action.products]
+      return action.products
     default:
       return state
   }

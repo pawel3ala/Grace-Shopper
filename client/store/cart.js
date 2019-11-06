@@ -31,9 +31,9 @@ const cartReducer = (action, state = []) => {
     case ADD_ITEM:
       return [...state, action.item]
     case GET_ITEMS:
-      return [...action.items]
+      return action.items
     case CLEAR_ITEMS:
-      return [action.items]
+      return action.items
     default:
       return state
   }
@@ -46,6 +46,16 @@ export const fetchItems = () => {
     try {
       const {data} = await Axios.get('/api/cart')
       dispatch(getItems(data))
+    } catch (err) {
+      console.error(err)
+    }
+  }
+}
+export const addAnItem = item => {
+  return async dispatch => {
+    try {
+      const {data} = await Axios.post('/api/cart', item)
+      dispatch(addItem(data))
     } catch (err) {
       console.error(err)
     }

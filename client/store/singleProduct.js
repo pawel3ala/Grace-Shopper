@@ -22,6 +22,16 @@ const singleProductReducer = (state = {}, action) => {
 export default singleProductReducer
 //Thunk
 
+export const fetchProduct = productId => {
+  return async dispatch => {
+    try {
+      const {data} = await Axios.get(`/api/product/${productId}`)
+      dispatch(getProduct(data))
+    } catch (err) {
+      console.error(err)
+    }
+  }
+}
 export const addReview = review => {
   return async () => {
     try {
@@ -31,28 +41,28 @@ export const addReview = review => {
     }
   }
 }
-export const editProduct = product => {
-  return async () => {
-    try {
-      await Axios.put(`/api/products/${product.id}`, product)
-    } catch (err) {
-      console.error(err)
-    }
-  }
-}
-export const removeProduct = product => {
-  return async () => {
-    try {
-      await Axios.delete(`/api/products/${product.id}`)
-    } catch (err) {
-      console.error(err)
-    }
-  }
-}
 export const editReview = review => {
   return async () => {
     try {
       await Axios.put(`/api/review/${review.id}`, review)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+}
+export const editProduct = product => {
+  return async () => {
+    try {
+      await Axios.put(`/api/product/${product.id}`, product)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+}
+export const removeProduct = productId => {
+  return async () => {
+    try {
+      await Axios.delete(`/api/product/${productId}`)
     } catch (err) {
       console.error(err)
     }
