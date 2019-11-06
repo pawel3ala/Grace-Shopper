@@ -31,6 +31,24 @@ export const addReview = review => {
     }
   }
 }
+export const editProduct = product => {
+  return async () => {
+    try {
+      await Axios.put(`/api/products/${product.id}`, product)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+}
+export const removeProduct = product => {
+  return async () => {
+    try {
+      await Axios.delete(`/api/products/${product.id}`)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+}
 export const editReview = review => {
   return async () => {
     try {
