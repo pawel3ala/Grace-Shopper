@@ -14,9 +14,10 @@ router.get('/', async (req, res, next) => {
 
 // GET api/product/:productId (get single product)
 router.get('/:productId', async (req, res, next) => {
-  const {params: {productId}} = req
   try {
+    const {params: {productId}} = req
     const product = await Product.findByPk(productId, {include: [Review]})
+    if (!product) throw new Error('Product not found')
     res.json(product)
   } catch (err) {
     next(err)
@@ -25,8 +26,8 @@ router.get('/:productId', async (req, res, next) => {
 
 // PUT api/product/:productId
 router.put('/:productId', async (req, res, next) => {
-  const {params: {productId}, body} = req
   try {
+    const {params: {productId}, body} = req
     const [_, [product]] = await Product.update(body, {
       where: {id: productId},
       returning: true
@@ -37,12 +38,31 @@ router.put('/:productId', async (req, res, next) => {
   }
 })
 
-// POST api/product/:productId/review
-router.post('/:productId/review', async (req, res, next) => {
-  const {params: {productId}, body} = req
+// POST api/product/review
+router.post('/review', async (req, res, next) => {
   try {
-    const review = await Review.create(body, {
-      where: {id: productId}
+    if (!req.user) throw new Error('Not logged in')
+    const {body: {productId, ...body}, user: {id: userId}} = req
+    const review = await Review.create(
+      {userId, body},
+      {
+        where: {id: productId}
+      }
+    )
+    res.json(review)
+  } catch (err) {
+    next(err)
+  }
+})
+
+// PUT api/product/review/:reviewId (update user review)
+router.put('/review/:reviewId', async (req, res, next) => {
+  try {
+    if (!req.user) throw new Error('Not logged in')
+    // Need to handle the case where a user tries to edit a review that isn't theirs!
+    const {params: {reviewId}, body, user: {id: userId}} = req
+    const review = await Review.update(body, {
+      where: {id: reviewId}
     })
     res.json(review)
   } catch (err) {
@@ -50,13 +70,12 @@ router.post('/:productId/review', async (req, res, next) => {
   }
 })
 
-router.post('/:productId/review/:reviewId', async (req, res, next) => {
-  const {params: {reviewId}, body} = req
+// DELETE api/product/:productId
+router.delete('/:productId', async (req, res, next) => {
   try {
-    const review = await Review.update(body, {
-      where: {id: reviewId}
-    })
-    res.json(review)
+    const {params: {productId}} = req
+    await Product.destroy({where: {id: productId}})
+    res.status(200).send('OK')
   } catch (err) {
     next(err)
   }
