@@ -1,7 +1,42 @@
 import Axios from 'axios'
 
 const GET_PRODUCT = 'GET_PRODUCT'
-const ADD_REVIEW = 'ADD_REVIEW'
-const EDIT_REVIEW = 'EDIT_REVIEW'
-const EDIT_PRODUCT = 'EDIT_PRODUCT'
-const REMOVE_PRODUCT = 'REMOVE_PRODUCT'
+
+//Action Creator
+export const getProduct = product => {
+  return {
+    type: GET_PRODUCT,
+    product
+  }
+}
+
+//Reducer
+const singleProductReducer = (state = {}, action) => {
+  switch (action.type) {
+    case GET_PRODUCT:
+      return action.product
+    default:
+      return state
+  }
+}
+export default singleProductReducer
+//Thunk
+
+export const addReview = review => {
+  return async () => {
+    try {
+      await Axios.post(`/api/review`, review)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+}
+export const editReview = review => {
+  return async () => {
+    try {
+      await Axios.put(`/api/review/${review.id}`, review)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+}

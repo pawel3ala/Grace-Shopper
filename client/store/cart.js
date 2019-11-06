@@ -26,7 +26,7 @@ export const clearItems = () => {
 
 //Reducer
 
-export default (cartReducer = (action, state = []) => {
+const cartReducer = (action, state = []) => {
   switch (action.type) {
     case ADD_ITEM:
       return [...state, action.item]
@@ -37,7 +37,8 @@ export default (cartReducer = (action, state = []) => {
     default:
       return state
   }
-})
+}
+export default cartReducer
 
 //Thunks
 export const fetchItems = () => {

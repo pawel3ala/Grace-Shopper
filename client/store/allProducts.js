@@ -11,14 +11,15 @@ export const getProducts = products => {
 }
 
 //Reducer
-export default (allProductsReducer = (state = [], action) => {
+const allProductsReducer = (state = [], action) => {
   switch (action.type) {
     case GET_PRODUCTS:
       return [...action.products]
     default:
       return state
   }
-})
+}
+export default allProductsReducer
 
 //Thunks
 export const fetchProducts = query => {
