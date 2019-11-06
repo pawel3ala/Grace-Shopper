@@ -1,0 +1,7 @@
+import Axios from 'axios'
+
+const GET_PRODUCT = 'GET_PRODUCT'
+const ADD_REVIEW = 'ADD_REVIEW'
+const EDIT_REVIEW = 'EDIT_REVIEW'
+const EDIT_PRODUCT = 'EDIT_PRODUCT'
+const REMOVE_PRODUCT = 'REMOVE_PRODUCT'
