@@ -70,3 +70,24 @@ router.put('/', async (req, res, next) => {
     next(err)
   }
 })
+
+router.delete('/', async (req, res, next) => {
+  try {
+    const {body: {productId, ...body}} = req
+    if (!req.user) {
+      // handle unauthenticated user w/ cookie
+      let where = {userId: 1}
+      if (productId) where.productId = productId
+      await CartItems.destroy({where})
+      res.status(200).end()
+    } else {
+      const {user: {id: userId}} = req
+      let where = {userId}
+      if (productId) where.productId = productId
+      const cart = await CartItems.destroy({where})
+      res.json(cart)
+    }
+  } catch (err) {
+    next(err)
+  }
+})
