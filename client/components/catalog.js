@@ -52,7 +52,12 @@ class CatalogUnconnected extends React.Component {
       <div>
         <div className="allProducts">
           {allProducts.map(product => (
-            <div key={product.id}>{product.name}</div>
+            <div key={product.id} className="">
+              {product.name}
+              <div>
+                <img className="allProductImg" src={product.image} />
+              </div>
+            </div>
           ))}
         </div>
       </div>
