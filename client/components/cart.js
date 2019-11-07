@@ -9,7 +9,33 @@ import {
 import {connect} from 'react-redux'
 
 class unconnectedCart extends React.Component {
+  constructor() {
+    super()
+    this.handleChange = this.handleChange.bind(this)
+    this.handleDelete = this.handleDelete.bind(this)
+  }
   componentDidMount() {
+    this.props.fetchItems()
+  }
+  handleChange(event) {
+    const productId = event.target.name
+    const quantity = event.target.value
+    const itemObj = {
+      productId,
+      quantity
+    }
+    this.props.changeItem(itemObj)
+    this.props.fetchItems()
+  }
+  handleDelete(event) {
+    const productId = event.target.name
+    const quantity = event.target.value
+    const itemObj = {
+      productId,
+      quantity
+    }
+    console.log(itemObj)
+    this.props.deleteItem(itemObj)
     this.props.fetchItems()
   }
   render() {
@@ -18,7 +44,7 @@ class unconnectedCart extends React.Component {
       : {cartItems: [], products: []}
     return (
       <div className="cartContainer">
-        {cart.cartItems.map(item => {
+        {cart.cartItems.sort((a, b) => a.productId - b.productId).map(item => {
           const selectedProduct = this.props.cart.products.find(
             product => product.id === item.productId
           )
@@ -27,7 +53,22 @@ class unconnectedCart extends React.Component {
               <img src={selectedProduct.image} />
               <div>Name: {selectedProduct.name}</div>
               <div>Price: {selectedProduct.price}</div>
-              <div>Quantity: {item.quantity}</div>
+              <div>
+                Quantity:{' '}
+                <form>
+                  <input
+                    name={item.productId}
+                    type="number"
+                    value={item.quantity}
+                    onChange={this.handleChange}
+                  />
+                </form>
+              </div>
+              <div>
+                <button type="button" onClick={this.handleDelete}>
+                  Remove from cart
+                </button>
+              </div>
             </div>
           )
         })}

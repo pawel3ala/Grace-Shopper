@@ -13,8 +13,10 @@ router.get('/', async (req, res, next) => {
       // handle unauthenticated user w/ cookie
       const matchingUser = await User.findByPk(1, {include: [Product]})
       const products = matchingUser.products
-      console.log(products)
-      let cartItems = await CartItems.findAll({where: {userId: 1}})
+      let cartItems = await CartItems.findAll(
+        {where: {userId: 1}},
+        {order: [['productId', 'ASC']]}
+      )
       res.json({cartItems, products})
     } else {
       const {user: {id: userId}} = req
@@ -76,6 +78,7 @@ router.put('/', async (req, res, next) => {
 
 router.delete('/', async (req, res, next) => {
   try {
+    console.log(req)
     const {body: {productId, ...body}} = req
     if (!req.user) {
       // handle unauthenticated user w/ cookie
