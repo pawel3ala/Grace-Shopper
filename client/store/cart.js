@@ -1,16 +1,9 @@
 import Axios from 'axios'
 
-const ADD_ITEM = 'ADD_ITEM'
 const GET_ITEMS = 'GET_ITEMS'
 const CLEAR_ITEMS = 'CLEAR_ITEMS'
 
 //Action creators
-export const addItem = item => {
-  return {
-    type: ADD_ITEM,
-    item
-  }
-}
 export const getItems = items => {
   return {
     type: GET_ITEMS,
@@ -33,8 +26,6 @@ const initialState = {
 
 const cartReducer = (state = initialState, action) => {
   switch (action.type) {
-    case ADD_ITEM:
-      return {...state, cartItems: [...state.cartItems, action.item]}
     case GET_ITEMS:
       return action.items
     case CLEAR_ITEMS:
@@ -50,7 +41,6 @@ export const fetchItems = () => {
   return async dispatch => {
     try {
       const {data} = await Axios.get('/api/cart')
-      console.log(data)
       dispatch(getItems(data))
     } catch (err) {
       console.error(err)
@@ -58,10 +48,9 @@ export const fetchItems = () => {
   }
 }
 export const addAnItem = item => {
-  return async dispatch => {
+  return async () => {
     try {
-      const {data} = await Axios.post('/api/cart', item)
-      dispatch(addItem(data))
+      await Axios.post('/api/cart', item)
     } catch (err) {
       console.error(err)
     }

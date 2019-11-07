@@ -7,20 +7,21 @@ import {
   editProduct,
   removeProduct
 } from '../store/singleProduct'
-import {addAnItem} from '../store/cart'
+import {addAnItem, fetchItems} from '../store/cart'
 
 class unconnectedSingleProduct extends React.Component {
   componentDidMount() {
     this.props.fetchProduct(this.props.match.params.productId)
   }
 
-  handleSubmit(event) {
+  async handleSubmit(event) {
     event.preventDefault()
     const itemObj = {
       productId: this.props.match.params.productId,
       quantity: event.target.children[0].value
     }
-    this.props.addToCart(itemObj)
+    await this.props.addToCart(itemObj)
+    await this.props.fetchCart()
     this.props.history.push('/cart')
   }
   // eslint-disable-next-line complexity
@@ -83,7 +84,8 @@ const mapDispatchToProps = dispatch => {
     removeProduct: productId => dispatch(removeProduct(productId)), //only for admins(merchants)
     addReview: review => dispatch(addReview(review)),
     editReview: review => dispatch(editReview(review)),
-    addToCart: item => dispatch(addAnItem(item))
+    addToCart: item => dispatch(addAnItem(item)),
+    fetchCart: () => dispatch(fetchItems())
   }
 }
 

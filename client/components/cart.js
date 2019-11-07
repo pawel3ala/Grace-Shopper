@@ -45,12 +45,9 @@ class unconnectedCart extends React.Component {
     return (
       <div className="cartContainer">
         {cart.cartItems.sort((a, b) => a.productId - b.productId).map(item => {
-          let selectedProduct = []
-          this.props.cart.products.length > 0
-            ? (selectedProduct = this.props.cart.products.find(
-                product => product.id === item.productId
-              ))
-            : (selectedProduct = [{image: '', name: '', price: ''}])
+          const selectedProduct = this.props.cart.products.find(
+            product => product.id === item.productId
+          )
           return (
             <div key={item.productId} className="productCart">
               <img src={selectedProduct.image} />
