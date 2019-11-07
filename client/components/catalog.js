@@ -1,5 +1,6 @@
 import React from 'react'
 import {connect} from 'react-redux'
+import {Link} from 'react-router-dom'
 // import PropTypes from 'prop-types'
 // import {auth} from '../store'
 import {fetchCatalog} from '../store/catalog'
@@ -52,11 +53,15 @@ class CatalogUnconnected extends React.Component {
       <div>
         <div className="allProducts">
           {allProducts.map(product => (
-            <div key={product.id} className="">
-              {product.name}
-              <div>
-                <img className="allProductImg" src={product.image} />
+            <div key={product.id}>
+              <div className="productDiv">
+                <Link to={`/product/${product.id}`}>
+                  <img className="allProductImg" src={product.image} />
+                </Link>
               </div>
+              <Link to={`/product/${product.id}`} className="productName">
+                <div>{product.name}</div>
+              </Link>
             </div>
           ))}
         </div>

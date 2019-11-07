@@ -24,9 +24,23 @@ form div {
 .allProducts {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
+}
+
+.productDiv {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .allProductImg {
   height: 10rem;
-  width: 10rem;
+  width: 13rem;
+  padding: 2rem 1rem 2rem 1rem;
+}
+
+.productName {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
