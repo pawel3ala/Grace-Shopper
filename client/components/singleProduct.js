@@ -7,6 +7,7 @@ import {
   editProduct,
   removeProduct
 } from '../store/singleProduct'
+import {addAnItem} from '../store/cart'
 import faker from 'faker'
 
 let dummyReviews = []
@@ -32,8 +33,19 @@ let newProduct = {
 
 class unconnectedSingleProduct extends React.Component {
   componentDidMount() {
-    // this.props.fetchProduct(this.props.match.params.productId)
+    this.props.fetchProduct(this.props.match.params.productId)
   }
+
+  handleSubmit(event) {
+    event.preventDefault()
+    const itemObj = {
+      productId: this.props.match.params.productId,
+      qty: event.target.children[0].value
+    }
+    this.props.addToCart(itemObj)
+    this.props.history.push('/cart')
+  }
+
   // eslint-disable-next-line complexity
   render() {
     const name = newProduct.name || ''
@@ -55,7 +67,7 @@ class unconnectedSingleProduct extends React.Component {
           <div>Quantity: {productStatus}</div>
           <div>description: {description}</div>
         </div>
-        <form>
+        <form onSubmit={() => this.handleSubmit(event)}>
           <select name="quantityAddToCart">
             <option>1</option>
             <option>2</option>
@@ -93,7 +105,8 @@ const mapDispatchToProps = dispatch => {
     editProduct: product => dispatch(editProduct(product)), //only for admins(merchants)
     removeProduct: productId => dispatch(removeProduct(productId)), //only for admins(merchants)
     addReview: review => dispatch(addReview(review)),
-    editReview: review => dispatch(editReview(review))
+    editReview: review => dispatch(editReview(review)),
+    addToCart: item => dispatch(addAnItem(item))
   }
 }
 
