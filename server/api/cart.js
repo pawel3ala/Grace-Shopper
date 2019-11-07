@@ -38,6 +38,7 @@ router.post('/', async (req, res, next) => {
     const {body} = req
     if (!req.user) {
       // handle unauthenticated user w/ cookie
+      console.log('IS THIS IT?', body.productId)
       const cartItem = await CartItems.create({...body, userId: 1})
       res.json(cartItem)
     } else {

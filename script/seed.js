@@ -60,6 +60,10 @@ async function seed() {
 
   // Creates random Products
   let allProducts = []
+  // await Promise.all(allProducts.map(product => {
+  //   return Product.create(product)
+  // }))
+
   for (let i = 0; i < 12000; i++) {
     let newProduct = await Product.create({
       name: `${faker.commerce.productName()}`,
