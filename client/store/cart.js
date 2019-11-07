@@ -20,13 +20,13 @@ export const getItems = items => {
 export const clearItems = () => {
   return {
     type: CLEAR_ITEMS,
-    items: []
+    items: {}
   }
 }
 
 //Reducer
 
-const cartReducer = (state = [], action) => {
+const cartReducer = (state = {}, action) => {
   switch (action.type) {
     case ADD_ITEM:
       return [...state, action.item]
@@ -45,6 +45,7 @@ export const fetchItems = () => {
   return async dispatch => {
     try {
       const {data} = await Axios.get('/api/cart')
+      console.log(data)
       dispatch(getItems(data))
     } catch (err) {
       console.error(err)
