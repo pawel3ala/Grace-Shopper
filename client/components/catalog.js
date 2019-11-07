@@ -1,5 +1,6 @@
 import React from 'react'
 import {connect} from 'react-redux'
+import {NavLink} from 'react-router-dom'
 // import PropTypes from 'prop-types'
 // import {auth} from '../store'
 import {fetchCatalog} from '../store/catalog'
@@ -55,7 +56,9 @@ class CatalogUnconnected extends React.Component {
             <div key={product.id} className="">
               {product.name}
               <div>
-                <img className="allProductImg" src={product.image} />
+                <NavLink to={`/product/${product.id}`}>
+                  <img className="allProductImg" src={product.image} />
+                </NavLink>
               </div>
             </div>
           ))}

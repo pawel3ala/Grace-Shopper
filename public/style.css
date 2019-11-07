@@ -30,3 +30,32 @@ form div {
   height: 10rem;
   width: 10rem;
 }
+
+/*Single Product */
+.singleProduct {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.singleProduct img {
+  height: 25rem;
+  width: 25rem;
+}
+
+.productInfo {
+  margin-left: 3rem;
+  width: 35rem;
+  /* border: 5px solid red; */
+}
+
+.singleProductName {
+  font-size: 2rem;
+}
+.singleProduct form {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.reviewsHeader {
+  font-size: 3rem;
+}
