@@ -57,6 +57,7 @@ Merchant.hasOne(Country)
 Order.belongsToMany(Product, {through: OrderItem})
 Order.hasOne(Address, {as: 'shipToAddress'})
 Order.hasOne(Address, {as: 'billToAddress'})
+Order.hasOne(User)
 
 // Relations between USER and:
 User.belongsTo(Merchant)
@@ -64,6 +65,7 @@ User.hasMany(Review)
 User.belongsToMany(Product, {through: CartItems})
 User.hasOne(Country)
 User.hasMany(Address)
+User.belongsTo(Order)
 
 /**
  * We'll export all of our models here, so that any time a module needs a model,
