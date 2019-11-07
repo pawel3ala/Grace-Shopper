@@ -57,7 +57,7 @@ const mapSignup = state => {
   }
 }
 
-const mapDispatch = dispatch => {
+const mapDispatchToProps = dispatch => {
   return {
     handleSubmit(evt) {
       evt.preventDefault()
@@ -69,8 +69,8 @@ const mapDispatch = dispatch => {
   }
 }
 
-export const Login = connect(mapLogin, mapDispatch)(AuthForm)
-export const Signup = connect(mapSignup, mapDispatch)(AuthForm)
+export const Login = connect(mapLogin, mapDispatchToProps)(AuthForm)
+export const Signup = connect(mapSignup, mapDispatchToProps)(AuthForm)
 
 /**
  * PROP TYPES

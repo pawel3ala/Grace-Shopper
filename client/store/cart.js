@@ -26,7 +26,7 @@ export const clearItems = () => {
 
 //Reducer
 
-const cartReducer = (action, state = []) => {
+const cartReducer = (state = [], action) => {
   switch (action.type) {
     case ADD_ITEM:
       return [...state, action.item]
@@ -80,9 +80,10 @@ export const changeItem = item => {
   }
 }
 export const clearAllItems = () => {
-  return async () => {
+  return async dispatch => {
     try {
       await Axios.delete(`/api/cart`, {})
+      dispatch(clearAllItems())
     } catch (err) {
       console.error(err)
     }

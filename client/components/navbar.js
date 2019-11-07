@@ -6,7 +6,13 @@ import {logout} from '../store'
 
 const Navbar = ({handleClick, isLoggedIn}) => (
   <div>
-    <h1>BOILERMAKER</h1>
+    <h1>Grapefruit</h1>
+    <div className="slogan">
+      <h4>"They're Gr-r-r-r-apefuit!!"</h4>
+      <div id="tm">
+        <h6>TM</h6>
+      </div>
+    </div>
     <nav>
       {isLoggedIn ? (
         <div>
@@ -31,13 +37,13 @@ const Navbar = ({handleClick, isLoggedIn}) => (
 /**
  * CONTAINER
  */
-const mapState = state => {
+const mapStateToProps = state => {
   return {
     isLoggedIn: !!state.user.id
   }
 }
 
-const mapDispatch = dispatch => {
+const mapDispatchToProps = dispatch => {
   return {
     handleClick() {
       dispatch(logout())
@@ -45,7 +51,7 @@ const mapDispatch = dispatch => {
   }
 }
 
-export default connect(mapState, mapDispatch)(Navbar)
+export default connect(mapStateToProps, mapDispatchToProps)(Navbar)
 
 /**
  * PROP TYPES
