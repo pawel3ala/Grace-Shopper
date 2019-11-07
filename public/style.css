@@ -20,6 +20,18 @@ form div {
   display: inline-block;
 }
 
+/* Navbar */
+.slogan {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#tm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
 /* Catalog */
 .allProducts {
   display: flex;
