@@ -26,10 +26,15 @@ export const clearItems = () => {
 
 //Reducer
 
-const cartReducer = (state = {}, action) => {
+const initialState = {
+  cartItems: [],
+  products: []
+}
+
+const cartReducer = (state = initialState, action) => {
   switch (action.type) {
     case ADD_ITEM:
-      return [...state, action.item]
+      return {...state, cartItems: [...state.cartItems, action.item]}
     case GET_ITEMS:
       return action.items
     case CLEAR_ITEMS:
