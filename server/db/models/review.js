@@ -10,7 +10,7 @@ const Review = db.define('review', {
       isLongerThan(value) {
         if (value.length < 12) {
           throw new Error(
-            'Review contant too short - must have at least 12 characters'
+            'Review content too short - must have at least 12 characters'
           )
         }
       }
