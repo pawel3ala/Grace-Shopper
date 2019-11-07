@@ -31,8 +31,8 @@ Category.belongsToMany(Product, {
 })
 
 // Relations between COUNTRY and:
-Country.belongsTo(Merchant)
-Country.belongsTo(User)
+Country.hasMany(Merchant)
+Country.hasMany(User)
 
 // Relations between PRODUCT and:
 Product.belongsToMany(Category, {
@@ -46,16 +46,13 @@ Product.hasMany(Review)
 
 // Relations between ADDRESS and:
 Address.belongsTo(User)
-Address.belongsToMany(Order, {
-  through: 'OrderAddress',
-  foreignKeyConstraint: true
-})
+// Address.hasMany(Order)
 // Address.belongsTo(Country)
 
 // Relations between MERCHANT and:
 Merchant.hasMany(Product)
 Merchant.hasOne(User)
-Merchant.hasOne(Country)
+Merchant.belongsTo(Country)
 
 // Relations between ORDER_ITEM and:
 // Can we bring this up in code review?
@@ -63,18 +60,18 @@ Merchant.hasOne(Country)
 // OrderItem.belongsToMany(Product, {through: 'ProductOrderItem'})
 
 // Relations between ORDER and:
-Order.hasOne(Address, {as: 'shipToAddress', foreignKeyConstraint: true})
-Order.hasOne(Address, {as: 'billToAddress', foreignKeyConstraint: true})
-Order.hasOne(User)
+Order.belongsTo(Address, {as: 'shipToAddress'})
+Order.belongsTo(Address, {as: 'billToAddress'})
+Order.belongsTo(User)
 Order.belongsToMany(Product, {through: OrderItem, foreignKeyConstraint: true})
 
 // Relations between USER and:
 User.belongsTo(Merchant)
 User.hasMany(Review)
 User.belongsToMany(Product, {through: CartItems, foreignKeyConstraint: true})
-User.hasOne(Country)
+User.belongsTo(Country)
 User.hasMany(Address)
-User.belongsTo(Order)
+User.hasMany(Order)
 
 /**
  * We'll export all of our models here, so that any time a module needs a model,

@@ -2,7 +2,7 @@ const router = require('express').Router()
 const {OrderItem} = require('../db/models')
 module.exports = router
 
-// POST api/cart (adding item to cart)
+// POST api/orderItem (adding item to order)
 router.post('/', async (req, res, next) => {
   // edge cases:
   //   -can't order more than what is in stock
