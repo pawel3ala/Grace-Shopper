@@ -78,7 +78,6 @@ router.put('/', async (req, res, next) => {
 
 router.delete('/', async (req, res, next) => {
   try {
-    console.log(req)
     const {body: {productId, ...body}} = req
     if (!req.user) {
       // handle unauthenticated user w/ cookie

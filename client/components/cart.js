@@ -28,13 +28,12 @@ class unconnectedCart extends React.Component {
     this.props.fetchItems()
   }
   handleDelete(event) {
-    const productId = event.target.name
-    const quantity = event.target.value
+    const productId = event.target.previousSibling.name
+    const quantity = event.target.previousSibling.value
     const itemObj = {
       productId,
       quantity
     }
-    console.log(itemObj)
     this.props.deleteItem(itemObj)
     this.props.fetchItems()
   }
@@ -62,12 +61,10 @@ class unconnectedCart extends React.Component {
                     value={item.quantity}
                     onChange={this.handleChange}
                   />
+                  <button type="button" onClick={this.handleDelete}>
+                    Remove from cart
+                  </button>
                 </form>
-              </div>
-              <div>
-                <button type="button" onClick={this.handleDelete}>
-                  Remove from cart
-                </button>
               </div>
             </div>
           )

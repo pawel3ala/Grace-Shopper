@@ -59,7 +59,7 @@ export const addAnItem = item => {
 export const deleteItem = item => {
   return async () => {
     try {
-      await Axios.delete(`/api/cart`, item)
+      await Axios.delete(`/api/cart`, {data: item})
     } catch (err) {
       console.error(err)
     }
