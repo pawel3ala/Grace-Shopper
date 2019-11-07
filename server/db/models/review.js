@@ -5,7 +5,16 @@ const db = require('../db')
 
 const Review = db.define('review', {
   content: {
-    type: Sequelize.TEXT
+    type: Sequelize.TEXT,
+    validate: {
+      isLongerThan(value) {
+        if (value.length < 12) {
+          throw new Error(
+            'Review content too short - must have at least 12 characters'
+          )
+        }
+      }
+    }
   },
   stars: {
     type: Sequelize.INTEGER,
