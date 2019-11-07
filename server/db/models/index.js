@@ -36,6 +36,7 @@ Product.belongsToMany(Category, {through: 'ProductCategory'})
 Product.belongsToMany(Order, {through: OrderItem})
 Product.belongsToMany(User, {through: CartItems})
 Product.belongsTo(Merchant)
+Product.hasMany(Review)
 
 // Relations between ADDRESS and:
 Address.belongsTo(User)

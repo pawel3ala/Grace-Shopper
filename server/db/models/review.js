@@ -1,6 +1,8 @@
 const Sequelize = require('sequelize')
 const db = require('../db')
 
+// Make sure that we're validating that reviews have a valid productId
+
 const Review = db.define('review', {
   content: {
     type: Sequelize.TEXT
