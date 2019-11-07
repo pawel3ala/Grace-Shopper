@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const {Product, Review, Category} = require('../db/models')
+const {Product, Review} = require('../db/models')
 const {getProductQuery} = require('./helpers')
 
 module.exports = router
@@ -9,8 +9,7 @@ router.get('/', async (req, res, next) => {
   try {
     const {where, include} = getProductQuery(req.query)
     const {skip: offset, query: {limit, sort = 'id.ASC'}} = req
-    const products = await Product.findAll({
-      // think about how review (N:1) and category (N:M) filtering works
+    const products = await Product.findAndCountAll({
       where,
       limit,
       offset,
