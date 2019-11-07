@@ -15,7 +15,11 @@ const getProductQuery = query => {
   // fuelLevel will have some kind of LHS operators attached to it (e.g fuelLevel[lte])
   const {search, price, review, category} = query
   let where = {}
-  let include = [{model: Category}]
+  let include = [
+    {model: Category, attributes: ['name'], through: {attributes: []}}
+  ]
+  // if category is on the query, it will add a where clause to the include, otherwise just include
+  // all categories
   if (search)
     where[Op.or] = {
       // do we want this to be name or description OR just name
