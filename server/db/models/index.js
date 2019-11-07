@@ -63,8 +63,8 @@ Merchant.hasOne(Country)
 // OrderItem.belongsToMany(Product, {through: 'ProductOrderItem'})
 
 // Relations between ORDER and:
-Order.hasOne(Address, {as: 'shipToAddress'})
-Order.hasOne(Address, {as: 'billToAddress'})
+Order.hasOne(Address, {as: 'shipToAddress', foreignKeyConstraint: true})
+Order.hasOne(Address, {as: 'billToAddress', foreignKeyConstraint: true})
 Order.hasOne(User)
 Order.belongsToMany(Product, {through: OrderItem, foreignKeyConstraint: true})
 
