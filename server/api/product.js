@@ -92,3 +92,14 @@ router.delete('/:productId', async (req, res, next) => {
     next(err)
   }
 })
+
+// POST api/product/
+router.post('/', async (req, res, next) => {
+  try {
+    const {params: {body}} = req
+    const product = await Product.create(body)
+    res.json(product)
+  } catch (err) {
+    next(err)
+  }
+})
