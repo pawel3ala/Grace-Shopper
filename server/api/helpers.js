@@ -1,4 +1,5 @@
 const Op = require('sequelize').Op
+const {Category} = require('../db/models')
 
 const operatorAliases = {
   lt: Op.lt,
@@ -14,13 +15,14 @@ const getProductQuery = query => {
   // fuelLevel will have some kind of LHS operators attached to it (e.g fuelLevel[lte])
   const {search, price, review, category} = query
   let where = {}
+  let include = [{model: Category}]
   if (search)
     where[Op.or] = {
       // do we want this to be name or description OR just name
       name: {[Op.iLike]: `%${search}%`},
       description: {[Op.iLike]: `%${search}%`}
     }
-  if (category) where.category = category
+  if (category) include[0].where = {name: category}
   // do we want multi-category filtering?
   if (price) {
     where.price = {}
@@ -32,7 +34,7 @@ const getProductQuery = query => {
     for (let k of Object.keys(review))
       where.review[operatorAliases[k]] = review[k]
   }
-  return where
+  return {where, include}
 }
 
 module.exports = {getProductQuery}

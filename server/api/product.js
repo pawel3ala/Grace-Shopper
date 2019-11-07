@@ -7,7 +7,7 @@ module.exports = router
 // GET api/product (get catalog)
 router.get('/', async (req, res, next) => {
   try {
-    const where = getProductQuery(req.query)
+    const {where, include} = getProductQuery(req.query)
     const {skip: offset, query: {limit, sort = 'id.ASC'}} = req
     const products = await Product.findAll({
       // think about how review (N:1) and category (N:M) filtering works
@@ -15,7 +15,7 @@ router.get('/', async (req, res, next) => {
       limit,
       offset,
       order: [sort.split('.')],
-      include: [Category]
+      include
       // for multiple sort -- sort.split(",").map(s => s.split("."))
     })
     res.json(products)
