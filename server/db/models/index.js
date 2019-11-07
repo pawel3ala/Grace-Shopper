@@ -55,7 +55,8 @@ Merchant.hasOne(Country)
 
 // Relations between ORDER and:
 Order.belongsToMany(Product, {through: OrderItem})
-Order.belongsToMany(Address, {through: 'OrderAddress'})
+Order.hasOne(Address, {as: 'shipToAddress'})
+Order.hasOne(Address, {as: 'billToAddress'})
 
 // Relations between USER and:
 User.belongsTo(Merchant)
