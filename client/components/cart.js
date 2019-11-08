@@ -38,38 +38,38 @@ class unconnectedCart extends React.Component {
     this.props.fetchItems()
   }
   render() {
-    // const cart = this.props.cart.cartItems
-    //   ? this.props.cart
-    //   : {cartItems: [], products: []}
     let cart
-    this.props.cart === undefined
-      ? (cart = {id: 0, quantity: 0, name: '', image: '', price: ''})
-      : (cart = this.props.cart)
+    this.props.cart === undefined ? (cart = []) : (cart = this.props.cart)
     return (
       <div className="cartContainer">
-        {Object.keys(cart).map(item => {
-          return (
-            <div key={cart[item].productId} className="productCart">
-              <img src={cart[item].image} />
-              <div>Name: {cart[item].name}</div>
-              <div>Price: {cart[item].price}</div>
-              <div>
-                Quantity:{' '}
-                <form>
-                  <input
-                    name={cart[item].productId}
-                    type="number"
-                    value={cart[item].quantity}
-                    onChange={this.handleChange}
-                  />
-                  <button type="button" onClick={this.handleDelete}>
-                    Remove from cart
-                  </button>
-                </form>
-              </div>
-            </div>
-          )
-        })}
+        {cart.length > 0
+          ? cart.map(item => {
+              return (
+                <div key={item.productId} className="productCart">
+                  <img src={item.image} />
+                  <div>Name: {item.name}</div>
+                  <div>Price: {item.price}</div>
+                  <div>
+                    Quantity:{' '}
+                    <form>
+                      <input
+                        name={item.productId}
+                        type="number"
+                        min="1"
+                        max={item.productQuantity}
+                        value={item.quantity}
+                        onChange={this.handleChange}
+                      />
+                      <button type="button" onClick={this.handleDelete}>
+                        Remove from cart
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              )
+            })
+          : 'Cart is Empty'}
+        <button type="button">Proceed to Checkout</button>
       </div>
     )
   }
