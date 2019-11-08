@@ -19,7 +19,7 @@ router.get('/', async (req, res, next) => {
           }
         }
       } = req
-      // console.log(cart)
+      console.log(cart)
       res.json(cart)
     } else {
       const {user} = req
@@ -69,17 +69,19 @@ router.put('/', async (req, res, next) => {
     if (!req.user) {
       // handle unauthenticated user w/ cookie
       console.log(quantity)
-      req.session.cart.cartItems = await req.session.cart.cartItems.map(d => {
-        if (d.productId === productId) return {...d, quantity}
-        else return d
-      })
+      req.session.cart.cartItems.find(
+        d => d.productId === productId
+      ).quantity = quantity
       res.json(req.session.cart)
     } else {
       const {user: {id: userId}} = req
-      const [_, [cart]] = await CartItems.update(body, {
-        where: {userId, productId},
-        returning: true
-      })
+      const [_, [cart]] = await CartItems.update(
+        {productId, quantity},
+        {
+          where: {userId, productId},
+          returning: true
+        }
+      )
       if (!cart) throw new Error('Product not found')
       res.json(cart)
     }
@@ -90,19 +92,20 @@ router.put('/', async (req, res, next) => {
 
 router.delete('/', async (req, res, next) => {
   try {
-    const {body: {productId, ...body}} = req
+    const {body: {productId}} = req
     if (!req.user) {
       // handle unauthenticated user w/ cookie
-      let where = {userId: 1}
-      if (productId) where.productId = productId
-      await CartItems.destroy({where})
+      console.log(req.session.cart)
+      req.session.cart.cartItems = req.session.cart.cartItems.filter(
+        d => d.productId !== productId
+      )
       res.status(200).end()
     } else {
       const {user: {id: userId}} = req
       let where = {userId}
       if (productId) where.productId = productId
       const cart = await CartItems.destroy({where})
-      res.json(cart)
+      res.status(200).end()
     }
   } catch (err) {
     next(err)
