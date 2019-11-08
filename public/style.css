@@ -95,3 +95,10 @@ form div {
   height: 5rem;
   width: 5rem;
 }
+
+/* Checkout */
+
+.addressContainer {
+  display: flex;
+  flex-wrap: wrap;
+}
