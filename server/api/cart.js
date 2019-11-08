@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const {CartItems} = require('../db/models')
+const {CartItems, Product, User} = require('../db/models')
 module.exports = router
 
 // GET api/cart (getting user's cart from server)
@@ -11,12 +11,17 @@ router.get('/', async (req, res, next) => {
   try {
     if (!req.user) {
       // handle unauthenticated user w/ cookie
-      const cartItem = await CartItems.findAll({where: {userId: 1}})
-      res.json(cartItem)
+      const matchingUser = await User.findByPk(1, {include: [Product]})
+      const products = matchingUser.products
+      let cartItems = await CartItems.findAll(
+        {where: {userId: 1}},
+        {order: [['productId', 'ASC']]}
+      )
+      res.json({cartItems, products})
     } else {
       const {user: {id: userId}} = req
-      const cartItem = await CartItems.findAll({where: {userId}})
-      res.json(cartItem)
+      const cartItems = await CartItems.findAll({where: {userId}})
+      res.json(cartItems)
     }
   } catch (err) {
     next(err)
