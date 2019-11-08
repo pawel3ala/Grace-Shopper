@@ -102,3 +102,11 @@ form div {
   display: flex;
   flex-wrap: wrap;
 }
+
+#shippingContainer {
+  flex: 0 0 50%;
+}
+
+#billingContainer {
+  flex: 0 0 50%;
+}
