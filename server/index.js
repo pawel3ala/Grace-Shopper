@@ -5,6 +5,7 @@ const compression = require('compression')
 const session = require('express-session')
 const passport = require('passport')
 const SequelizeStore = require('connect-session-sequelize')(session.Store)
+const paginate = require('express-paginate')
 const db = require('./db')
 const sessionStore = new SequelizeStore({db})
 const PORT = process.env.PORT || 8080
@@ -62,6 +63,9 @@ const createApp = () => {
   )
   app.use(passport.initialize())
   app.use(passport.session())
+
+  // pagination middleware
+  app.use(paginate.middleware(10, 50))
 
   // auth and api routes
   app.use('/auth', require('./auth'))

@@ -17,57 +17,55 @@ class unconnectedCart extends React.Component {
   componentDidMount() {
     this.props.fetchItems()
   }
-  handleChange(event) {
+  async handleChange(event) {
     const productId = event.target.name
     const quantity = event.target.value
     const itemObj = {
       productId,
       quantity
     }
-    this.props.changeItem(itemObj)
+    await this.props.changeItem(itemObj)
     this.props.fetchItems()
   }
-  handleDelete(event) {
-    const productId = event.target.name
-    const quantity = event.target.value
+  async handleDelete(event) {
+    const productId = event.target.previousSibling.name
+    const quantity = event.target.previousSibling.value
     const itemObj = {
       productId,
       quantity
     }
-    console.log(itemObj)
-    this.props.deleteItem(itemObj)
+    await this.props.deleteItem(itemObj)
     this.props.fetchItems()
   }
   render() {
-    const cart = this.props.cart.cartItems
-      ? this.props.cart
-      : {cartItems: [], products: []}
+    // const cart = this.props.cart.cartItems
+    //   ? this.props.cart
+    //   : {cartItems: [], products: []}
+    let cart
+    this.props.cart === undefined
+      ? (cart = {id: 0, quantity: 0, name: '', image: '', price: ''})
+      : (cart = this.props.cart)
     return (
       <div className="cartContainer">
-        {cart.cartItems.sort((a, b) => a.productId - b.productId).map(item => {
-          const selectedProduct = this.props.cart.products.find(
-            product => product.id === item.productId
-          )
+        {Object.keys(cart).map(item => {
           return (
-            <div key={item.productId} className="productCart">
-              <img src={selectedProduct.image} />
-              <div>Name: {selectedProduct.name}</div>
-              <div>Price: {selectedProduct.price}</div>
+            <div key={cart[item].productId} className="productCart">
+              <img src={cart[item].image} />
+              <div>Name: {cart[item].name}</div>
+              <div>Price: {cart[item].price}</div>
               <div>
                 Quantity:{' '}
                 <form>
                   <input
-                    name={item.productId}
+                    name={cart[item].productId}
                     type="number"
-                    value={item.quantity}
+                    value={cart[item].quantity}
                     onChange={this.handleChange}
                   />
+                  <button type="button" onClick={this.handleDelete}>
+                    Remove from cart
+                  </button>
                 </form>
-              </div>
-              <div>
-                <button type="button" onClick={this.handleDelete}>
-                  Remove from cart
-                </button>
               </div>
             </div>
           )

@@ -15,7 +15,8 @@ const Address = db.define('address', {
     type: Sequelize.STRING
   },
   zip: Sequelize.STRING,
-  type: Sequelize.ENUM('BILL_TO', 'SHIP_TO', 'BOTH')
+  type: Sequelize.ENUM('BILL_TO', 'SHIP_TO'),
+  default: Sequelize.BOOLEAN
 })
 
 module.exports = Address
