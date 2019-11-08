@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const {CartItems, Product, User} = require('../db/models')
+const {CartItems} = require('../db/models')
 module.exports = router
 
 // GET api/cart (getting user's cart from server)
@@ -11,17 +11,22 @@ router.get('/', async (req, res, next) => {
   try {
     if (!req.user) {
       // handle unauthenticated user w/ cookie
-      const matchingUser = await User.findByPk(1, {include: [Product]})
-      const products = matchingUser.products
-      let cartItems = await CartItems.findAll(
-        {where: {userId: 1}},
-        {order: [['productId', 'ASC']]}
-      )
-      res.json({cartItems, products})
+      const {
+        session: {
+          cart = {
+            cartItems: [],
+            products: []
+          }
+        }
+      } = req
+      res.json(cart)
     } else {
-      const {user: {id: userId}} = req
-      const cartItems = await CartItems.findAll({where: {userId}})
-      res.json(cartItems)
+      const {user} = req
+      const products = user.getProducts()
+      const cartItems = await CartItems.findAll({
+        where: {userId: user.id}
+      })
+      res.json({cartItems, products})
     }
   } catch (err) {
     next(err)
@@ -35,14 +40,15 @@ router.post('/', async (req, res, next) => {
   //   -if someone orders something that depletes the stock of a given item, all users with that
   //   item in their cart can't order it
   try {
-    const {body} = req
+    const {body: {productId, quantity}} = req
     if (!req.user) {
       // handle unauthenticated user w/ cookie
-      const cartItem = await CartItems.create({...body, userId: 1})
-      res.json(cartItem)
+      const {session: {cart: {cartItems = []}}} = req
+      cartItems.push({productId, quantity})
+      res.json(req.session.cartItem)
     } else {
       const {user: {id: userId}} = req
-      const cartItem = await CartItems.create({...body, userId})
+      const cartItem = await CartItems.create({productId, quantity, userId})
       res.json(cartItem)
     }
   } catch (err) {
