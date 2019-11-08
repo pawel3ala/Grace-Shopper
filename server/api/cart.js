@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const {CartItems} = require('../db/models')
+const {CartItems, Product} = require('../db/models')
 module.exports = router
 
 // GET api/cart (getting user's cart from server)
@@ -19,6 +19,7 @@ router.get('/', async (req, res, next) => {
           }
         }
       } = req
+      // console.log(cart)
       res.json(cart)
     } else {
       const {user} = req
@@ -26,7 +27,7 @@ router.get('/', async (req, res, next) => {
       const cartItems = await CartItems.findAll({
         where: {userId: user.id}
       })
-      res.json({cartItems, products})
+      res.json({cartItems})
     }
   } catch (err) {
     next(err)
@@ -43,9 +44,10 @@ router.post('/', async (req, res, next) => {
     const {body: {productId, quantity}} = req
     if (!req.user) {
       // handle unauthenticated user w/ cookie
-      const {session: {cart: {cartItems = []}}} = req
-      cartItems.push({productId, quantity})
-      res.json(req.session.cartItem)
+      if (!req.session.cart) req.session.cart = {cartItems: [], products: []}
+      req.session.cart.cartItems.push({productId, quantity})
+      req.session.cart.products.push(await Product.findByPk(productId))
+      res.json(req.session.cart)
     } else {
       const {user: {id: userId}} = req
       const cartItem = await CartItems.create({productId, quantity, userId})
@@ -63,18 +65,22 @@ router.put('/', async (req, res, next) => {
   //   -if someone orders something that depletes the stock of a given item, all users with that
   //   item in their cart can't order it
   try {
-    const {body: {productId, ...body}} = req
+    const {body: {productId, quantity}} = req
     if (!req.user) {
       // handle unauthenticated user w/ cookie
+      console.log(quantity)
+      req.session.cart.cartItems = await req.session.cart.cartItems.map(d => {
+        if (d.productId === productId) return {...d, quantity}
+        else return d
+      })
+      res.json(req.session.cart)
+    } else {
+      const {user: {id: userId}} = req
       const [_, [cart]] = await CartItems.update(body, {
-        where: {userId: 1, productId},
+        where: {userId, productId},
         returning: true
       })
       if (!cart) throw new Error('Product not found')
-      res.json(cart)
-    } else {
-      const {user: {id: userId}} = req
-      const cart = await CartItems.create({...body, userId})
       res.json(cart)
     }
   } catch (err) {

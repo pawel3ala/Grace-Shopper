@@ -9,7 +9,7 @@ router.get('/', async (req, res, next) => {
   try {
     const {where, include} = getProductQuery(req.query)
     const {skip: offset, query: {limit, sort = 'id.ASC'}} = req
-    const products = await Product.findAndCountAll({
+    const products = await Product.findAll({
       where,
       limit,
       offset,
