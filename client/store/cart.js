@@ -41,22 +41,23 @@ export const fetchItems = () => {
   return async dispatch => {
     try {
       const {data} = await Axios.get('/api/cart')
-      // console.log(data)
-      // console.log({ ...data.products[0]})
-      // console.log({...data.cartItems[0]})
-      let info = {}
+      data.products.sort(
+        (a, b) => a.cart_item.productId - b.cart_item.productId
+      )
+      data.cartItems.sort((a, b) => a.productId - b.productId) //Need to sort so product matches up with correct cart item
+      let info = []
       for (let i = 0; i < data.products.length; i++) {
-        info['cartItem' + (i + 1)] = {
+        info.push({
           //Only grab needed info for each cart item
           id: i + 1,
           quantity: data.cartItems[i].quantity,
           productId: data.cartItems[i].productId,
           name: data.products[i].name,
           image: data.products[i].image,
-          price: data.products[i].price
-        }
+          price: data.products[i].price,
+          productQuantity: data.products[i].quantity
+        })
       }
-      console.log(info)
       dispatch(getItems(info))
     } catch (err) {
       console.error(err)
