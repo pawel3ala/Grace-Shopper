@@ -9,7 +9,6 @@ import {
 import {Cart} from './index'
 import {fetchAddress, changeAddress} from '../store/address'
 import {connect} from 'react-redux'
-import {timingSafeEqual} from 'crypto'
 
 class unconnectedCheckout extends React.Component {
   constructor() {
