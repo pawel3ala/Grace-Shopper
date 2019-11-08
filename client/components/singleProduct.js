@@ -7,53 +7,31 @@ import {
   editProduct,
   removeProduct
 } from '../store/singleProduct'
-import {addAnItem} from '../store/cart'
-import faker from 'faker'
-
-let dummyReviews = []
-for (let i = 0; i < 3; i++) {
-  let contentAmount = Math.floor(Math.random() * 4)
-  let newReview = {
-    id: i,
-    content: faker.lorem.paragraphs(contentAmount),
-    stars: Math.ceil(Math.random() * 5),
-    title: faker.lorem.sentence(contentAmount + 3)
-  }
-  dummyReviews.push(newReview)
-}
-let newProduct = {
-  id: 0,
-  name: `${faker.commerce.productName()}`,
-  quantity: Math.floor(Math.random() * 1000),
-  price: Number(faker.commerce.price(0.1, 1000, 2)),
-  image: faker.image.imageUrl(),
-  description: faker.lorem.paragraph(),
-  reviews: dummyReviews
-}
+import {addAnItem, fetchItems} from '../store/cart'
 
 class unconnectedSingleProduct extends React.Component {
   componentDidMount() {
     this.props.fetchProduct(this.props.match.params.productId)
   }
 
-  handleSubmit(event) {
+  async handleSubmit(event) {
     event.preventDefault()
     const itemObj = {
       productId: this.props.match.params.productId,
-      qty: event.target.children[0].value
+      quantity: event.target.children[0].value
     }
-    this.props.addToCart(itemObj)
+    await this.props.addToCart(itemObj)
+    await this.props.fetchCart()
     this.props.history.push('/cart')
   }
-
   // eslint-disable-next-line complexity
   render() {
-    const name = newProduct.name || ''
-    const quantity = newProduct.quantity || ''
-    const price = newProduct.price || ''
-    const image = newProduct.image || ''
-    const description = newProduct.description || ''
-    const reviews = newProduct.reviews || []
+    const name = this.props.product.name || ''
+    const quantity = this.props.product.quantity || ''
+    const price = this.props.product.price || ''
+    const image = this.props.product.image || ''
+    const description = this.props.product.description || ''
+    const reviews = this.props.product.reviews || []
     let productStatus =
       quantity > 20
         ? 'In Stock'
@@ -78,7 +56,7 @@ class unconnectedSingleProduct extends React.Component {
         </form>
         <div className="productReviewsContainer">
           <div className="reviewsHeader">Reviews</div>
-          {newProduct.reviews.map(review => {
+          {reviews.map(review => {
             return (
               <div key={review.id}>
                 <div>{review.title}</div>
@@ -106,7 +84,8 @@ const mapDispatchToProps = dispatch => {
     removeProduct: productId => dispatch(removeProduct(productId)), //only for admins(merchants)
     addReview: review => dispatch(addReview(review)),
     editReview: review => dispatch(editReview(review)),
-    addToCart: item => dispatch(addAnItem(item))
+    addToCart: item => dispatch(addAnItem(item)),
+    fetchCart: () => dispatch(fetchItems())
   }
 }
 

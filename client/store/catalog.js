@@ -26,7 +26,7 @@ export default catalogReducer
 export const fetchCatalog = query => {
   return async dispatch => {
     try {
-      const {data} = await Axios.get(`/api/products?${getUrlString(query)}`)
+      const {data} = await Axios.get(`/api/product?${getUrlString(query)}`)
       dispatch(getProducts(data))
     } catch (err) {
       console.error(err)

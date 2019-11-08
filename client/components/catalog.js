@@ -33,13 +33,13 @@ class CatalogUnconnected extends React.Component {
     super()
     this.state = {
       query: {
+        page: 1,
+        limit: 10,
+        sort: 'id.ASC',
         search: '',
-        sort: '',
+        category: '',
         price: {},
-        review: {},
-        page: 0,
-        limit: 0,
-        category: ''
+        review: {}
       }
     }
   }

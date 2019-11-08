@@ -25,28 +25,34 @@ Review.belongsTo(Product)
 // CartItems.hasMany(Product)
 
 // Relations between CATEGORY and:
-Category.belongsToMany(Product, {through: 'ProductCategory'})
+Category.belongsToMany(Product, {
+  through: 'ProductCategory',
+  foreignKeyConstraint: true
+})
 
 // Relations between COUNTRY and:
-Country.belongsTo(Merchant)
-Country.belongsTo(User)
+Country.hasMany(Merchant)
+Country.hasMany(User)
 
 // Relations between PRODUCT and:
-Product.belongsToMany(Category, {through: 'ProductCategory'})
-Product.belongsToMany(Order, {through: OrderItem})
-Product.belongsToMany(User, {through: CartItems})
+Product.belongsToMany(Category, {
+  through: 'ProductCategory',
+  foreignKeyConstraint: true
+})
+Product.belongsToMany(Order, {through: OrderItem, foreignKeyConstraint: true})
+Product.belongsToMany(User, {through: CartItems, foreignKeyConstraint: true})
 Product.belongsTo(Merchant)
 Product.hasMany(Review)
 
 // Relations between ADDRESS and:
 Address.belongsTo(User)
-Address.belongsToMany(Order, {through: 'OrderAddress'})
+// Address.hasMany(Order)
 // Address.belongsTo(Country)
 
 // Relations between MERCHANT and:
 Merchant.hasMany(Product)
 Merchant.hasOne(User)
-Merchant.hasOne(Country)
+Merchant.belongsTo(Country)
 
 // Relations between ORDER_ITEM and:
 // Can we bring this up in code review?
@@ -54,15 +60,18 @@ Merchant.hasOne(Country)
 // OrderItem.belongsToMany(Product, {through: 'ProductOrderItem'})
 
 // Relations between ORDER and:
-Order.belongsToMany(Product, {through: OrderItem})
-Order.belongsToMany(Address, {through: 'OrderAddress'})
+Order.belongsTo(Address, {as: 'shipToAddress'})
+Order.belongsTo(Address, {as: 'billToAddress'})
+Order.belongsTo(User)
+Order.belongsToMany(Product, {through: OrderItem, foreignKeyConstraint: true})
 
 // Relations between USER and:
 User.belongsTo(Merchant)
 User.hasMany(Review)
-User.belongsToMany(Product, {through: CartItems})
-User.hasOne(Country)
+User.belongsToMany(Product, {through: CartItems, foreignKeyConstraint: true})
+User.belongsTo(Country)
 User.hasMany(Address)
+User.hasMany(Order)
 
 /**
  * We'll export all of our models here, so that any time a module needs a model,
