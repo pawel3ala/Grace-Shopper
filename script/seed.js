@@ -74,7 +74,7 @@ async function seed() {
 
   // Creates random Reviews
   for (let i = 0; i < 500; i++) {
-    let contentAmount = Math.floor(Math.random() * 4)
+    let contentAmount = Math.floor(Math.random() * 2 + 2)
     let newReview = await Review.create({
       content: faker.lorem.paragraphs(contentAmount),
       stars: Math.ceil(Math.random() * 5),

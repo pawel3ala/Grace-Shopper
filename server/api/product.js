@@ -1,11 +1,22 @@
 const router = require('express').Router()
 const {Product, Review} = require('../db/models')
+const {getProductQuery} = require('./helpers')
+
 module.exports = router
 
 // GET api/product (get catalog)
 router.get('/', async (req, res, next) => {
   try {
-    const products = await Product.findAll()
+    const {where, include} = getProductQuery(req.query)
+    const {skip: offset, query: {limit, sort = 'id.ASC'}} = req
+    const products = await Product.findAll({
+      where,
+      limit,
+      offset,
+      order: [sort.split('.')],
+      include
+      // for multiple sort -- sort.split(",").map(s => s.split("."))
+    })
     res.json(products)
   } catch (err) {
     next(err)

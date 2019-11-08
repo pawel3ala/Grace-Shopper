@@ -17,24 +17,24 @@ class unconnectedCart extends React.Component {
   componentDidMount() {
     this.props.fetchItems()
   }
-  handleChange(event) {
+  async handleChange(event) {
     const productId = event.target.name
     const quantity = event.target.value
     const itemObj = {
       productId,
       quantity
     }
-    this.props.changeItem(itemObj)
+    await this.props.changeItem(itemObj)
     this.props.fetchItems()
   }
-  handleDelete(event) {
+  async handleDelete(event) {
     const productId = event.target.previousSibling.name
     const quantity = event.target.previousSibling.value
     const itemObj = {
       productId,
       quantity
     }
-    this.props.deleteItem(itemObj)
+    await this.props.deleteItem(itemObj)
     this.props.fetchItems()
   }
   render() {
