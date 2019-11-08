@@ -57,12 +57,17 @@ class SingleReview extends React.Component {
           value={this.state.title}
           onChange={this.handleChange}
         />
+        {this.state.title.length === 0 ? <div>Title needs an input</div> : null}
         <textarea
           type="text"
           name="content"
           value={this.state.content}
           onChange={this.handleChange}
         />
+        {this.state.content.length < 12 ? (
+          <div>Content needs to be more than 12 characters</div>
+        ) : null //give user an idea on what is needed
+        }
         <input
           type="number"
           name="stars"
@@ -71,7 +76,14 @@ class SingleReview extends React.Component {
           value={this.state.stars}
           onChange={this.handleChange}
         />
-        <button type="button" onClick={this.changeToNoEdit}>
+        {/*cant send a review with less than 12 characters or will fail sequelize validation*/}
+        <button
+          type="button"
+          onClick={this.changeToNoEdit}
+          disabled={
+            this.state.content.length < 12 || this.state.title.length === 0
+          }
+        >
           Done
         </button>
       </div>
