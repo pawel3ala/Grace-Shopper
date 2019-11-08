@@ -42,13 +42,8 @@ router.put('/:productId', async (req, res, next) => {
 router.post('/review', async (req, res, next) => {
   try {
     if (!req.user) throw new Error('Not logged in')
-    const {body: {productId, ...body}, user: {id: userId}} = req
-    const review = await Review.create(
-      {userId, body},
-      {
-        where: {id: productId}
-      }
-    )
+    const {body: {...body}, user: {id: userId}} = req
+    const review = await Review.create({userId, ...body})
     res.json(review)
   } catch (err) {
     next(err)
@@ -61,9 +56,12 @@ router.put('/review/:reviewId', async (req, res, next) => {
     if (!req.user) throw new Error('Not logged in')
     // Need to handle the case where a user tries to edit a review that isn't theirs!
     const {params: {reviewId}, body, user: {id: userId}} = req
-    const review = await Review.update(body, {
-      where: {id: reviewId}
-    })
+    const review = await Review.update(
+      {userId, ...body},
+      {
+        where: {id: reviewId}
+      }
+    )
     res.json(review)
   } catch (err) {
     next(err)

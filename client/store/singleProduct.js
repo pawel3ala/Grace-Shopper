@@ -35,7 +35,7 @@ export const fetchProduct = productId => {
 export const addReview = review => {
   return async () => {
     try {
-      await Axios.post(`/api/review`, review)
+      await Axios.post(`/api/product/review`, review)
     } catch (err) {
       console.error(err)
     }
@@ -44,7 +44,7 @@ export const addReview = review => {
 export const editReview = review => {
   return async () => {
     try {
-      await Axios.put(`/api/review/${review.id}`, review)
+      await Axios.put(`/api/product/review/${review.id}`, review)
     } catch (err) {
       console.error(err)
     }
