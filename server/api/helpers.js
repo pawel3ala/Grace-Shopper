@@ -9,10 +9,6 @@ const operatorAliases = {
 }
 
 const getProductQuery = query => {
-  // the function expects:
-  // name will be a case insensitive substring search
-  // fuelType will be an exact string search
-  // fuelLevel will have some kind of LHS operators attached to it (e.g fuelLevel[lte])
   const {search, price, review, category} = query
   let where = {}
   let include = [
