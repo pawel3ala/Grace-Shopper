@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const {CartItems, Product} = require('../db/models')
+const {CartItems, Product, User} = require('../db/models')
 module.exports = router
 
 // GET api/cart (getting user's cart from server)
@@ -11,23 +11,44 @@ router.get('/', async (req, res, next) => {
   try {
     if (!req.user) {
       // handle unauthenticated user w/ cookie
-      const {
-        session: {
-          cart = {
-            cartItems: [],
-            products: []
-          }
-        }
-      } = req
-      console.log(cart)
+      const {session: {cart = []}} = req
       res.json(cart)
     } else {
       const {user} = req
-      const products = user.getProducts()
-      const cartItems = await CartItems.findAll({
+      const productsPromise = Product.findAll({
+        attributes: [
+          ['id', 'productId'],
+          'name',
+          'image',
+          'price',
+          ['quantity', 'productQuantity']
+        ],
+        // user.getProducts() was returning through table data, so I wrote this to
+        // ensure that no extra data gets pulled
+        include: [
+          {
+            model: User,
+            attributes: [],
+            where: {id: user.id},
+            through: {
+              attributes: []
+            }
+          }
+        ]
+      })
+      const cartItemsPromise = CartItems.findAll({
         where: {userId: user.id}
       })
-      res.json({cartItems})
+      const [products, cartItems] = [
+        await productsPromise,
+        await cartItemsPromise
+      ]
+      products.forEach(p => console.log(p.get()))
+      const cart = products.map(p => ({
+        ...p.get(),
+        quantity: +cartItems.find(c => c.productId === p.id).quantity
+      }))
+      res.json(cart)
     }
   } catch (err) {
     next(err)
@@ -44,9 +65,17 @@ router.post('/', async (req, res, next) => {
     const {body: {productId, quantity}} = req
     if (!req.user) {
       // handle unauthenticated user w/ cookie
-      if (!req.session.cart) req.session.cart = {cartItems: [], products: []}
-      req.session.cart.cartItems.push({productId, quantity})
-      req.session.cart.products.push(await Product.findByPk(productId))
+      if (!req.session.cart) req.session.cart = []
+      const newProduct = await Product.findByPk(productId, {
+        attributes: [
+          ['id', 'productId'],
+          'name',
+          'image',
+          'price',
+          ['quantity', 'productQuantity']
+        ]
+      })
+      req.session.cart.push({...newProduct.get(), quantity: +quantity})
       res.json(req.session.cart)
     } else {
       const {user: {id: userId}} = req
@@ -68,22 +97,20 @@ router.put('/', async (req, res, next) => {
     const {body: {productId, quantity}} = req
     if (!req.user) {
       // handle unauthenticated user w/ cookie
-      console.log(quantity)
-      req.session.cart.cartItems.find(
-        d => d.productId === productId
-      ).quantity = quantity
+      console.log(req.session.cart)
+      req.session.cart.find(d => d.productId === +productId).quantity = quantity
       res.json(req.session.cart)
     } else {
       const {user: {id: userId}} = req
-      const [_, [cart]] = await CartItems.update(
-        {productId, quantity},
+      const [_, [cartItem]] = await CartItems.update(
+        {quantity},
         {
           where: {userId, productId},
           returning: true
         }
       )
-      if (!cart) throw new Error('Product not found')
-      res.json(cart)
+      if (!cartItem) throw new Error('Product not found')
+      res.json(cartItem)
     }
   } catch (err) {
     next(err)
@@ -95,16 +122,17 @@ router.delete('/', async (req, res, next) => {
     const {body: {productId}} = req
     if (!req.user) {
       // handle unauthenticated user w/ cookie
-      console.log(req.session.cart)
-      req.session.cart.cartItems = req.session.cart.cartItems.filter(
-        d => d.productId !== productId
-      )
+      req.session.cart = req.session.cart.filter(d => {
+        console.log(d.productId, productId)
+        return d.productId !== +productId
+      })
       res.status(200).end()
     } else {
       const {user: {id: userId}} = req
       let where = {userId}
       if (productId) where.productId = productId
-      const cart = await CartItems.destroy({where})
+      else throw new Error('No product being deleted.')
+      await CartItems.destroy({where})
       res.status(200).end()
     }
   } catch (err) {
