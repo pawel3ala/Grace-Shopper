@@ -85,3 +85,13 @@ form div {
 .reviewsHeader {
   font-size: 3rem;
 }
+
+/* Cart */
+.productCart {
+  border: 3px solid red;
+}
+
+.cartContainer img {
+  height: 5rem;
+  width: 5rem;
+}
