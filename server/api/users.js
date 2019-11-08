@@ -21,11 +21,11 @@ router.get('/address', async (req, res, next) => {
   try {
     // const {body: {user}} = req
     const user = await User.findByPk(1)
-    // if (!req.user)
-    //   res
-    //     .status(200)
-    //     .json()
-    //     .end()
+    if (!req.user)
+      res
+        .status(200)
+        .json()
+        .end()
     res.status(200).json(await user.getAddresses())
   } catch (err) {
     next(err)
