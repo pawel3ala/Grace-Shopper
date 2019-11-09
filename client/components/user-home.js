@@ -1,12 +1,11 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import {connect} from 'react-redux'
+import {useSelector} from 'react-redux'
 
 /**
  * COMPONENT
  */
 export const UserHome = props => {
-  const {email} = props
+  const email = useSelector(({user}) => user.email)
 
   return (
     <div>
@@ -15,20 +14,5 @@ export const UserHome = props => {
   )
 }
 
-/**
- * CONTAINER
- */
-const mapStateToProps = state => {
-  return {
-    email: state.user.email
-  }
-}
-
-export default connect(mapStateToProps)(UserHome)
-
-/**
- * PROP TYPES
- */
-UserHome.propTypes = {
-  email: PropTypes.string
-}
+// this was exported twice in the original code. Don't know if it's used both ways!
+export default UserHome
