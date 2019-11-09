@@ -41,13 +41,16 @@ class SingleReview extends React.Component {
         <div>{this.props.review.title}</div>
         <div>{this.props.review.content}</div>
         <div>{this.props.review.stars}</div>
-        <button
-          type="button"
-          name={this.props.review.id}
-          onClick={this.changeToEdit}
-        >
-          Edit Review
-        </button>
+        {//only the authed user who wrote that specific review can edit it
+        this.props.review.userId === this.props.userId ? (
+          <button
+            type="button"
+            name={this.props.review.id}
+            onClick={this.changeToEdit}
+          >
+            Edit Review
+          </button>
+        ) : null}
       </div>
     ) : (
       <div>

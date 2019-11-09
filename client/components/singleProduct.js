@@ -89,6 +89,7 @@ class unconnectedSingleProduct extends React.Component {
                 editReview={this.props.editReview}
                 fetchProduct={this.props.fetchProduct}
                 productId={this.props.match.params.productId}
+                userId={this.props.user.id}
               />
             )
           })}
