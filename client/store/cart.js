@@ -66,10 +66,10 @@ export const deleteItem = item => {
   }
 }
 export const changeItem = item => {
-  return async () => {
+  return async dispatch => {
     try {
       await Axios.put(`/api/cart`, item)
-      fetchItems()
+      dispatch(fetchItems())
     } catch (err) {
       console.error(err)
     }

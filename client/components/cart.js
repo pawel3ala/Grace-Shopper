@@ -14,7 +14,7 @@ export const Cart = props => {
     dispatch(fetchItems())
   }, [])
 
-  const handleChange = async event => {
+  const handleChange = event => {
     const productId = event.target.name
     const quantity = event.target.value
     const itemObj = {
