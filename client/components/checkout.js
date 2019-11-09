@@ -7,14 +7,14 @@ import {
   clearAllItems
 } from '../store/cart'
 import {fetchAddress, changeAddress} from '../store/address'
+import {CheckoutForm} from './checkoutForm'
 import {connect} from 'react-redux'
-import StripeCheckout from 'react-stripe-checkout'
+import {StripeProvider, Elements} from 'react-stripe-elements'
 
 class unconnectedCheckout extends React.Component {
   constructor() {
     super()
     this.handleChange = this.handleChange.bind(this)
-    this.handleToken = this.handleToken.bind(this)
   }
   componentDidMount() {
     this.props.fetchItems()
@@ -36,49 +36,48 @@ class unconnectedCheckout extends React.Component {
     // this.props.setOrderItems()
     this.props.clearCart()
   }
-  handleToken(token, addresses) {
-    console.log(token, addresses)
-  }
   render() {
     let cart
-    this.props.cart === undefined
-      ? (cart = {id: 0, quantity: 0, name: '', image: '', price: ''})
-      : (cart = this.props.cart)
+    this.props.cart === undefined ? (cart = []) : (cart = this.props.cart)
     return (
       <div>
         <div id="checkoutHeader">
           <h1>Checkout</h1>
           {/* <h1>Checkout ({numberOfItems} items)</h1> */}
           <div className="cartContainer">
-            {Object.keys(cart).map(item => {
-              return (
-                <div key={cart[item].productId} className="productCart">
-                  <img src={cart[item].image} />
-                  <div>Name: {cart[item].name}</div>
-                  <div>Price: {cart[item].price}</div>
-                  <div>
-                    Quantity:{' '}
-                    <form>
-                      <input
-                        name={cart[item].productId}
-                        type="number"
-                        value={cart[item].quantity}
-                        onChange={this.handleChange}
-                      />
-                    </form>
-                  </div>
-                </div>
-              )
-            })}
+            {cart.length > 0
+              ? cart.map(item => {
+                  return (
+                    <div key={item.productId} className="productCart">
+                      <img src={item.image} />
+                      <div>Name: {item.name}</div>
+                      <div>Price: {item.price}</div>
+                      <div>
+                        Quantity:{' '}
+                        <form>
+                          <input
+                            name={item.productId}
+                            type="number"
+                            min="1"
+                            max={item.productQuantity}
+                            value={item.quantity}
+                            onChange={this.handleChange}
+                          />
+                        </form>
+                      </div>
+                    </div>
+                  )
+                })
+              : 'Cart is Empty'}
           </div>
-          <StripeCheckout
-            stripeKey="pk_test_FjmwUNWUX5OIG2L1aadq9nkM00e6PJNafA"
-            token={this.handleToken}
-            billingAddress
-            shippingAddress
-            amount={5 * 100}
-            name="Grapefruits Order"
-          />
+        </div>
+        <br />
+        <div>
+          <StripeProvider apiKey="pk_test_FjmwUNWUX5OIG2L1aadq9nkM00e6PJNafA">
+            <Elements>
+              <CheckoutForm />
+            </Elements>
+          </StripeProvider>
         </div>
       </div>
     )
