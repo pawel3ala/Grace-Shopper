@@ -51,14 +51,17 @@ class CheckoutForm extends React.Component {
   }
   async handleSubmit(event) {
     event.preventDefault()
+
     try {
       let {token} = await this.props.stripe.createToken({
         name: this.state.billName
       })
-      let amount = this.props.orderTotal
+      let amount = this.props.orderTotal / 100
       const {data} = await Axios.post('/api/payment', {token, amount})
       if (data.status) {
         console.log('Success!')
+      } else {
+        console.log('fail')
       }
     } catch (err) {
       throw err

@@ -13,7 +13,6 @@ class unconnectedCart extends React.Component {
     super()
     this.handleChange = this.handleChange.bind(this)
     this.handleDelete = this.handleDelete.bind(this)
-    this.handleCheckout = this.handleCheckout.bind(this)
   }
   componentDidMount() {
     this.props.fetchItems()

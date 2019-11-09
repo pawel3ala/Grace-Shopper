@@ -60,6 +60,7 @@ class unconnectedCheckout extends React.Component {
             <Elements>
               <CheckoutForm
                 address="this.props.address"
+                cart={cart}
                 orderTotal={displayOrderTotal}
                 changeAddress={this.props.changeAddress}
                 fetchAddress={this.props.fetchAddress}

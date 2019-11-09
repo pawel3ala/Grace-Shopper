@@ -23,8 +23,6 @@ router.post('/', async (req, res, next) => {
   try {
     // user doesn't matter for Stripe
     const {body: {token, amount}} = req
-    // console.log('token', token)
-    // console.log('amount', amount)
     let data = await charge(token.id, amount)
     res.send(data)
   } catch (err) {
