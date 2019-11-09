@@ -39,43 +39,20 @@ class unconnectedCheckout extends React.Component {
   render() {
     let cart
     this.props.cart === undefined ? (cart = [0]) : (cart = this.props.cart)
-    console.log('cart', cart)
     const cartCount = cart.reduce((accum, currentVal) => {
-      console.log(currentVal.quantity)
       accum += currentVal.quantity
       return accum
     }, 0)
-    console.log('cartCount', cartCount)
+    const orderTotal = cart.reduce((accum, currentVal) => {
+      accum += currentVal.total
+      return accum
+    }, 0)
+    // const displayOrderTotal = String(orderTotal)
+    const displayOrderTotal = String(234)
     return (
       <div>
         <div id="checkoutHeader">
           <h1>Checkout ({cartCount} items)</h1>
-          <div className="cartContainer">
-            {cart.length > 0
-              ? cart.map(item => {
-                  return (
-                    <div key={item.productId} className="productCart">
-                      <img src={item.image} />
-                      <div>Name: {item.name}</div>
-                      <div>Price: {item.price}</div>
-                      <div>
-                        Quantity:{' '}
-                        <form>
-                          <input
-                            name={item.productId}
-                            type="number"
-                            min="1"
-                            max={item.productQuantity}
-                            value={item.quantity}
-                            onChange={this.handleChange}
-                          />
-                        </form>
-                      </div>
-                    </div>
-                  )
-                })
-              : 'Cart is Empty'}
-          </div>
         </div>
         <br />
         <div>
@@ -83,6 +60,7 @@ class unconnectedCheckout extends React.Component {
             <Elements>
               <CheckoutForm
                 address="this.props.address"
+                orderTotal={displayOrderTotal}
                 changeAddress={this.props.changeAddress}
                 fetchAddress={this.props.fetchAddress}
                 clearCart={this.props.clearCart}
