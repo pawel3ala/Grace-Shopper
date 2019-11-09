@@ -9,18 +9,13 @@ import {
 } from '../store/singleProduct'
 import {addAnItem, fetchItems} from '../store/cart'
 import SingleReview from './singleReview'
+import AddReview from './addReview'
 import {getAverageRating} from '../../script/helperFuncs'
 
 class unconnectedSingleProduct extends React.Component {
   constructor() {
     super()
-    this.state = {
-      addingTitle: '',
-      addingContent: '',
-      addingStars: '0'
-    }
     this.addReview = this.addReview.bind(this)
-    this.handleChange = this.handleChange.bind(this)
   }
   componentDidMount() {
     this.props.fetchProduct(this.props.match.params.productId)
@@ -37,29 +32,19 @@ class unconnectedSingleProduct extends React.Component {
     this.props.history.push('/cart')
   }
 
-  handleChange(event) {
-    this.setState({
-      [event.target.name]: event.target.value
-    })
-  }
-  async addReview() {
+  async addReview(review) {
     await this.props.addReview({
-      content: this.state.addingContent,
-      title: this.state.addingTitle,
-      stars: +this.state.addingStars,
-      userId: 1,
+      content: review.content,
+      title: review.title,
+      stars: review.stars,
       productId: +this.props.match.params.productId
     })
     await this.props.fetchProduct(this.props.match.params.productId)
-    this.setState({
-      addingContent: '',
-      addingTitle: '',
-      addingStars: '0'
-    })
   }
 
   // eslint-disable-next-line complexity
   render() {
+    console.log(this.props.user)
     const name = this.props.product.name || ''
     const quantity = this.props.product.quantity || ''
     const price = this.props.product.price || ''
@@ -107,38 +92,7 @@ class unconnectedSingleProduct extends React.Component {
               />
             )
           })}
-          <input
-            type="text"
-            placeholder="Title"
-            name="addingTitle"
-            value={this.state.addingTitle}
-            onChange={this.handleChange}
-          />
-          <textarea
-            placeholder="Content"
-            name="addingContent"
-            minLength="12"
-            value={this.state.addingContent}
-            onChange={this.handleChange}
-          />
-          <input
-            type="number"
-            min="0"
-            max="5"
-            name="addingStars"
-            value={this.state.addingStars}
-            onChange={this.handleChange}
-          />
-          <button
-            type="button"
-            disabled={
-              this.state.addingContent.length < 12 ||
-              this.state.addingTitle.length === 0
-            }
-            onClick={this.addReview}
-          >
-            Add Review
-          </button>
+          {this.props.user.id ? <AddReview addReview={this.addReview} /> : null}
         </div>
       </div>
     )
@@ -147,6 +101,7 @@ class unconnectedSingleProduct extends React.Component {
 
 const mapStateToProps = state => {
   return {
+    user: state.user,
     product: state.singleProduct
   }
 }
