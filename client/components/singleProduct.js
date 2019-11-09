@@ -1,5 +1,5 @@
-import React from 'react'
-import {connect} from 'react-redux'
+import React, {useEffect} from 'react'
+import {useSelector, useDispatch} from 'react-redux'
 import {
   fetchProduct,
   addReview,
@@ -9,86 +9,79 @@ import {
 } from '../store/singleProduct'
 import {addAnItem, fetchItems} from '../store/cart'
 
-class unconnectedSingleProduct extends React.Component {
-  componentDidMount() {
-    this.props.fetchProduct(this.props.match.params.productId)
-  }
+export const SingleProduct = ({history, match: {params: {productId}}}) => {
+  const dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(fetchProduct(productId))
+  }, [])
 
-  async handleSubmit(event) {
+  const handleSubmit = event => {
     event.preventDefault()
     const itemObj = {
-      productId: this.props.match.params.productId,
+      productId,
       quantity: event.target.children[0].value
     }
-    await this.props.addToCart(itemObj)
-    await this.props.fetchCart()
-    this.props.history.push('/cart')
+    dispatch(addAnItem(itemObj))
+    history.push('/cart')
   }
   // eslint-disable-next-line complexity
-  render() {
-    const name = this.props.product.name || ''
-    const quantity = this.props.product.quantity || ''
-    const price = this.props.product.price || ''
-    const image = this.props.product.image || ''
-    const description = this.props.product.description || ''
-    const reviews = this.props.product.reviews || []
-    let productStatus =
-      quantity > 20
-        ? 'In Stock'
-        : quantity > 0 ? 'Low in Stock' : 'Out of Stock'
-    return (
-      <div className="singleProduct">
-        <img src={image} />
-        <div className="productInfo">
-          <div className="singleProductName">{name}</div>
-          <div>Price: ${price}</div>
-          <div>Quantity: {productStatus}</div>
-          <div>description: {description}</div>
-        </div>
-        <form onSubmit={() => this.handleSubmit(event)}>
-          <select name="quantityAddToCart">
-            <option>1</option>
-            <option>2</option>
-            <option>3</option>
-            <option>4</option>
-          </select>
-          <button type="submit">Add to Cart</button>
-        </form>
-        <div className="productReviewsContainer">
-          <div className="reviewsHeader">Reviews</div>
-          {reviews.map(review => {
-            return (
-              <div key={review.id}>
-                <div>{review.title}</div>
-                <div>{review.content}</div>
-                <div>{review.stars}</div>
-              </div>
-            )
-          })}
-        </div>
+  const {name, description, quantity, image, price, reviews = []} = useSelector(
+    ({singleProduct}) => singleProduct // state => state.singleProduct
+  )
+  const productStatus =
+    quantity > 20 ? 'In Stock' : quantity > 0 ? 'Low in Stock' : 'Out of Stock'
+  return (
+    <div className="singleProduct">
+      <img src={image} />
+      <div className="productInfo">
+        <div className="singleProductName">{name}</div>
+        <div>Price: ${price}</div>
+        <div>Quantity: {productStatus}</div>
+        <div>description: {description}</div>
       </div>
-    )
-  }
+      <form onSubmit={handleSubmit}>
+        <select name="quantityAddToCart">
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+        </select>
+        <button type="submit">Add to Cart</button>
+      </form>
+      <div className="productReviewsContainer">
+        <div className="reviewsHeader">Reviews</div>
+        {reviews.map(review => {
+          return (
+            <div key={review.id}>
+              <div>{review.title}</div>
+              <div>{review.content}</div>
+              <div>{review.stars}</div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
 }
 
-const mapStateToProps = state => {
-  return {
-    product: state.singleProduct
-  }
-}
+// const mapStateToProps = state => {
+//   return {
+//     product: state.singleProduct
+//   }
+// }
 
-const mapDispatchToProps = dispatch => {
-  return {
-    fetchProduct: productId => dispatch(fetchProduct(productId)),
-    editProduct: product => dispatch(editProduct(product)), //only for admins(merchants)
-    removeProduct: productId => dispatch(removeProduct(productId)), //only for admins(merchants)
-    addReview: review => dispatch(addReview(review)),
-    editReview: review => dispatch(editReview(review)),
-    addToCart: item => dispatch(addAnItem(item)),
-    fetchCart: () => dispatch(fetchItems())
-  }
-}
+// const mapDispatchToProps = dispatch => {
+//   return {
+//     fetchProduct: productId => dispatch(fetchProduct(productId)),
+//     editProduct: product => dispatch(editProduct(product)), //only for admins(merchants)
+//     removeProduct: productId => dispatch(removeProduct(productId)), //only for admins(merchants)
+//     addReview: review => dispatch(addReview(review)),
+//     editReview: review => dispatch(editReview(review)),
+//     addToCart: item => dispatch(addAnItem(item)),
+//     fetchCart: () => dispatch(fetchItems())
+//   }
+// }
 
-export const SingleProduct = connect(mapStateToProps, mapDispatchToProps)(
-  unconnectedSingleProduct
-)
+// export const SingleProduct = connect(mapStateToProps, mapDispatchToProps)(
+//   unconnectedSingleProduct
+// )
