@@ -37,16 +37,17 @@ router.get('/', async (req, res, next) => {
         ]
       })
       const cartItemsPromise = CartItems.findAll({
-        where: {userId: user.id}
+        where: {userId: user.id},
+        raw: true
       })
       const [products, cartItems] = [
         await productsPromise,
         await cartItemsPromise
       ]
-      products.forEach(p => console.log(p.get()))
       const cart = products.map(p => ({
         ...p.get(),
-        quantity: +cartItems.find(c => c.productId === p.id).quantity
+        quantity: +cartItems.find(c => c.productId === p.get().productId)
+          .quantity
       }))
       res.json(cart)
     }
