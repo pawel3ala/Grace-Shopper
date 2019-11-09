@@ -33,9 +33,13 @@ export const fetchProduct = productId => {
   }
 }
 export const addReview = review => {
-  return async () => {
+  return async dispatch => {
     try {
-      await Axios.post(`/api/product/review`, review)
+      const {data: {productId}} = await Axios.post(
+        `/api/product/review`,
+        review
+      )
+      dispatch(fetchProduct(productId))
     } catch (err) {
       console.error(err)
     }
