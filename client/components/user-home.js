@@ -4,7 +4,7 @@ import {useSelector} from 'react-redux'
 /**
  * COMPONENT
  */
-export const UserHome = props => {
+export const UserHome = () => {
   const email = useSelector(({user}) => user.email)
 
   return (

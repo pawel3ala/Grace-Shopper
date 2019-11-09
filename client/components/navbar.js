@@ -3,7 +3,7 @@ import {useSelector, useDispatch} from 'react-redux'
 import {Link} from 'react-router-dom'
 import {logout} from '../store'
 
-const Navbar = props => {
+const Navbar = () => {
   const dispatch = useDispatch()
   const isLoggedIn = useSelector(({user}) => !!user.id)
   const handleClick = event => {
