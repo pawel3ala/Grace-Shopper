@@ -7,7 +7,7 @@ import {
   clearAllItems
 } from '../store/cart'
 import {fetchAddress, changeAddress} from '../store/address'
-import {CheckoutForm} from './checkoutForm'
+import CheckoutForm from './checkoutForm'
 import {connect} from 'react-redux'
 import {StripeProvider, Elements} from 'react-stripe-elements'
 
@@ -38,12 +38,17 @@ class unconnectedCheckout extends React.Component {
   }
   render() {
     let cart
-    this.props.cart === undefined ? (cart = []) : (cart = this.props.cart)
+    this.props.cart === undefined ? (cart = [0]) : (cart = this.props.cart)
+    // console.log(cart)
+    // const cartCount = cart.reduce((accum, currentVal) => {
+    //     accum += 1
+    //     return accum
+    // }, 0)
     return (
       <div>
         <div id="checkoutHeader">
           <h1>Checkout</h1>
-          {/* <h1>Checkout ({numberOfItems} items)</h1> */}
+          {/* <h1>Checkout ({cartCount} items)</h1> */}
           <div className="cartContainer">
             {cart.length > 0
               ? cart.map(item => {
@@ -75,7 +80,12 @@ class unconnectedCheckout extends React.Component {
         <div>
           <StripeProvider apiKey="pk_test_FjmwUNWUX5OIG2L1aadq9nkM00e6PJNafA">
             <Elements>
-              <CheckoutForm />
+              <CheckoutForm
+                address="this.props.address"
+                changeAddress={this.props.changeAddress}
+                fetchAddress={this.props.fetchAddress}
+                clearCart={this.props.clearCart}
+              />
             </Elements>
           </StripeProvider>
         </div>

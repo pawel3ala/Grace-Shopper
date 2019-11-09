@@ -43,7 +43,7 @@ passport.deserializeUser(async (id, done) => {
 })
 
 // stripe checkout
-const stripe = require('stripe')(process.env.SESSION_SECRET)
+const stripe = require('stripe')(process.env.STRIPE_SECRET)
 
 const createApp = () => {
   // logging middleware

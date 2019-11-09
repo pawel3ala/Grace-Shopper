@@ -27,9 +27,9 @@ form div {
   flex-wrap: wrap;
 }
 
-.navBar {
-  /* background-color: rgb(249,151,60); */
-}
+/* .navBar {
+  background-color: rgb(249,151,60);
+} */
 
 #tm {
   display: flex;
@@ -115,5 +115,5 @@ form div {
   border: 0;
   outline: 0;
   border-radius: 4px;
-  background: rgb(249, 151, 60);
+  background: rgb(255, 196, 140);
 }
