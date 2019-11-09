@@ -26,10 +26,10 @@ class Routes extends Component {
     return (
       <Switch>
         {/* Routes placed here are available to all visitors */}
-        <Route path="/login" component={Login} />
-        <Route path="/signup" component={Signup} />
         <Route path="/product/:productId" component={SingleProduct} />
         <Route path="/cart" component={Cart} />
+        <Route path="/login" component={Login} />
+        <Route path="/signup" component={Signup} />
         <Route component={Catalog} />
         {isLoggedIn && (
           <Switch>

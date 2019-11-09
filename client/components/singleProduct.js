@@ -9,6 +9,7 @@ import {
 } from '../store/singleProduct'
 import {addAnItem, fetchItems} from '../store/cart'
 import SingleReview from './singleReview'
+import {getAverageRating} from '../../script/helperFuncs'
 
 class unconnectedSingleProduct extends React.Component {
   constructor() {
@@ -74,6 +75,12 @@ class unconnectedSingleProduct extends React.Component {
         <img src={image} />
         <div className="productInfo">
           <div className="singleProductName">{name}</div>
+          <div>
+            Rating:{' '}
+            {getAverageRating(reviews) > 0
+              ? getAverageRating(reviews)
+              : 'No reviews'}
+          </div>
           <div>Price: ${price}</div>
           <div>Quantity: {productStatus}</div>
           <div>description: {description}</div>
