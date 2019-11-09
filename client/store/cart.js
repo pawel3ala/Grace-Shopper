@@ -65,18 +65,20 @@ export const fetchItems = () => {
   }
 }
 export const addAnItem = item => {
-  return async () => {
+  return async dispatch => {
     try {
       await Axios.post('/api/cart', item)
+      dispatch(fetchItems())
     } catch (err) {
       console.error(err)
     }
   }
 }
 export const deleteItem = item => {
-  return async () => {
+  return async dispatch => {
     try {
       await Axios.delete(`/api/cart`, {data: item})
+      dispatch(fetchItems())
     } catch (err) {
       console.error(err)
     }
@@ -86,6 +88,7 @@ export const changeItem = item => {
   return async () => {
     try {
       await Axios.put(`/api/cart`, item)
+      fetchItems()
     } catch (err) {
       console.error(err)
     }
