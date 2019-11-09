@@ -8,8 +8,15 @@ import {
   removeProduct
 } from '../store/singleProduct'
 import {addAnItem, fetchItems} from '../store/cart'
+import SingleReview from './singleReview'
+import AddReview from './addReview'
+import {getAverageRating} from '../../script/helperFuncs'
 
 class unconnectedSingleProduct extends React.Component {
+  constructor() {
+    super()
+    this.addReview = this.addReview.bind(this)
+  }
   componentDidMount() {
     this.props.fetchProduct(this.props.match.params.productId)
   }
@@ -24,8 +31,20 @@ class unconnectedSingleProduct extends React.Component {
     await this.props.fetchCart()
     this.props.history.push('/cart')
   }
+
+  async addReview(review) {
+    await this.props.addReview({
+      content: review.content,
+      title: review.title,
+      stars: review.stars,
+      productId: +this.props.match.params.productId
+    })
+    await this.props.fetchProduct(this.props.match.params.productId)
+  }
+
   // eslint-disable-next-line complexity
   render() {
+    console.log(this.props.user)
     const name = this.props.product.name || ''
     const quantity = this.props.product.quantity || ''
     const price = this.props.product.price || ''
@@ -41,6 +60,12 @@ class unconnectedSingleProduct extends React.Component {
         <img src={image} />
         <div className="productInfo">
           <div className="singleProductName">{name}</div>
+          <div>
+            Rating:{' '}
+            {getAverageRating(reviews) > 0
+              ? getAverageRating(reviews)
+              : 'No reviews'}
+          </div>
           <div>Price: ${price}</div>
           <div>Quantity: {productStatus}</div>
           <div>description: {description}</div>
@@ -58,13 +83,17 @@ class unconnectedSingleProduct extends React.Component {
           <div className="reviewsHeader">Reviews</div>
           {reviews.map(review => {
             return (
-              <div key={review.id}>
-                <div>{review.title}</div>
-                <div>{review.content}</div>
-                <div>{review.stars}</div>
-              </div>
+              <SingleReview
+                key={review.id}
+                review={review}
+                editReview={this.props.editReview}
+                fetchProduct={this.props.fetchProduct}
+                productId={this.props.match.params.productId}
+                userId={this.props.user.id}
+              />
             )
           })}
+          {this.props.user.id ? <AddReview addReview={this.addReview} /> : null}
         </div>
       </div>
     )
@@ -73,6 +102,7 @@ class unconnectedSingleProduct extends React.Component {
 
 const mapStateToProps = state => {
   return {
+    user: state.user,
     product: state.singleProduct
   }
 }
