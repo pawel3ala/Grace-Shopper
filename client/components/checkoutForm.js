@@ -177,7 +177,12 @@ class CheckoutForm extends React.Component {
               </button>
             )}
           </div>
-          <CardElement />
+          <CardElement
+            onBlur={console.log('blur')}
+            // onChange='h'
+            // onFocus='{handleFocus}'
+            // onReady='{handleReady}'
+          />
           <button type="submit">Confirm order</button>
         </form>
       </div>
