@@ -7,7 +7,7 @@ import {
   editProduct,
   removeProduct
 } from '../store/singleProduct'
-import {addAnItem, fetchItems} from '../store/cart'
+import {addAnItem} from '../store/cart'
 
 export const SingleProduct = ({history, match: {params: {productId}}}) => {
   const dispatch = useDispatch()
