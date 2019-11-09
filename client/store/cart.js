@@ -1,5 +1,7 @@
 import Axios from 'axios'
 
+const initialState = []
+
 const GET_ITEMS = 'GET_ITEMS'
 const CLEAR_ITEMS = 'CLEAR_ITEMS'
 
@@ -13,16 +15,11 @@ export const getItems = items => {
 export const clearItems = () => {
   return {
     type: CLEAR_ITEMS,
-    items: {}
+    items: initialState
   }
 }
 
 //Reducer
-
-const initialState = {
-  cartItems: [],
-  products: []
-}
 
 const cartReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -41,24 +38,7 @@ export const fetchItems = () => {
   return async dispatch => {
     try {
       const {data} = await Axios.get('/api/cart')
-      data.products.sort(
-        (a, b) => a.cart_item.productId - b.cart_item.productId
-      )
-      data.cartItems.sort((a, b) => a.productId - b.productId) //Need to sort so product matches up with correct cart item
-      let info = []
-      for (let i = 0; i < data.products.length; i++) {
-        info.push({
-          //Only grab needed info for each cart item
-          id: i + 1,
-          quantity: data.cartItems[i].quantity,
-          productId: data.cartItems[i].productId,
-          name: data.products[i].name,
-          image: data.products[i].image,
-          price: data.products[i].price,
-          productQuantity: data.products[i].quantity
-        })
-      }
-      dispatch(getItems(info))
+      dispatch(getItems(data))
     } catch (err) {
       console.error(err)
     }
@@ -77,6 +57,7 @@ export const addAnItem = item => {
 export const deleteItem = item => {
   return async dispatch => {
     try {
+      // axios delete requires an object with the key of data to pass in a body to the request
       await Axios.delete(`/api/cart`, {data: item})
       dispatch(fetchItems())
     } catch (err) {
@@ -97,7 +78,8 @@ export const changeItem = item => {
 export const clearAllItems = () => {
   return async dispatch => {
     try {
-      await Axios.delete(`/api/cart`, {})
+      // axios delete requires an object with the key of data to pass in a body to the request
+      await Axios.delete(`/api/cart`, {data: {}})
       dispatch(clearAllItems())
     } catch (err) {
       console.error(err)
