@@ -98,7 +98,6 @@ router.put('/', async (req, res, next) => {
     const {body: {productId, quantity}} = req
     if (!req.user) {
       // handle unauthenticated user w/ cookie
-      // console.log(req.session.cart)
       req.session.cart.find(d => d.productId === +productId).quantity = quantity
       res.json(req.session.cart)
     } else {

@@ -19,7 +19,7 @@ class unconnectedCart extends React.Component {
   }
   async handleChange(event) {
     const productId = event.target.name
-    const quantity = event.target.value
+    const quantity = Number(event.target.value)
     const itemObj = {
       productId,
       quantity

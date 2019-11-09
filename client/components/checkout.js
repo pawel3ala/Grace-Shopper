@@ -22,7 +22,7 @@ class unconnectedCheckout extends React.Component {
   }
   async handleChange(event) {
     const productId = event.target.name
-    const quantity = event.target.value
+    const quantity = Number(event.target.value)
     const itemObj = {
       productId,
       quantity
@@ -39,16 +39,17 @@ class unconnectedCheckout extends React.Component {
   render() {
     let cart
     this.props.cart === undefined ? (cart = [0]) : (cart = this.props.cart)
-    // console.log(cart)
-    // const cartCount = cart.reduce((accum, currentVal) => {
-    //     accum += 1
-    //     return accum
-    // }, 0)
+    console.log('cart', cart)
+    const cartCount = cart.reduce((accum, currentVal) => {
+      console.log(currentVal.quantity)
+      accum += currentVal.quantity
+      return accum
+    }, 0)
+    console.log('cartCount', cartCount)
     return (
       <div>
         <div id="checkoutHeader">
-          <h1>Checkout</h1>
-          {/* <h1>Checkout ({cartCount} items)</h1> */}
+          <h1>Checkout ({cartCount} items)</h1>
           <div className="cartContainer">
             {cart.length > 0
               ? cart.map(item => {
