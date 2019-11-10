@@ -37,16 +37,17 @@ router.get('/', async (req, res, next) => {
         ]
       })
       const cartItemsPromise = CartItems.findAll({
-        where: {userId: user.id}
+        where: {userId: user.id},
+        raw: true
       })
       const [products, cartItems] = [
         await productsPromise,
         await cartItemsPromise
       ]
-      products.forEach(p => console.log(p.get()))
       const cart = products.map(p => ({
         ...p.get(),
-        quantity: +cartItems.find(c => c.productId === p.id).quantity
+        quantity: +cartItems.find(c => c.productId === p.get().productId)
+          .quantity
       }))
       res.json(cart)
     }
@@ -97,7 +98,6 @@ router.put('/', async (req, res, next) => {
     const {body: {productId, quantity}} = req
     if (!req.user) {
       // handle unauthenticated user w/ cookie
-      console.log(req.session.cart)
       req.session.cart.find(
         d => d.productId === +productId
       ).quantity = +quantity

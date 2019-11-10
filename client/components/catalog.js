@@ -52,7 +52,7 @@ class CatalogUnconnected extends React.Component {
     return (
       <div>
         <div className="allProducts">
-          {allProducts.map(product => (
+          {this.props.catalog.map(product => (
             <div key={product.id}>
               <div className="productDiv">
                 <Link to={`/product/${product.id}`}>
