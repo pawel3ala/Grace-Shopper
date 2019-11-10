@@ -3,7 +3,6 @@ import {useSelector, useDispatch} from 'react-redux'
 import {
   fetchProduct,
   addReview,
-  editReview,
   editProduct,
   removeProduct
 } from '../store/singleProduct'
@@ -78,8 +77,6 @@ export const SingleProduct = ({history, match: {params: {productId}}}) => {
             <SingleReview
               key={review.id}
               review={review}
-              editReview={editReview}
-              fetchProduct={fetchProduct}
               productId={+productId}
               userId={userId}
             />

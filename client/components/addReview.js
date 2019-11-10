@@ -1,73 +1,73 @@
-import React from 'react'
+import React, {useState} from 'react'
 
-class AddReview extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      title: '',
-      content: '',
-      stars: '1'
+const AddReview = ({addReview}) => {
+  const [title, setTitle] = useState('')
+  const [content, setContent] = useState('')
+  const [stars, setStars] = useState(1)
+
+  const handleChange = event => {
+    const {target: {name, value}} = event
+    switch (name) {
+      case 'title':
+        setTitle(value)
+        break
+      case 'content':
+        setContent(value)
+        break
+      case 'stars':
+        setStars(value)
+        break
+      default:
+        throw new Error('Event target not valid')
     }
-    this.handleChange = this.handleChange.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
   }
 
-  handleChange(event) {
-    this.setState({
-      [event.target.name]: event.target.value
+  const handleSubmit = () => {
+    addReview({
+      title,
+      content,
+      stars
     })
+    setTitle('')
+    setContent('')
+    setStars(1)
   }
 
-  handleSubmit() {
-    this.props.addReview({
-      title: this.state.title,
-      content: this.state.content,
-      stars: this.state.stars
-    })
-    this.setState({
-      title: '',
-      content: '',
-      stars: '1'
-    })
-  }
-
-  render() {
-    return (
-      <div className="addReview">
-        <input
-          type="text"
-          placeholder="Title"
-          name="title"
-          value={this.state.title}
-          onChange={this.handleChange}
-        />
-        <textarea
-          placeholder="Content"
-          name="content"
-          minLength="12"
-          value={this.state.content}
-          onChange={this.handleChange}
-        />
-        <input
-          type="number"
-          min="1"
-          max="5"
-          name="stars"
-          value={this.state.stars}
-          onChange={this.handleChange}
-        />
-        <button
-          type="button"
-          disabled={
-            this.state.content.length < 12 || this.state.title.length === 0
-          }
-          onClick={this.handleSubmit}
-        >
-          Add Review
-        </button>
-      </div>
-    )
-  }
+  return (
+    <div className="addReview">
+      <input
+        type="text"
+        placeholder="Title"
+        name="title"
+        value={title}
+        onChange={handleChange}
+      />
+      <textarea
+        placeholder="Content"
+        name="content"
+        minLength="12"
+        value={content}
+        onChange={handleChange}
+      />
+      <input
+        type="number"
+        min="1"
+        max="5"
+        name="stars"
+        value={stars}
+        onChange={handleChange}
+      />
+      <button
+        type="button"
+        disabled={
+          content.length < 12 || title.length === 0 || stars < 0 || stars > 5
+        }
+        onClick={handleSubmit}
+      >
+        Add Review
+      </button>
+    </div>
+  )
 }
 
 export default AddReview

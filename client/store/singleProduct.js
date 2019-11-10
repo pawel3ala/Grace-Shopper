@@ -45,10 +45,11 @@ export const addReview = review => {
     }
   }
 }
-export const editReview = review => {
-  return async () => {
+export const editReview = (review, productId) => {
+  return async dispatch => {
     try {
       await Axios.put(`/api/product/review/${review.id}`, review)
+      dispatch(fetchProduct(productId))
     } catch (err) {
       console.error(err)
     }

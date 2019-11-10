@@ -27,7 +27,10 @@ router.get('/', async (req, res, next) => {
 router.get('/:productId', async (req, res, next) => {
   try {
     const {params: {productId}} = req
-    const product = await Product.findByPk(productId, {include: [Review]})
+    const product = await Product.findByPk(productId, {
+      include: [Review],
+      order: [[Review, 'id', 'ASC']]
+    })
     if (!product) throw new Error('Product not found')
     res.json(product)
   } catch (err) {
