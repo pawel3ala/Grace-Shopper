@@ -8,11 +8,10 @@ import {
 } from '../store/cart'
 import {connect} from 'react-redux'
 
-class unconnectedCart extends React.Component {
+class unconnectedCheckoutCart extends React.Component {
   constructor() {
     super()
     this.handleChange = this.handleChange.bind(this)
-    this.handleDelete = this.handleDelete.bind(this)
   }
   componentDidMount() {
     this.props.fetchItems()
@@ -27,28 +26,24 @@ class unconnectedCart extends React.Component {
     await this.props.changeItem(itemObj)
     this.props.fetchItems()
   }
-  async handleDelete(event) {
-    const productId = event.target.previousSibling.name
-    const quantity = event.target.previousSibling.value
-    const itemObj = {
-      productId,
-      quantity
-    }
-    await this.props.deleteItem(itemObj)
-    this.props.fetchItems()
-  }
   render() {
     let cart
-    this.props.cart === undefined ? (cart = []) : (cart = this.props.cart)
+    this.props.cart === undefined ? (cart = [0]) : (cart = this.props.cart)
     return (
       <div className="cartContainer">
+        <h3>Review Items</h3>
         {cart.length > 0
           ? cart.map(item => {
+              const price = String(item.price)
               return (
                 <div key={item.productId} className="productCart">
                   <img src={item.image} />
                   <div>Name: {item.name}</div>
-                  <div>Price: {item.price}</div>
+                  <div>
+                    Price: ${price.slice(0, price.length - 2)}.{price.slice(
+                      price.length - 2
+                    )}
+                  </div>
                   <div>
                     Quantity:{' '}
                     <form>
@@ -60,18 +55,12 @@ class unconnectedCart extends React.Component {
                         value={item.quantity}
                         onChange={this.handleChange}
                       />
-                      <button type="button" onClick={this.handleDelete}>
-                        Remove from cart
-                      </button>
                     </form>
                   </div>
                 </div>
               )
             })
           : 'Cart is Empty'}
-        <button type="button" onClick={this.handleCheckout}>
-          Proceed to Checkout
-        </button>
       </div>
     )
   }
@@ -79,7 +68,8 @@ class unconnectedCart extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    cart: state.cart
+    cart: state.cart,
+    address: state.address
   }
 }
 
@@ -93,6 +83,6 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-export const Cart = connect(mapStateToProps, mapDispatchToProps)(
-  unconnectedCart
+export const CheckoutCart = connect(mapStateToProps, mapDispatchToProps)(
+  unconnectedCheckoutCart
 )
