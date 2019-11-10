@@ -101,7 +101,7 @@ router.delete('/:productId', async (req, res, next) => {
 // POST api/product/
 router.post('/', async (req, res, next) => {
   try {
-    if (!req.user) throw new Error('Not logged in.')
+    if (!req.user || !req.user.merchantId) throw new Error('Not authorized')
     const {user: {merchantId}, params: {body}} = req
     const product = await Product.create({...body, merchantId})
     res.json(product)
