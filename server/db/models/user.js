@@ -29,6 +29,11 @@ const User = db.define('user', {
   },
   googleId: {
     type: Sequelize.STRING
+  },
+  passwordReset: Sequelize.BOOLEAN,
+  guestUser: {
+    type: Sequelize.BOOLEAN,
+    default: false
   }
 })
 

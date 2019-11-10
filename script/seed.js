@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 'use strict'
 
 const db = require('../server/db')
@@ -59,17 +60,24 @@ async function seed() {
   ])
 
   // Creates random Products
-  let allProducts = []
-  for (let i = 0; i < 12000; i++) {
-    let newProduct = await Product.create({
+  let allProductsPromise = []
+  for (let i = 0; i < 1200; i++) {
+    let newProduct = Product.create({
       name: `${faker.commerce.productName()}`,
-      quantity: Math.floor(Math.random() * 1000),
-      price: Number(faker.commerce.price(0.1, 1000, 2)),
-      image: faker.image.imageUrl(),
+      quantity: Math.floor(Math.random() * 100),
+      price: Number(faker.commerce.price()),
+      image: `https://source.unsplash.com/collection/${Math.floor(
+        Math.random() * 1000000
+      )}/480x480`,
       description: faker.lorem.paragraph()
     })
-    newProduct.addCategory(faker.random.arrayElement(categories))
-    allProducts.push(newProduct)
+    allProductsPromise.push(newProduct)
+  }
+
+  const allProducts = await Promise.all(allProductsPromise)
+
+  for (let i = 0; i < 1200; i++) {
+    allProducts[i].addCategory(faker.random.arrayElement(categories))
   }
 
   // Creates random Reviews
@@ -112,7 +120,7 @@ async function seed() {
     newMerchant.setCountry(allCountries[i])
   }
   //Creates random Addresses
-  let shipTypes = ['BILL_TO', 'SHIP_TO', 'BOTH']
+  let shipTypes = ['BILL_TO', 'SHIP_TO']
   for (let i = 0; i < 300; i++) {
     let newAddress = await Address.create({
       name: `${faker.name.firstName()} ${faker.name.lastName()}`,
