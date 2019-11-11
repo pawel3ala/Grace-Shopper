@@ -1,4 +1,5 @@
 import React from 'react'
+import {Grid, Rating, Form, Input, Label, TextArea} from 'semantic-ui-react'
 
 class AddReview extends React.Component {
   constructor(props) {
@@ -12,10 +13,16 @@ class AddReview extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this)
   }
 
-  handleChange(event) {
-    this.setState({
-      [event.target.name]: event.target.value
-    })
+  handleChange(event, data) {
+    if (data) {
+      //This is so we can grab the data from react ui star value for ratings
+      this.setState({
+        [data.name]: data.rating
+      })
+    } else
+      this.setState({
+        [event.target.name]: event.target.value
+      })
   }
 
   handleSubmit() {
@@ -33,39 +40,40 @@ class AddReview extends React.Component {
 
   render() {
     return (
-      <div className="addReview">
-        <input
-          type="text"
-          placeholder="Title"
-          name="title"
-          value={this.state.title}
-          onChange={this.handleChange}
-        />
-        <textarea
-          placeholder="Content"
-          name="content"
-          minLength="12"
-          value={this.state.content}
-          onChange={this.handleChange}
-        />
-        <input
-          type="number"
-          min="1"
-          max="5"
-          name="stars"
-          value={this.state.stars}
-          onChange={this.handleChange}
-        />
-        <button
-          type="button"
-          disabled={
-            this.state.content.length < 12 || this.state.title.length === 0
-          }
-          onClick={this.handleSubmit}
-        >
-          Add Review
-        </button>
-      </div>
+      <Grid.Row>
+        <Form>
+          <input
+            type="text"
+            placeholder="What's most important to know?"
+            name="title"
+            value={this.state.title}
+            onChange={this.handleChange}
+          />
+          <textarea
+            placeholder="Write your review!"
+            name="content"
+            minLength="12"
+            value={this.state.content}
+            onChange={this.handleChange}
+          />
+          <Rating
+            rating={this.state.stars}
+            icon="star"
+            maxRating={5}
+            onRate={this.handleChange}
+            name="stars"
+          />
+          <button
+            type="button"
+            disabled={
+              this.state.content.length < 12 || this.state.title.length === 0
+            }
+            onClick={this.handleSubmit}
+          >
+            Add Review
+          </button>
+        </Form>
+      </Grid.Row>
     )
   }
 }
