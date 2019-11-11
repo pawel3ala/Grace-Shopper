@@ -1,15 +1,26 @@
 const router = require('express').Router()
-const User = require('../db/models/user')
+const {User} = require('../db/models')
+const Op = require('sequelize').Op
 module.exports = router
 
 router.post('/login', async (req, res, next) => {
   try {
-    const user = await User.findOne({where: {email: req.body.email}})
+    const {body: {email, password}, session: {cart}} = req
+    const user = await User.findOne({where: {email}})
+    if (cart && cart.length) {
+      const userCart = await user.getProducts()
+      const newItems = cart.filter(c => !userCart.includes(c))
+      await Promise.all(
+        newItems.map(({productId, quantity}) =>
+          user.addProduct(productId, {through: {quantity}})
+        )
+      )
+    }
     if (!user) {
-      console.log('No such user found:', req.body.email)
+      console.log('No such user found:', email)
       res.status(401).send('Wrong username and/or password')
-    } else if (!user.correctPassword(req.body.password)) {
-      console.log('Incorrect password for user:', req.body.email)
+    } else if (!user.correctPassword(password)) {
+      console.log('Incorrect password for user:', email)
       res.status(401).send('Wrong username and/or password')
     } else {
       req.login(user, err => (err ? next(err) : res.json(user)))
@@ -21,7 +32,15 @@ router.post('/login', async (req, res, next) => {
 
 router.post('/signup', async (req, res, next) => {
   try {
-    const user = await User.create(req.body)
+    const {body, session: {cart}} = req
+    const user = await User.create(body)
+    if (cart && cart.length) {
+      await Promise.all(
+        cart.map(({productId, quantity}) =>
+          user.addProduct(productId, {through: {quantity}})
+        )
+      )
+    }
     req.login(user, err => (err ? next(err) : res.json(user)))
   } catch (err) {
     if (err.name === 'SequelizeUniqueConstraintError') {
