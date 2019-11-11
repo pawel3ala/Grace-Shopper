@@ -8,7 +8,6 @@ import cartReducer from './cart'
 import singleProductReducer from './singleProduct'
 import catalogReducer from './catalog'
 import addressReducer from './address'
-import {reducer as formReducer} from 'redux-form'
 
 const reducer = combineReducers({
   user: userReducer,
