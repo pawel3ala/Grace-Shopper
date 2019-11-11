@@ -50,7 +50,6 @@ class SingleReview extends React.Component {
       <Grid.Column width={4} textAlign="center">
         <Grid.Row>{this.props.review.title}</Grid.Row>
         <Grid.Row>{this.props.review.content}</Grid.Row>
-        <Grid.Row>{this.props.review.stars}</Grid.Row>
         <Grid.Row>
           <Rating
             rating={this.props.review.stars}
