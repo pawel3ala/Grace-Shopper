@@ -2,7 +2,15 @@ const router = require('express').Router()
 const {User} = require('../db/models')
 module.exports = router
 
-router.get('/', async (req, res, next) => {
+const onlyAdmins = (req, res, next) => {
+  const {user} = req
+  if (!user || !user.isAdmin) next(new Error('Only for admins'))
+  else next()
+}
+
+// router.use(onlyAdmins)
+
+router.get('/', onlyAdmins, async (req, res, next) => {
   try {
     const users = await User.findAll({
       // explicitly select only the id and email fields - even though
