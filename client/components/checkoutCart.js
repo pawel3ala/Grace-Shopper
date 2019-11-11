@@ -35,27 +35,35 @@ class unconnectedCheckoutCart extends React.Component {
         {cart.length > 0
           ? cart.map(item => {
               const price = String(item.price)
+              const itemSubtotal = item.price * item.quantity
+              const displayItemSubtotal = String(itemSubtotal)
               return (
                 <div key={item.productId} className="productCart">
                   <img src={item.image} />
                   <div>Name: {item.name}</div>
                   <div>
-                    Price: ${price.slice(0, price.length - 2)}.{price.slice(
+                    Unit Price: ${price.slice(0, price.length - 2)}.{price.slice(
                       price.length - 2
                     )}
                   </div>
                   <div>
                     Quantity:{' '}
-                    <form>
-                      <input
-                        name={item.productId}
-                        type="number"
-                        min="1"
-                        max={item.productQuantity}
-                        value={item.quantity}
-                        onChange={this.handleChange}
-                      />
-                    </form>
+                    <input
+                      name={item.productId}
+                      type="number"
+                      min="1"
+                      max={item.productQuantity}
+                      value={item.quantity}
+                      onChange={this.handleChange}
+                    />
+                    <div>
+                      Item Subtotal: ${displayItemSubtotal.slice(
+                        0,
+                        displayItemSubtotal.length - 2
+                      )}.{displayItemSubtotal.slice(
+                        displayItemSubtotal.length - 2
+                      )}
+                    </div>
                   </div>
                 </div>
               )

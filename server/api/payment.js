@@ -19,13 +19,12 @@ router.post('/', async (req, res, next) => {
   // edge cases:
   //   ??????
 
-  // body: {orderId, productId, price, qty}
   try {
     // user doesn't matter for Stripe
     const {body: {token, amount}} = req
     let data = await charge(token.id, amount)
     res.send(data)
   } catch (err) {
-    next(err)
+    res.send(err)
   }
 })

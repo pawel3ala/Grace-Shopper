@@ -1,57 +1,67 @@
 /* eslint-disable camelcase */
 import React from 'react'
+import {connect} from 'react-redux'
 import {CheckoutCart} from './index'
+import ShipAddressForm from './shipAddressFormRedux'
+import BillAddressForm from './billAddressFormRedux'
 import {CardElement, injectStripe} from 'react-stripe-elements'
 import Axios from 'axios'
 
-const shipAddress = {
-  name: 'Test Name',
-  line1: '123 Anywhere St.',
-  line2: 'Apt 3',
-  city: 'Townsville',
-  state: 'Ohio',
-  zip: '12345'
-}
-const billAddress = {
-  name: 'Test Name',
-  line1: '123 Anywhere St.',
-  line2: 'Apt 3',
-  city: 'Townsville',
-  state: 'Ohio',
-  zip: '12345'
-}
+// const billAddress = {
+//   name: 'Test Name',
+//   line1: '123 Anywhere St.',
+//   line2: 'Apt 3',
+//   city: 'Townsville',
+//   state: 'Ohio',
+//   zip: '12345'
+// }
+// const shipAddress = {
+//   name: 'Test Name',
+//   line1: '123 Anywhere St.',
+//   line2: 'Apt 3',
+//   city: 'Townsville',
+//   state: 'Ohio',
+//   zip: '12345'
+// }
 
 class CheckoutForm extends React.Component {
   constructor() {
     super()
     this.state = {
       updateShip: false,
-      updateBill: false,
-      shipName: '',
-      shipLine1: '',
-      shipLine2: '',
-      shipCity: '',
-      shipState: '',
-      shipZip: '',
       enterBilling: false,
-      billName: '',
-      billLine1: '',
-      billLine2: '',
-      billCity: '',
-      billState: '',
-      billZip: ''
+      updateBill: false,
+      email: '',
+      shipAddressState: {
+        shipName: '',
+        shipStreet1: '',
+        shipStreet2: '',
+        shipCity: '',
+        shipState: '',
+        shipZip: ''
+      },
+      billAddressState: {
+        billName: '',
+        billStreet1: '',
+        billStreet2: '',
+        billCity: '',
+        billState: '',
+        billZip: ''
+      },
+      orderFail: false
     }
-    this.handleSubmit = this.handleSubmit.bind(this)
-    this.handleChange = this.handleChange.bind(this)
+    this.handleOrderSubmit = this.handleOrderSubmit.bind(this)
+    this.formShipSubmit = this.formShipSubmit.bind(this)
+    this.formBillSubmit = this.formBillSubmit.bind(this)
+    this.handleEmailChange = this.handleEmailChange.bind(this)
+    this.handleShipChange = this.handleShipChange.bind(this)
+    this.handleBillChange = this.handleBillChange.bind(this)
     this.handleShipUpdate = this.handleShipUpdate.bind(this)
-    this.handleShipSave = this.handleShipSave.bind(this)
     this.handleBillUpdate = this.handleBillUpdate.bind(this)
-    this.handleBillSave = this.handleBillSave.bind(this)
     this.handleBillingAddress = this.handleBillingAddress.bind(this)
   }
-  async handleSubmit(event) {
+  async handleOrderSubmit(event) {
     event.preventDefault()
-
     try {
       let {token} = await this.props.stripe.createToken({
         name: this.state.billName
@@ -59,39 +69,89 @@ class CheckoutForm extends React.Component {
       let amount = this.props.orderTotal / 100
       const {data} = await Axios.post('/api/payment', {token, amount})
       if (data.status) {
-        console.log('Success!')
+        this.setState({
+          orderFail: false
+        })
       } else {
-        console.log('fail')
+        this.setState({
+          orderFail: true
+        })
       }
     } catch (err) {
       throw err
     }
   }
-  handleChange(event) {
+  handleEmailChange() {
     this.setState({
-      [event.target.name]: event.target.value
+      email: [event.target.value]
+    })
+  }
+  formShipSubmit(values) {
+    if (!this.state.enterBilling) {
+      const shipAddress = {
+        name: values.shipName,
+        street1: values.shipStreet1,
+        street2: values.shipStreet2,
+        city: values.shipCity,
+        state: values.shipState,
+        zip: values.shipZip,
+        type: 'SHIP_TO'
+      }
+      const billAddress = {
+        name: values.shipName,
+        street1: values.shipStreet1,
+        street2: values.shipStreet2,
+        city: values.shipCity,
+        state: values.shipState,
+        zip: values.shipZip,
+        type: 'BILL_TO'
+      }
+      this.props.changeAddress([shipAddress, billAddress])
+    } else {
+      const shipAddress = {
+        name: values.shipName,
+        street1: values.shipStreet1,
+        street2: values.shipStreet2,
+        city: values.shipCity,
+        state: values.shipState,
+        zip: values.shipZip,
+        type: 'SHIP_TO'
+      }
+      this.props.changeAddress([shipAddress])
+    }
+  }
+  formBillSubmit(values) {
+    const billAddress = {
+      name: values.billName,
+      street1: values.billStreet1,
+      street2: values.billStreet2,
+      city: values.billCity,
+      state: values.billState,
+      zip: values.billZip,
+      type: 'BILL_TO'
+    }
+    this.props.changeAddress([billAddress])
+  }
+  handleShipChange(name, value) {
+    this.setState({
+      shipAddressState: {...this.state.shipAddressState, [name]: value}
+    })
+  }
+  handleBillChange(name, value) {
+    this.setState({
+      billAddressState: {...this.state.billAddressState, [name]: value}
     })
   }
   handleShipUpdate() {
+    event.preventDefault()
     this.setState({
-      updateShip: !this.state.updateShip,
-      shipName: shipAddress.name,
-      shipLine1: shipAddress.line1,
-      shipLine2: shipAddress.line2,
-      shipCity: shipAddress.city,
-      shipState: shipAddress.state,
-      shipZip: shipAddress.zip
+      updateShip: !this.state.updateShip
     })
   }
   handleBillUpdate() {
+    event.preventDefault()
     this.setState({
-      updateBill: !this.state.updateBill,
-      billName: billAddress.name,
-      billLine1: billAddress.line1,
-      billLine2: billAddress.line2,
-      billCity: billAddress.city,
-      billState: billAddress.state,
-      billZip: billAddress.zip
+      updateBill: !this.state.updateBill
     })
   }
   handleBillingAddress() {
@@ -99,198 +159,51 @@ class CheckoutForm extends React.Component {
       enterBilling: !this.state.enterBilling
     })
   }
-  handleShipSave() {
-    // this.props.changeAddress()
-    // this.props.fetchAddress()
-    this.setState({
-      updateShip: !this.state.updateShip
-    })
-    console.log('saved')
-  }
-  handleBillSave() {
-    // this.props.changeAddress()
-    // this.props.fetchAddress()
-    this.setState({
-      updateBill: !this.state.updateBill
-    })
-    console.log('saved')
-  }
   render() {
+    let addresses
+    this.props.addresses === undefined
+      ? (addresses = [0])
+      : (addresses = this.props.addresses)
+    const shipAddress = addresses.filter(address => address.type === 'SHIP_TO')
+    const billAddress = addresses.filter(address => address.type === 'BILL_TO')
     return (
       <div className="orderForm">
-        <form onSubmit={this.handleSubmit}>
-          {this.state.updateShip ? (
-            <div>
-              <label htmlFor="shipName">
-                Name:
-                <input
-                  name="shipName"
-                  value={this.state.shipName}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <br />
-              <label htmlFor="shipLine1">
-                Street Address:
-                <input
-                  name="shipLine1"
-                  value={this.state.shipLine1}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <br />
-              <label htmlFor="shipLine2">
-                Apt/Suite:
-                <input
-                  name="shipLine2"
-                  value={this.state.shipLine2}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <br />
-              <label htmlFor="shipCity">
-                City:
-                <input
-                  name="shipCity"
-                  value={this.state.shipCity}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <br />
-              <label htmlFor="shipState">
-                State:
-                <input
-                  name="shipState"
-                  value={this.state.shipState}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <br />
-              <label htmlFor="shipZip">
-                Postal Code:
-                <input
-                  name="shipZip"
-                  value={this.state.shipZip}
-                  onChange={this.handleChange}
-                />
-              </label>
-            </div>
-          ) : (
-            <div>
-              <div>Name: {shipAddress.name}</div>
-              <br />
-              <div>Street Address: {shipAddress.line1}</div>
-              <br />
-              <div>Apt/Suite: {shipAddress.line2}</div>
-              <br />
-              <div>City: {shipAddress.city}</div>
-              <br />
-              <div>State: {shipAddress.state}</div>
-              <br />
-              <div>Postal Code: {shipAddress.zip}</div>
-            </div>
-          )}
+        <ShipAddressForm
+          onSubmit={values => this.formShipSubmit(values)}
+          shipAddress={shipAddress}
+          shipAddressState={this.state.shipAddressState}
+          handleShipChange={this.handleShipChange}
+          handleShipUpdate={this.handleShipUpdate}
+          updateShip={this.state.updateShip}
+        />
+        <div>
+          <input
+            type="checkbox"
+            onChange={this.handleBillingAddress}
+            defaultChecked
+          />Billing and Shipping are the same.
+        </div>
+        {!this.state.enterBilling ? null : (
+          <BillAddressForm
+            onSubmit={this.formBillSubmit}
+            billAddress={billAddress}
+            billAddressState={this.state.billAddressState}
+            handleBillChange={this.handleBillChange}
+            handleBillUpdate={this.handleBillUpdate}
+            updateBill={this.state.updateBill}
+          />
+        )}
+        <br />
+        <form onSubmit={this.handleOrderSubmit}>
+          <label htmlFor="email">E-mail:</label>
+          <input
+            name="email"
+            required
+            type="email"
+            value={this.state.email}
+            onChange={this.handleEmailChange}
+          />
           <br />
-          <div>
-            {this.state.updateShip ? (
-              <button type="button" onClick={this.handleShipSave}>
-                Save Changes
-              </button>
-            ) : (
-              <button type="button" onClick={this.handleShipUpdate}>
-                Edit Shipping Address
-              </button>
-            )}
-          </div>
-          <div>
-            <input
-              type="checkbox"
-              onChange={this.handleBillingAddress}
-              defaultChecked
-            />Billing and Shipping are the same.
-          </div>
-          <br />
-          {!this.state.enterBilling ? null : this.state.updateBill ? (
-            <div>
-              <label htmlFor="billName">
-                Name:
-                <input
-                  name="billName"
-                  value={this.state.billName}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <br />
-              <label htmlFor="billLine1">
-                Street Address:
-                <input
-                  name="billLine1"
-                  value={this.state.billLine1}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <br />
-              <label htmlFor="billLine2">
-                Apt/Suite:
-                <input
-                  name="billLine2"
-                  value={this.state.billLine2}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <br />
-              <label htmlFor="billCity">
-                City:
-                <input
-                  name="billCity"
-                  value={this.state.billCity}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <br />
-              <label htmlFor="billState">
-                State:
-                <input
-                  name="billState"
-                  value={this.state.billState}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <br />
-              <label htmlFor="billZip">
-                Postal Code:
-                <input
-                  name="billZip"
-                  value={this.state.billZip}
-                  onChange={this.handleChange}
-                />
-              </label>
-            </div>
-          ) : (
-            <div>
-              <div>Name: {billAddress.name}</div>
-              <br />
-              <div>Street Address: {billAddress.line1}</div>
-              <br />
-              <div>Apt/Suite: {billAddress.line2}</div>
-              <br />
-              <div>City: {billAddress.city}</div>
-              <br />
-              <div>State: {billAddress.state}</div>
-              <br />
-              <div>Postal Code: {billAddress.zip}</div>
-            </div>
-          )}
-          <br />
-          {!this.state.enterBilling ? null : this.state.updateBill ? (
-            <button type="button" onClick={this.handleBillSave}>
-              Save Changes
-            </button>
-          ) : (
-            <button type="button" onClick={this.handleBillUpdate}>
-              Edit Billing Address
-            </button>
-          )}
           <CardElement />
           <br />
           <CheckoutCart />
@@ -301,6 +214,14 @@ class CheckoutForm extends React.Component {
               this.props.orderTotal.length - 2
             )}.{this.props.orderTotal.slice(this.props.orderTotal.length - 2)}
           </div>
+          {this.state.orderFail ? (
+            <div>
+              <h3>
+                Your card failed to process correctly.<br />Please try a new
+                card or check that the details are correct.
+              </h3>
+            </div>
+          ) : null}
         </form>
       </div>
     )
