@@ -6,7 +6,7 @@ import {
   changeItem,
   clearAllItems
 } from '../store/cart'
-import {fetchAddress, changeAddress} from '../store/address'
+import {fetchAddress, changeAddress, getAddress} from '../store/address'
 import CheckoutForm from './checkoutForm'
 import {connect} from 'react-redux'
 import {StripeProvider, Elements} from 'react-stripe-elements'
@@ -44,11 +44,11 @@ class unconnectedCheckout extends React.Component {
       return accum
     }, 0)
     const orderTotal = cart.reduce((accum, currentVal) => {
-      accum += currentVal.total
+      const itemSubtotal = currentVal.quantity * currentVal.price
+      accum += itemSubtotal
       return accum
     }, 0)
-    // const displayOrderTotal = String(orderTotal)
-    const displayOrderTotal = String(234)
+    const displayOrderTotal = String(orderTotal)
     return (
       <div>
         <div id="checkoutHeader">
@@ -59,11 +59,11 @@ class unconnectedCheckout extends React.Component {
           <StripeProvider apiKey="pk_test_FjmwUNWUX5OIG2L1aadq9nkM00e6PJNafA">
             <Elements>
               <CheckoutForm
-                address="this.props.address"
                 cart={cart}
                 orderTotal={displayOrderTotal}
+                getAddress={this.props.getAddress}
                 changeAddress={this.props.changeAddress}
-                fetchAddress={this.props.fetchAddress}
+                addresses={this.props.addresses}
                 clearCart={this.props.clearCart}
               />
             </Elements>
@@ -77,7 +77,7 @@ class unconnectedCheckout extends React.Component {
 const mapStateToProps = state => {
   return {
     cart: state.cart,
-    address: state.address
+    addresses: state.address
   }
 }
 
@@ -88,6 +88,7 @@ const mapDispatchToProps = dispatch => {
     deleteItem: item => dispatch(deleteItem(item)),
     changeItem: item => dispatch(changeItem(item)),
     clearCart: () => dispatch(clearAllItems()),
+    getAddress: address => dispatch(getAddress(address)),
     fetchAddress: () => dispatch(fetchAddress()),
     changeAddress: address => dispatch(changeAddress(address))
   }
