@@ -26,3 +26,14 @@ export const getUrlString = (params, keys = [], isArray = false) => {
   keys.pop()
   return p
 }
+
+export const getAverageRating = reviews => {
+  if (reviews.length === 0) {
+    return 0
+  }
+  let total = reviews.reduce((tot, review) => {
+    tot += review.stars
+    return tot
+  }, 0)
+  return (total / reviews.length).toPrecision(2)
+}
