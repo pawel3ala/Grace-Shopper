@@ -25,22 +25,6 @@ const dummyOrders = [
 ]
 
 export const AllOrders = props => {
-  // const [page, setPage] = useState(1)
-  // const [limit, setLimit] = useState(10)
-  // const [sort, setSort] = useState('id.ASC')
-  // const [search, setSearch] = useState('')
-  // const [category, setCategory] = useState('')
-  // const [price, setPrice] = useState({})
-  // const [review, setReview] = useState({})
-  // const query = {
-  //   page,
-  //   limit,
-  //   sort,
-  //   ...(search && {search}),
-  //   ...(category && {category}),
-  //   ...(Object.entries(price).length > 0 && {price}),
-  //   ...(Object.entries(review).length > 0 && {review})
-  // }
   // const dispatch = useDispatch()
 
   // useEffect(() => {
