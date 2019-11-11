@@ -45,28 +45,31 @@ export const fetchItems = () => {
   }
 }
 export const addAnItem = item => {
-  return async () => {
+  return async dispatch => {
     try {
       await Axios.post('/api/cart', item)
+      dispatch(fetchItems())
     } catch (err) {
       console.error(err)
     }
   }
 }
 export const deleteItem = item => {
-  return async () => {
+  return async dispatch => {
     try {
       // axios delete requires an object with the key of data to pass in a body to the request
       await Axios.delete(`/api/cart`, {data: item})
+      dispatch(fetchItems())
     } catch (err) {
       console.error(err)
     }
   }
 }
 export const changeItem = item => {
-  return async () => {
+  return async dispatch => {
     try {
       await Axios.put(`/api/cart`, item)
+      dispatch(fetchItems())
     } catch (err) {
       console.error(err)
     }

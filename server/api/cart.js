@@ -98,8 +98,9 @@ router.put('/', async (req, res, next) => {
     const {body: {productId, quantity}} = req
     if (!req.user) {
       // handle unauthenticated user w/ cookie
-      console.log(req.session.cart)
-      req.session.cart.find(d => d.productId === +productId).quantity = quantity
+      req.session.cart.find(
+        d => d.productId === +productId
+      ).quantity = +quantity
       res.json(req.session.cart)
     } else {
       const {user: {id: userId}} = req
@@ -123,10 +124,9 @@ router.delete('/', async (req, res, next) => {
     const {body: {productId}} = req
     if (!req.user) {
       // handle unauthenticated user w/ cookie
-      req.session.cart = req.session.cart.filter(d => {
-        console.log(d.productId, productId)
-        return d.productId !== +productId
-      })
+      req.session.cart = req.session.cart.filter(
+        d => d.productId !== +productId
+      )
       res.status(200).end()
     } else {
       const {user: {id: userId}} = req

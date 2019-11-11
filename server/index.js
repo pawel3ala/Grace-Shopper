@@ -1,5 +1,6 @@
 const path = require('path')
 const express = require('express')
+const cors = require('cors')
 const morgan = require('morgan')
 const compression = require('compression')
 const session = require('express-session')
@@ -41,12 +42,16 @@ passport.deserializeUser(async (id, done) => {
   }
 })
 
+// stripe checkout
+const stripe = require('stripe')(process.env.STRIPE_SECRET)
+
 const createApp = () => {
   // logging middleware
   app.use(morgan('dev'))
 
   // body parsing middleware
   app.use(express.json())
+  app.use(cors())
   app.use(express.urlencoded({extended: true}))
 
   // compression middleware
