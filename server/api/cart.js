@@ -67,20 +67,28 @@ router.post('/', async (req, res, next) => {
     if (!req.user) {
       // handle unauthenticated user w/ cookie
       if (!req.session.cart) req.session.cart = []
-      const newProduct = await Product.findByPk(productId, {
-        attributes: [
-          ['id', 'productId'],
-          'name',
-          'image',
-          'price',
-          ['quantity', 'productQuantity']
-        ]
-      })
-      req.session.cart.push({...newProduct.get(), quantity: +quantity})
+      // check to see if item is in the cart before adding
+      if (req.session.cart.every(({productId: id}) => id !== +productId)) {
+        const newProduct = await Product.findByPk(productId, {
+          attributes: [
+            ['id', 'productId'],
+            'name',
+            'image',
+            'price',
+            ['quantity', 'productQuantity']
+          ]
+        })
+        req.session.cart.push({...newProduct.get(), quantity: +quantity})
+      }
       res.json(req.session.cart)
     } else {
       const {user: {id: userId}} = req
-      const cartItem = await CartItems.create({productId, quantity, userId})
+      // findOrCreate prevents the cart item from being added if it already exists. Quantity will not be updated on CartItems
+      // if the item is already in the cart
+      const cartItem = await CartItems.findOrCreate({
+        where: {productId, userId},
+        defaults: {quantity}
+      })
       res.json(cartItem)
     }
   } catch (err) {
