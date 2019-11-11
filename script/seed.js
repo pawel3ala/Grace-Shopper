@@ -66,9 +66,7 @@ async function seed() {
       name: `${faker.commerce.productName()}`,
       quantity: Math.floor(Math.random() * 100),
       price: Number(faker.commerce.price()),
-      image: `https://source.unsplash.com/collection/${Math.floor(
-        Math.random() * 1000000
-      )}/480x480`,
+      image: `https://source.unsplash.com/collection/${i}/480x480`,
       description: faker.lorem.paragraph()
     })
     allProductsPromise.push(newProduct)
