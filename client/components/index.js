@@ -1,3 +1,5 @@
+import OrderConfirmation from './orderConfirmed'
+
 /**
  * `components/index.js` exists simply as a 'central export' for our components.
  * This way, we can import all of our components from the same place, rather than
@@ -9,3 +11,4 @@ export {Login, Signup} from './auth-form'
 export {Catalog} from './catalog'
 export {SingleProduct} from './singleProduct'
 export {Cart} from './cart'
+export {OrderConfirmed} from './orderConfirmed'
