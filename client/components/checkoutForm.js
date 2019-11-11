@@ -6,22 +6,22 @@ import BillAddressForm from './billAddressFormRedux'
 import {CardElement, injectStripe} from 'react-stripe-elements'
 import Axios from 'axios'
 
-const billAddress = {
-  name: 'Test Name',
-  line1: '123 Anywhere St.',
-  line2: 'Apt 3',
-  city: 'Townsville',
-  state: 'Ohio',
-  zip: '12345'
-}
-const shipAddress = {
-  name: 'Test Name',
-  line1: '123 Anywhere St.',
-  line2: 'Apt 3',
-  city: 'Townsville',
-  state: 'Ohio',
-  zip: '12345'
-}
+// const billAddress = {
+//   name: 'Test Name',
+//   line1: '123 Anywhere St.',
+//   line2: 'Apt 3',
+//   city: 'Townsville',
+//   state: 'Ohio',
+//   zip: '12345'
+// }
+// const shipAddress = {
+//   name: 'Test Name',
+//   line1: '123 Anywhere St.',
+//   line2: 'Apt 3',
+//   city: 'Townsville',
+//   state: 'Ohio',
+//   zip: '12345'
+// }
 
 class CheckoutForm extends React.Component {
   constructor() {
@@ -69,11 +69,32 @@ class CheckoutForm extends React.Component {
   formShipSubmit(values) {
     if (!this.state.enterBilling) {
       console.log(values)
+      const shipAddress = {
+        name: values.shipName,
+        street1: values.shipStreet1,
+        street2: values.shipStreet2,
+        city: values.shipCity,
+        state: values.shipState,
+        zip: values.shipZip,
+        type: 'SHIP_TO',
+        guest: true
+      }
+      const billAddress = {
+        name: values.shipName,
+        street1: values.shipStreet1,
+        street2: values.shipStreet2,
+        city: values.shipCity,
+        state: values.shipState,
+        zip: values.shipZip,
+        type: 'BILL_TO',
+        guest: true
+      }
+      this.props.getAddress([shipAddress, billAddress])
       // this.props.getAddress(values)
     }
-    if (this.props.addresses[0].guest) {
-      console.log('hey')
-    }
+    // if (this.props.addresses[0].guest) {
+    //   console.log('hey')
+    // }
     // this.setState({
     //   updateShip: !this.state.updateShip
     // })
