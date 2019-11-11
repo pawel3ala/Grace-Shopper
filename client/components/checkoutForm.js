@@ -62,10 +62,17 @@ class CheckoutForm extends React.Component {
   }
   async handleOrderSubmit(event) {
     event.preventDefault()
+    // if ()
+    const tokenObj = {
+      name: this.state.billAddressState.billName,
+      address_line1: this.state.billAddressState.billStreet1,
+      address_line2: this.state.billAddressState.billStreet2,
+      address_city: this.state.billAddressState.billCity,
+      address_state: this.state.billAddressState.billState,
+      address_zip: this.state.billAddressState.billZip
+    }
     try {
-      let {token} = await this.props.stripe.createToken({
-        name: this.state.billName
-      })
+      let {token} = await this.props.stripe.createToken(tokenObj)
       let amount = this.props.orderTotal / 100
       const {data} = await Axios.post('/api/payment', {token, amount})
       if (data.status) {
@@ -161,9 +168,8 @@ class CheckoutForm extends React.Component {
   }
   render() {
     let addresses
-    this.props.addresses === undefined
-      ? (addresses = [0])
-      : (addresses = this.props.addresses)
+    this.props.addresses === undefined ? (addresses = [0]) : (addresses = [0])
+    //   : (addresses = this.props.addresses)
     const shipAddress = addresses.filter(address => address.type === 'SHIP_TO')
     const billAddress = addresses.filter(address => address.type === 'BILL_TO')
     return (
