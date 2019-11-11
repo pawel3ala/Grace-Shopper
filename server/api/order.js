@@ -38,7 +38,7 @@ router.get('/', async (req, res, next) => {
     } else {
       const {user} = req
       const orders = await Order.findAll({
-        where: {id: user.id}
+        where: {userId: user.id}
       })
       res.json(orders)
     }
