@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import React from 'react'
+import {connect} from 'react-redux'
 import {CheckoutCart} from './index'
 import ShipAddressForm from './shipAddressFormRedux'
 import BillAddressForm from './billAddressFormRedux'
@@ -29,46 +30,64 @@ class CheckoutForm extends React.Component {
     this.state = {
       updateShip: false,
       enterBilling: false,
-      updateBill: false
+      updateBill: false,
+      email: '',
+      shipAddressState: {
+        shipName: '',
+        shipStreet1: '',
+        shipStreet2: '',
+        shipCity: '',
+        shipState: '',
+        shipZip: ''
+      },
+      billAddressState: {
+        billName: '',
+        billStreet1: '',
+        billStreet2: '',
+        billCity: '',
+        billState: '',
+        billZip: ''
+      },
+      orderFail: false
     }
-    this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleOrderSubmit = this.handleOrderSubmit.bind(this)
     this.formShipSubmit = this.formShipSubmit.bind(this)
     this.formBillSubmit = this.formBillSubmit.bind(this)
+    this.handleEmailChange = this.handleEmailChange.bind(this)
+    this.handleShipChange = this.handleShipChange.bind(this)
+    this.handleBillChange = this.handleBillChange.bind(this)
     this.handleShipUpdate = this.handleShipUpdate.bind(this)
     this.handleBillUpdate = this.handleBillUpdate.bind(this)
     this.handleBillingAddress = this.handleBillingAddress.bind(this)
   }
-  async handleSubmit(event) {
+  async handleOrderSubmit(event) {
     event.preventDefault()
-    let saleOK = true
-    this.props.cart.forEach(product => {
-      product.productQuantity < product.quantity
-        ? (saleOK = false)
-        : (saleOK = true)
-    })
-
-    if (saleOK) {
-      try {
-        let {token} = await this.props.stripe.createToken({
-          name: this.state.billName
+    try {
+      let {token} = await this.props.stripe.createToken({
+        name: this.state.billName
+      })
+      let amount = this.props.orderTotal / 100
+      const {data} = await Axios.post('/api/payment', {token, amount})
+      if (data.status) {
+        this.setState({
+          orderFail: false
         })
-        let amount = this.props.orderTotal / 100
-        const {data} = await Axios.post('/api/payment', {token, amount})
-        if (data.status) {
-          console.log('Success!')
-        } else {
-          console.log('fail')
-        }
-      } catch (err) {
-        throw err
+      } else {
+        this.setState({
+          orderFail: true
+        })
       }
-    } else {
-      console.log('One or more items in your cart have become unavailable.')
+    } catch (err) {
+      throw err
     }
+  }
+  handleEmailChange() {
+    this.setState({
+      email: [event.target.value]
+    })
   }
   formShipSubmit(values) {
     if (!this.state.enterBilling) {
-      console.log(values)
       const shipAddress = {
         name: values.shipName,
         street1: values.shipStreet1,
@@ -76,8 +95,7 @@ class CheckoutForm extends React.Component {
         city: values.shipCity,
         state: values.shipState,
         zip: values.shipZip,
-        type: 'SHIP_TO',
-        guest: true
+        type: 'SHIP_TO'
       }
       const billAddress = {
         name: values.shipName,
@@ -86,51 +104,54 @@ class CheckoutForm extends React.Component {
         city: values.shipCity,
         state: values.shipState,
         zip: values.shipZip,
-        type: 'BILL_TO',
-        guest: true
+        type: 'BILL_TO'
       }
-      this.props.getAddress([shipAddress, billAddress])
-      // this.props.getAddress(values)
+      this.props.changeAddress([shipAddress, billAddress])
+    } else {
+      const shipAddress = {
+        name: values.shipName,
+        street1: values.shipStreet1,
+        street2: values.shipStreet2,
+        city: values.shipCity,
+        state: values.shipState,
+        zip: values.shipZip,
+        type: 'SHIP_TO'
+      }
+      this.props.changeAddress([shipAddress])
     }
-    // if (this.props.addresses[0].guest) {
-    //   console.log('hey')
-    // }
-    // this.setState({
-    //   updateShip: !this.state.updateShip
-    // })
   }
   formBillSubmit(values) {
-    console.log(values)
-    // this.setState({
-    //   updateBill: !this.state.updateBill
-    // })
+    const billAddress = {
+      name: values.billName,
+      street1: values.billStreet1,
+      street2: values.billStreet2,
+      city: values.billCity,
+      state: values.billState,
+      zip: values.billZip,
+      type: 'BILL_TO'
+    }
+    this.props.changeAddress([billAddress])
+  }
+  handleShipChange(name, value) {
+    this.setState({
+      shipAddressState: {...this.state.shipAddressState, [name]: value}
+    })
+  }
+  handleBillChange(name, value) {
+    this.setState({
+      billAddressState: {...this.state.billAddressState, [name]: value}
+    })
   }
   handleShipUpdate() {
     event.preventDefault()
     this.setState({
       updateShip: !this.state.updateShip
-      //   shipAddress: {
-      //     shipName: shipAddress.name,
-      //     shipLine1: shipAddress.line1,
-      //     shipLine2: shipAddress.line2,
-      //     shipCity: shipAddress.city,
-      //     shipState: shipAddress.state,
-      //     shipZip: shipAddress.zip
-      //   }
     })
   }
   handleBillUpdate() {
     event.preventDefault()
     this.setState({
-      updateBill: !this.state.updateBill,
-      billAddress: {
-        billName: billAddress.name,
-        billLine1: billAddress.line1,
-        billLine2: billAddress.line2,
-        billCity: billAddress.city,
-        billState: billAddress.state,
-        billZip: billAddress.zip
-      }
+      updateBill: !this.state.updateBill
     })
   }
   handleBillingAddress() {
@@ -150,6 +171,8 @@ class CheckoutForm extends React.Component {
         <ShipAddressForm
           onSubmit={values => this.formShipSubmit(values)}
           shipAddress={shipAddress}
+          shipAddressState={this.state.shipAddressState}
+          handleShipChange={this.handleShipChange}
           handleShipUpdate={this.handleShipUpdate}
           updateShip={this.state.updateShip}
         />
@@ -164,10 +187,23 @@ class CheckoutForm extends React.Component {
           <BillAddressForm
             onSubmit={this.formBillSubmit}
             billAddress={billAddress}
+            billAddressState={this.state.billAddressState}
+            handleBillChange={this.handleBillChange}
+            handleBillUpdate={this.handleBillUpdate}
             updateBill={this.state.updateBill}
           />
         )}
-        <form onSubmit={this.handleSubmit}>
+        <br />
+        <form onSubmit={this.handleOrderSubmit}>
+          <label htmlFor="email">E-mail:</label>
+          <input
+            name="email"
+            required
+            type="email"
+            value={this.state.email}
+            onChange={this.handleEmailChange}
+          />
+          <br />
           <CardElement />
           <br />
           <CheckoutCart />
@@ -178,6 +214,14 @@ class CheckoutForm extends React.Component {
               this.props.orderTotal.length - 2
             )}.{this.props.orderTotal.slice(this.props.orderTotal.length - 2)}
           </div>
+          {this.state.orderFail ? (
+            <div>
+              <h3>
+                Your card failed to process correctly.<br />Please try a new
+                card or check that the details are correct.
+              </h3>
+            </div>
+          ) : null}
         </form>
       </div>
     )

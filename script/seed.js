@@ -136,21 +136,21 @@ async function seed() {
     newAddress.setUser(allUsers[i])
   }
 
-  for (let i = 0; i < 300; i++) {
-    let newAddress = await Address.create({
-      name: `${faker.name.firstName()} ${faker.name.lastName()}`,
-      street1: faker.address.streetAddress(false),
-      street2: `${faker.random.arrayElement(aptSuite)} ${Math.ceil(
-        Math.random() * 998
-      )}`,
-      city: faker.address.city(),
-      state: faker.address.state(),
-      zip: faker.address.zipCode(),
-      type: faker.random.arrayElement(shipTypes),
-      default: false
-    })
-    newAddress.setUser(faker.random.arrayElement(allUsers))
-  }
+  // for (let i = 0; i < 300; i++) {
+  //   let newAddress = await Address.create({
+  //     name: `${faker.name.firstName()} ${faker.name.lastName()}`,
+  //     street1: faker.address.streetAddress(false),
+  //     street2: `${faker.random.arrayElement(aptSuite)} ${Math.ceil(
+  //       Math.random() * 998
+  //     )}`,
+  //     city: faker.address.city(),
+  //     state: faker.address.state(),
+  //     zip: faker.address.zipCode(),
+  //     type: faker.random.arrayElement(shipTypes),
+  //     default: false
+  //   })
+  //   newAddress.setUser(faker.random.arrayElement(allUsers))
+  // }
 
   for (let i = 0; i < 120; i++) {
     let newAddress = await Address.create({

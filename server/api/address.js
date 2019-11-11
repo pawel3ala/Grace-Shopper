@@ -51,29 +51,46 @@ router.post('/', async (req, res, next) => {
   }
 })
 
-// PUT api/cart (updating cart quantity)
-router.put('/', async (req, res, next) => {
+// PUT api/address (updating address details)
+router.put('/ship', async (req, res, next) => {
   // edge cases:
-  //   -can't order more than what is in stock
-  //   -if someone orders something that depletes the stock of a given item, all users with that
-  //   item in their cart can't order it
+  //   ??????????
   try {
-    const {body: {productId, quantity}} = req
+    console.log(req.body)
+    // const {body: {productId, quantity}} = req
     if (!req.user) {
-      // handle unauthenticated user w/ cookie
-      req.session.cart.find(d => d.productId === +productId).quantity = quantity
-      res.json(req.session.cart)
+      throw new Error("Y'ain't s'posed to be here! Go on! Git!")
     } else {
       const {user: {id: userId}} = req
-      const [_, [cartItem]] = await CartItems.update(
-        {quantity},
-        {
-          where: {userId, productId},
-          returning: true
-        }
-      )
-      if (!cartItem) throw new Error('Product not found')
-      res.json(cartItem)
+      const {newAddress} = await Address.update({
+        where: {userId, type: 'SHIP_TO'},
+        returning: true
+      })
+      if (!newAddress) throw new Error('Address not found')
+      res.json(newAddress)
+    }
+  } catch (err) {
+    next(err)
+  }
+})
+
+// PUT api/address (updating address details)
+router.put('/bill', async (req, res, next) => {
+  // edge cases:
+  //   ??????????
+  try {
+    console.log(req.body)
+    // const {body: {productId, quantity}} = req
+    if (!req.user) {
+      throw new Error("Y'ain't s'posed to be here! Go on! Git!")
+    } else {
+      const {user: {id: userId}} = req
+      const {newAddress} = await Address.update({
+        where: {userId, type: 'BILL_TO'},
+        returning: true
+      })
+      if (!newAddress) throw new Error('Address not found')
+      res.json(newAddress)
     }
   } catch (err) {
     next(err)

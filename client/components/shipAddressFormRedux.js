@@ -1,55 +1,14 @@
 /* eslint-disable camelcase */
 import React from 'react'
 import {Field, reduxForm} from 'redux-form'
-import {connect} from 'react-redux'
-import {getAddress as getAddressData} from '../store/shipAddress'
-import Axios from 'axios'
-
-// const shipAddress = {
-//   line2: 'Apt 3',
-//   city: 'Townsville',
-//   state: 'Ohio',
-//   zip: '12345'
-// }
-// const billAddress = {
-//   name: 'Test Name',
-//   line1: '123 Anywhere St.',
-//   line2: 'Apt 3',
-//   city: 'Townsville',
-//   state: 'Ohio',
-//   zip: '12345'
-// }
 
 class UnreduxedShipAddressForm extends React.Component {
   constructor({handleSubmit}) {
     super({handleSubmit})
-    this.state = {
-      updateShip: false,
-      shipName: '',
-      shipStreet1: '',
-      shipStreet2: '',
-      shipCity: '',
-      shipState: '',
-      shipZip: ''
-    }
-    this.handleShipUpdate = this.handleShipUpdate.bind(this)
     this.handleChange = this.handleChange.bind(this)
   }
-  handleShipUpdate() {
-    this.setState({
-      updateShip: !this.state.updateShip,
-      shipName: shipAddress.name,
-      shipStreet1: shipAddress.line1,
-      shipStreet2: shipAddress.line2,
-      shipCity: shipAddress.city,
-      shipState: shipAddress.state,
-      shipZip: shipAddress.zip
-    })
-  }
   handleChange() {
-    this.setState({
-      [event.target.name]: event.target.value
-    })
+    this.props.handleShipChange(event.target.name, event.target.value)
   }
   render() {
     let shipAddress
@@ -67,7 +26,7 @@ class UnreduxedShipAddressForm extends React.Component {
                   name="shipName"
                   component="input"
                   type="text"
-                  value={this.state.shipName}
+                  value={this.props.shipAddressState.shipName}
                   onChange={this.handleChange}
                 />
                 <br />
@@ -76,7 +35,7 @@ class UnreduxedShipAddressForm extends React.Component {
                   name="shipStreet1"
                   component="input"
                   type="text"
-                  value={this.state.shipStreet1}
+                  value={this.props.shipAddressState.shipStreet1}
                   onChange={this.handleChange}
                 />
                 <br />
@@ -85,7 +44,7 @@ class UnreduxedShipAddressForm extends React.Component {
                   name="shipStreet2"
                   component="input"
                   type="text"
-                  value={this.state.shipStreet2}
+                  value={this.props.shipAddressState.shipStreet2}
                   onChange={this.handleChange}
                 />
                 <br />
@@ -94,7 +53,7 @@ class UnreduxedShipAddressForm extends React.Component {
                   name="shipCity"
                   component="input"
                   type="text"
-                  value={this.state.shipCity}
+                  value={this.props.shipAddressState.shipCity}
                   onChange={this.handleChange}
                 />
                 <br />
@@ -103,7 +62,7 @@ class UnreduxedShipAddressForm extends React.Component {
                   name="shipState"
                   component="input"
                   type="text"
-                  value={this.state.shipState}
+                  value={this.props.shipAddressState.shipState}
                   onChange={this.handleChange}
                 />
                 <br />
@@ -112,14 +71,12 @@ class UnreduxedShipAddressForm extends React.Component {
                   name="shipZip"
                   component="input"
                   type="text"
-                  value={this.state.shipZip}
+                  value={this.props.shipAddressState.shipZip}
                   onChange={this.handleChange}
                 />
+                <br />
               </div>
               <br />
-              <div>
-                <button type="submit">Confirm Address</button>
-              </div>
             </form>
           </div>
         ))
@@ -133,7 +90,7 @@ class UnreduxedShipAddressForm extends React.Component {
                     name="shipName"
                     component="input"
                     type="text"
-                    value={this.state.shipName}
+                    value={this.props.shipAddressState.shipName}
                     onChange={this.handleChange}
                   />
                   <br />
@@ -142,7 +99,7 @@ class UnreduxedShipAddressForm extends React.Component {
                     name="shipStreet1"
                     component="input"
                     type="text"
-                    value={this.state.shipStreet1}
+                    value={this.props.shipAddressState.shipStreet1}
                     onChange={this.handleChange}
                   />
                   <br />
@@ -151,7 +108,7 @@ class UnreduxedShipAddressForm extends React.Component {
                     name="shipStreet2"
                     component="input"
                     type="text"
-                    value={this.state.shipStreet2}
+                    value={this.props.shipAddressState.shipStreet2}
                     onChange={this.handleChange}
                   />
                   <br />
@@ -160,7 +117,7 @@ class UnreduxedShipAddressForm extends React.Component {
                     name="shipCity"
                     component="input"
                     type="text"
-                    value={this.state.shipCity}
+                    value={this.props.shipAddressState.shipCity}
                     onChange={this.handleChange}
                   />
                   <br />
@@ -169,7 +126,7 @@ class UnreduxedShipAddressForm extends React.Component {
                     name="shipState"
                     component="input"
                     type="text"
-                    value={this.state.shipState}
+                    value={this.props.shipAddressState.shipState}
                     onChange={this.handleChange}
                   />
                   <br />
@@ -178,23 +135,24 @@ class UnreduxedShipAddressForm extends React.Component {
                     name="shipZip"
                     component="input"
                     type="text"
-                    value={this.state.shipZip}
+                    value={this.props.shipAddressState.shipZip}
                     onChange={this.handleChange}
                   />
                 </div>
               ) : (
                 <div>
-                  <div>Name: {this.props.shipAddress.shipName}</div>
+                  <div>Name: {shipAddress.name}</div>
                   <br />
-                  <div>Street Address: {this.props.shipAddress.shipLine1}</div>
+                  <div>Street Address: {shipAddress.street1}</div>
                   <br />
-                  <div>Apt/Suite: {shipAddress.line2}</div>
+                  <div>Apt/Suite: {shipAddress.street2}</div>
                   <br />
                   <div>City: {shipAddress.city}</div>
                   <br />
                   <div>State: {shipAddress.state}</div>
                   <br />
                   <div>Postal Code: {shipAddress.zip}</div>
+                  <br />
                 </div>
               )}
               <br />
@@ -215,7 +173,8 @@ class UnreduxedShipAddressForm extends React.Component {
 }
 
 let ShipAddressForm = reduxForm({
-  form: 'ShipAddress'
+  form: 'ShipAddress',
+  destroyOnUnmount: false
 })(UnreduxedShipAddressForm)
 
 export default ShipAddressForm
