@@ -91,7 +91,8 @@ router.delete('/:productId', async (req, res, next) => {
       where: {id: productId, merchantId},
       returning: true
     })
-    if (!destroyed) throw new Error('You are not the merchant of this item')
+    if (!destroyed)
+      throw new Error(`Cannot delete product with ID of ${productId}`)
     res.status(200).send('OK')
   } catch (err) {
     next(err)
