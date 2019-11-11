@@ -1,98 +1,85 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {
   fetchItems,
-  addAnItem,
+  addAnItem, // do we need this as part of the cart?
   deleteItem,
   changeItem,
   clearAllItems
 } from '../store/cart'
-import {connect} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 
-class unconnectedCart extends React.Component {
-  constructor() {
-    super()
-    this.handleChange = this.handleChange.bind(this)
-    this.handleDelete = this.handleDelete.bind(this)
-  }
-  componentDidMount() {
-    this.props.fetchItems()
-  }
-  async handleChange(event) {
+export const Cart = props => {
+  const dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(fetchItems())
+  }, [])
+
+  const handleChange = event => {
     const productId = event.target.name
     const quantity = Number(event.target.value)
     const itemObj = {
       productId,
       quantity
     }
-    await this.props.changeItem(itemObj)
-    this.props.fetchItems()
+    dispatch(changeItem(itemObj))
   }
-  async handleDelete(event) {
+  const handleDelete = event => {
     const productId = event.target.previousSibling.name
     const quantity = event.target.previousSibling.value
     const itemObj = {
       productId,
       quantity
     }
-    await this.props.deleteItem(itemObj)
-    this.props.fetchItems()
+    dispatch(deleteItem(itemObj))
   }
-  render() {
-    let cart
-    this.props.cart === undefined ? (cart = []) : (cart = this.props.cart)
-    return (
-      <div className="cartContainer">
-        {cart.length > 0
-          ? cart.map(item => {
-              return (
-                <div key={item.productId} className="productCart">
-                  <img src={item.image} />
-                  <div>Name: {item.name}</div>
-                  <div>Price: {item.price}</div>
-                  <div>
-                    Quantity:{' '}
-                    <form>
-                      <input
-                        name={item.productId}
-                        type="number"
-                        min="1"
-                        max={item.productQuantity}
-                        value={item.quantity}
-                        onChange={this.handleChange}
-                      />
-                      <button type="button" onClick={this.handleDelete}>
-                        Remove from cart
-                      </button>
-                    </form>
-                  </div>
+
+  const cart = useSelector(({cart}) => cart) || []
+  return (
+    <div className="cartContainer">
+      {cart.length > 0
+        ? cart.map(item => {
+            return (
+              <div key={item.productId} className="productCart">
+                <img src={item.image} />
+                <div>Name: {item.name}</div>
+                <div>Price: {item.price}</div>
+                <div>
+                  Quantity:{' '}
+                  <form>
+                    <input
+                      name={item.productId}
+                      type="number"
+                      min="1"
+                      max={item.productQuantity}
+                      value={item.quantity}
+                      onChange={handleChange}
+                    />
+                    <button type="button" onClick={handleDelete}>
+                      Remove from cart
+                    </button>
+                  </form>
                 </div>
-              )
-            })
-          : 'Cart is Empty'}
-        <button type="button" onClick={this.handleCheckout}>
-          Proceed to Checkout
-        </button>
-      </div>
-    )
-  }
+              </div>
+            )
+          })
+        : 'Cart is Empty'}
+      <button type="button">Proceed to Checkout</button>
+    </div>
+  )
 }
 
-const mapStateToProps = state => {
-  return {
-    cart: state.cart
-  }
-}
+// const mapStateToProps = state => {
+//   return {
+//     cart: state.cart
+//   }
+// }
 
-const mapDispatchToProps = dispatch => {
-  return {
-    fetchItems: () => dispatch(fetchItems()),
-    addToCart: item => dispatch(addAnItem(item)),
-    deleteItem: item => dispatch(deleteItem(item)),
-    changeItem: item => dispatch(changeItem(item)),
-    clearCart: () => dispatch(clearAllItems())
-  }
-}
-
-export const Cart = connect(mapStateToProps, mapDispatchToProps)(
-  unconnectedCart
-)
+// const mapDispatchToProps = dispatch => {
+//   return {
+//     fetchItems: () => dispatch(fetchItems()),
+//     addToCart: item => dispatch(addAnItem(item)),
+//     deleteItem: item => dispatch(deleteItem(item)),
+//     changeItem: item => dispatch(changeItem(item)),
+//     clearCart: () => dispatch(clearAllItems())
+//   }
+// }
