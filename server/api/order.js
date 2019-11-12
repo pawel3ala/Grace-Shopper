@@ -41,7 +41,6 @@ router.post('/', async (req, res, next) => {
       })
       res.json(order)
     } else {
-      //NEED TO FINDORCREATE ADDRESS FOR NEW USER
       const {user: {id: userId}} = req
       shipAddress.userId = userId
       billAddress.userId = userId
