@@ -55,7 +55,7 @@ class SingleReview extends React.Component {
             rating={this.props.review.stars}
             icon="star"
             maxRating={5}
-            disabled="true"
+            disabled
           />
         </Grid.Row>
         {//only the authed user who wrote that specific review can edit it

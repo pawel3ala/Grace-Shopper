@@ -10,8 +10,8 @@ import {
 import {addAnItem, fetchItems} from '../store/cart'
 import SingleReview from './singleReview'
 import AddReview from './addReview'
-import {getAverageRating} from '../../script/helperFuncs'
-import {Grid, Image, Icon, Rating} from 'semantic-ui-react'
+import {getAverageRating, priceFormat} from '../../script/helperFuncs'
+import {Grid, Image, Rating} from 'semantic-ui-react'
 
 class unconnectedSingleProduct extends React.Component {
   constructor() {
@@ -56,28 +56,33 @@ class unconnectedSingleProduct extends React.Component {
       quantity > 20
         ? 'In Stock'
         : quantity > 0 ? 'Low in Stock' : 'Out of Stock'
+    let averageRating = getAverageRating(reviews)
     return (
       <Grid centered>
         <Grid.Row>
           <Grid.Column width={5}>
-            <Image src={image} />
+            <Image src={image} rounded bordered />
           </Grid.Column>
           <Grid.Column width={5}>
             <Grid.Row as="h2">{name}</Grid.Row>
             <Grid.Row style={{paddingTop: '0.5em'}}>
               Rating:{' '}
+              {/*Need key prop to force Rating component to re render after data is fetched */}
               {getAverageRating(reviews) > 0 ? (
                 <Rating
-                  defaultRating={getAverageRating(reviews)}
+                  key={averageRating}
+                  defaultRating={averageRating}
                   icon="star"
                   maxRating={5}
-                  disabled={true}
+                  disabled
                 />
               ) : (
                 'No reviews'
               )}
             </Grid.Row>
-            <Grid.Row style={{paddingTop: '0.5em'}}>Price: ${price}</Grid.Row>
+            <Grid.Row style={{paddingTop: '0.5em'}}>
+              Price: {priceFormat(price)}
+            </Grid.Row>
             <Grid.Row style={{paddingTop: '0.5em'}}>
               Quantity: {productStatus}
             </Grid.Row>

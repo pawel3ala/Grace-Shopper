@@ -35,7 +35,7 @@ export const getAverageRating = reviews => {
     tot += review.stars
     return tot
   }, 0)
-  return (total / reviews.length).toPrecision(2)
+  return Math.round(total / reviews.length)
 }
 
 export const priceFormat = price => {

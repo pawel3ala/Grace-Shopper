@@ -46,7 +46,10 @@ export const Cart = props => {
     props.history.push('/catalog')
   }
 
-  const cart = useSelector(({cart}) => cart) || []
+  const cartProp = useSelector(({cart}) => cart) || []
+  let cartAll
+  cartProp === undefined ? (cartAll = [0]) : (cartAll = cartProp)
+  let cart = cartAll.filter(cartItem => cartItem.orderId === null)
   return cart.length > 0 ? (
     <Grid padded centered>
       <Grid.Row as="h1" style={{paddingLeft: '0.5em'}}>
@@ -55,8 +58,8 @@ export const Cart = props => {
       {cart.map(item => {
         return (
           <Grid.Row key={item.productId}>
-            <Grid.Column width={4}>
-              <Image src={item.image} />
+            <Grid.Column width={2}>
+              <Image src={item.image} size="small" bordered circular />
             </Grid.Column>
             <Grid.Column width={3}>
               <Grid.Row>{item.name}</Grid.Row>
