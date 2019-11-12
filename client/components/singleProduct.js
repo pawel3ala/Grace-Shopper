@@ -12,6 +12,7 @@ import SingleReview from './singleReview'
 import AddReview from './addReview'
 import {getAverageRating} from '../../script/helperFuncs'
 import {Grid, Image, Icon, Rating} from 'semantic-ui-react'
+import EditProduct from './editProduct'
 
 class unconnectedSingleProduct extends React.Component {
   constructor() {
@@ -100,6 +101,15 @@ class unconnectedSingleProduct extends React.Component {
               </form>
             </Grid.Row>
           </Grid.Column>
+        </Grid.Row>
+        <Grid.Row>
+          <EditProduct
+            key={name}
+            name={name}
+            price={price}
+            quantity={quantity}
+            description={description}
+          />
         </Grid.Row>
         <Grid.Row as="h2"> Reviews</Grid.Row>
         {reviews.map(review => {
