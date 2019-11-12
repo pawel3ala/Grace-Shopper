@@ -83,7 +83,7 @@ class UnreduxedBillAddressForm extends React.Component {
       : (billForm = (
           <div className="orderForm">
             <form onSubmit={this.props.handleSubmit}>
-              {this.state.updateBill ? (
+              {this.props.updateBill ? (
                 <div>
                   <label htmlFor="billName">Name:</label>
                   <Field
@@ -159,7 +159,7 @@ class UnreduxedBillAddressForm extends React.Component {
                 <button type="submit">Confirm Changes</button>
               ) : (
                 <button type="button" onClick={this.props.handleBillUpdate}>
-                  Edit Billing Address
+                  Change Billing Address
                 </button>
               )}
             </form>

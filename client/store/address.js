@@ -26,14 +26,14 @@ export default addressReducer
 export const fetchAddress = () => {
   return async dispatch => {
     try {
-      const {data} = await Axios.get('/api/address')
+      const {data} = await Axios.get('/api/users/address')
       dispatch(getAddress(data))
     } catch (err) {
       console.error(err)
     }
   }
 }
-export const addAnAddress = address => {
+export const addAddress = address => {
   return async () => {
     try {
       await Axios.post('/api/address', address)

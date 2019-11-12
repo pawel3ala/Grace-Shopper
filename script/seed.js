@@ -118,7 +118,7 @@ async function seed() {
     newMerchant.setCountry(allCountries[i])
   }
   //Creates random Addresses
-  const shipTypes = ['BILL_TO', 'SHIP_TO']
+  // const shipTypes = ['BILL_TO', 'SHIP_TO']
   const aptSuite = ['Apt', 'Suite']
   for (let i = 0; i < 120; i++) {
     let newAddress = await Address.create({

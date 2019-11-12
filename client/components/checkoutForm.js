@@ -1,28 +1,11 @@
+/* eslint-disable max-statements */
 /* eslint-disable camelcase */
 import React from 'react'
-import {connect} from 'react-redux'
-import {CheckoutCart} from './index'
+import {CheckoutCart, UserHome} from './index'
 import ShipAddressForm from './shipAddressFormRedux'
 import BillAddressForm from './billAddressFormRedux'
 import {CardElement, injectStripe} from 'react-stripe-elements'
 import Axios from 'axios'
-
-// const billAddress = {
-//   name: 'Test Name',
-//   line1: '123 Anywhere St.',
-//   line2: 'Apt 3',
-//   city: 'Townsville',
-//   state: 'Ohio',
-//   zip: '12345'
-// }
-// const shipAddress = {
-//   name: 'Test Name',
-//   line1: '123 Anywhere St.',
-//   line2: 'Apt 3',
-//   city: 'Townsville',
-//   state: 'Ohio',
-//   zip: '12345'
-// }
 
 class CheckoutForm extends React.Component {
   constructor() {
@@ -62,23 +45,120 @@ class CheckoutForm extends React.Component {
   }
   async handleOrderSubmit(event) {
     event.preventDefault()
-    try {
-      let {token} = await this.props.stripe.createToken({
-        name: this.state.billName
-      })
-      let amount = this.props.orderTotal / 100
-      const {data} = await Axios.post('/api/payment', {token, amount})
-      if (data.status) {
-        this.setState({
-          orderFail: false
-        })
+    // Checks if user/guest has an address to start with
+    if (this.props.addresses.length === 0) {
+      let tokenObj = {}
+      // Check if shipping/billing are the same
+      if (!this.state.enterBilling) {
+        // If the same, use shipping name for token
+        tokenObj = {
+          name: this.state.shipAddressState.shipName
+        }
       } else {
-        this.setState({
-          orderFail: true
-        })
+        // If not the same, use billing name for token
+        tokenObj = {
+          name: this.state.billAddressState.billName
+        }
       }
-    } catch (err) {
-      throw err
+      try {
+        let {token} = await this.props.stripe.createToken(tokenObj)
+        let amount = this.props.orderTotal / 100
+        // Send payment to Strip
+        const {data} = await Axios.post('/api/payment', {token, amount})
+        if (data.status) {
+          // If prior payment attempt failed, reset orderFail bool to false
+          this.setState({
+            orderFail: false
+          })
+          // Now that order is successful, we create addresses for either guest or new user
+          // Check if shipping/billing are the same
+          if (!this.state.enterBilling) {
+            // If the same, use shipping info for both addressses
+            const orderObj = {
+              email: this.state.email,
+              shipAddress: {
+                name: this.state.shipAddressState.shipName,
+                street1: this.state.shipAddressState.shipStreet1,
+                street2: this.state.shipAddressState.shipStreet2,
+                city: this.state.shipAddressState.shipCity,
+                state: this.state.shipAddressState.shipState,
+                zip: this.state.shipAddressState.shipZip,
+                type: 'SHIP_TO'
+              },
+              billAddress: {
+                name: this.state.shipAddressState.shipName,
+                street1: this.state.shipAddressState.shipStreet1,
+                street2: this.state.shipAddressState.shipStreet2,
+                city: this.state.shipAddressState.shipCity,
+                state: this.state.shipAddressState.shipState,
+                zip: this.state.shipAddressState.shipZip,
+                type: 'BILL_TO'
+              },
+              totalPrice: this.props.orderTotal
+            }
+            const newOrder = await Axios.post('/api/order', orderObj)
+            const orderId = newOrder.dataValues.id
+          } else {
+            // If the same, use respective addressses
+            const orderObj = {
+              email: this.state.email,
+              shipAddress: {
+                name: this.state.shipAddressState.shipName,
+                street1: this.state.shipAddressState.shipStreet1,
+                street2: this.state.shipAddressState.shipStreet2,
+                city: this.state.shipAddressState.shipCity,
+                state: this.state.shipAddressState.shipState,
+                zip: this.state.shipAddressState.shipZip,
+                type: 'SHIP_TO'
+              },
+              billAddress: {
+                name: this.state.billAddressState.billName,
+                street1: this.state.billAddressState.billStreet1,
+                street2: this.state.billAddressState.billStreet2,
+                city: this.state.billAddressState.billCity,
+                state: this.state.billAddressState.billState,
+                zip: this.state.billAddressState.billZip,
+                type: 'BILL_TO'
+              },
+              totalPrice: this.props.orderTotal
+            }
+            const newOrder = await Axios.post('/api/order', orderObj)
+            const orderId = newOrder.dataValues.id
+          }
+        } else {
+          // If payment fails, set orderFail bool to true to display message
+          this.setState({
+            orderFail: true
+          })
+        }
+      } catch (err) {
+        throw err
+      }
+    } else {
+      // Dealing with an authenticated user, they have a billing address. Get it.
+      const billAddress = this.props.addresses.filter(
+        address => address.type === 'BILL_TO'
+      )
+      // Use billAddress for token name
+      const tokenObj = {
+        name: billAddress[0].name
+      }
+      try {
+        let {token} = await this.props.stripe.createToken(tokenObj)
+        let amount = this.props.orderTotal / 100
+        const {data} = await Axios.post('/api/payment', {token, amount})
+        if (data.status) {
+          this.setState({
+            orderFail: false
+          })
+        } else {
+          this.setState({
+            orderFail: true
+          })
+        }
+      } catch (err) {
+        throw err
+      }
     }
   }
   handleEmailChange() {
@@ -161,7 +241,8 @@ class CheckoutForm extends React.Component {
   }
   render() {
     let addresses
-    this.props.addresses === undefined
+    this.props.addresses === undefined ||
+    typeof this.props.addresses === 'string'
       ? (addresses = [0])
       : (addresses = this.props.addresses)
     const shipAddress = addresses.filter(address => address.type === 'SHIP_TO')
@@ -208,12 +289,16 @@ class CheckoutForm extends React.Component {
           <br />
           <CheckoutCart />
           <button type="submit">Confirm Order</button>
-          <div>
-            Order Total: ${this.props.orderTotal.slice(
-              0,
-              this.props.orderTotal.length - 2
-            )}.{this.props.orderTotal.slice(this.props.orderTotal.length - 2)}
-          </div>
+          {this.props.orderTotal === '0' ? (
+            <div>Order Total: $0</div>
+          ) : (
+            <div>
+              Order Total: ${this.props.orderTotal.slice(
+                0,
+                this.props.orderTotal.length - 2
+              )}.{this.props.orderTotal.slice(this.props.orderTotal.length - 2)}
+            </div>
+          )}
           {this.state.orderFail ? (
             <div>
               <h3>

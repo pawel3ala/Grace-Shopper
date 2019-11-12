@@ -3,13 +3,13 @@ import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
 import {logout} from '../store'
-import {Grid, Button, Icon} from 'semantic-ui-react'
+import {Grid, Icon} from 'semantic-ui-react'
 
 const Navbar = ({handleClick, isLoggedIn}) => (
   <div>
     <h1>Grapefruit</h1>
     <div className="slogan">
-      <h4>"They're Gr-gr-grapefruit!!"</h4>
+      <h4>"They're Gr-r-reat Fruit!!"</h4>
       <div id="tm">
         <h6>TM</h6>
       </div>
