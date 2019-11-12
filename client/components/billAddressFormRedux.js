@@ -8,7 +8,6 @@ class UnreduxedBillAddressForm extends React.Component {
     this.handleChange = this.handleChange.bind(this)
   }
   handleChange() {
-    console.log('change')
     this.props.handleBillChange(event.target.name, event.target.value)
   }
   render() {

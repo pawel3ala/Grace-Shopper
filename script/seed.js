@@ -66,7 +66,7 @@ async function seed() {
     let newProduct = Product.create({
       name: `${faker.commerce.productName()}`,
       quantity: Math.floor(Math.random() * 100),
-      price: Number(faker.commerce.price()),
+      price: Number(faker.commerce.price()) + 100,
       image: `https://source.unsplash.com/collection/${i}/480x480`,
       description: faker.lorem.paragraph()
     })

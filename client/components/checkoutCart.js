@@ -8,7 +8,7 @@ import {
 } from '../store/cart'
 import {connect} from 'react-redux'
 
-class unconnectedCheckoutCart extends React.Component {
+class UnconnectedCheckoutCart extends React.Component {
   constructor() {
     super()
     this.handleChange = this.handleChange.bind(this)
@@ -27,8 +27,13 @@ class unconnectedCheckoutCart extends React.Component {
     this.props.fetchItems()
   }
   render() {
-    let cart
-    this.props.cart === undefined ? (cart = [0]) : (cart = this.props.cart)
+    let cartAll
+    this.props.cart === undefined
+      ? (cartAll = [0])
+      : (cartAll = this.props.cart)
+    let cart = cartAll.filter(cartItem => {
+      return cartItem.orderId === null
+    })
     return (
       <div className="cartContainer">
         <h3>Review Items</h3>
@@ -92,5 +97,5 @@ const mapDispatchToProps = dispatch => {
 }
 
 export const CheckoutCart = connect(mapStateToProps, mapDispatchToProps)(
-  unconnectedCheckoutCart
+  UnconnectedCheckoutCart
 )

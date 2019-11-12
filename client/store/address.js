@@ -54,11 +54,9 @@ export const deleteItem = address => {
 export const changeAddress = address => {
   return async () => {
     try {
-      console.log('got here')
       if (address.length === 2) {
         const shipAddress = address[0]
         const billAddress = address[1]
-        console.log('thunk billAddress', billAddress)
         await Axios.put(`/api/address/ship`, shipAddress)
         await Axios.put(`/api/address/bill`, billAddress)
       } else if (address[0].type === 'SHIP_TO') {
