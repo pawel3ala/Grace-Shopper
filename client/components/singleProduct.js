@@ -24,13 +24,17 @@ class unconnectedSingleProduct extends React.Component {
 
   async handleSubmit(event) {
     event.preventDefault()
-    const itemObj = {
-      productId: this.props.match.params.productId,
-      quantity: event.target.children[0].value
+    if (event.target.children[0].value > this.props.product.quantity) {
+      alert('Not enough stock')
+    } else {
+      const itemObj = {
+        productId: this.props.match.params.productId,
+        quantity: event.target.children[0].value
+      }
+      await this.props.addToCart(itemObj)
+      await this.props.fetchCart()
+      this.props.history.push('/cart')
     }
-    await this.props.addToCart(itemObj)
-    await this.props.fetchCart()
-    this.props.history.push('/cart')
   }
 
   async addReview(review) {
