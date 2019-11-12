@@ -27,3 +27,22 @@ router.post('/', async (req, res, next) => {
     next(err)
   }
 })
+
+router.get('/', async (req, res, next) => {
+  try {
+    if (!req.user) {
+      throw new Error('Not available for unauthenticated users')
+    } else if (req.user.isAdmin) {
+      const orders = await Order.findAll({})
+      res.json(orders)
+    } else {
+      const {user} = req
+      const orders = await Order.findAll({
+        where: {userId: user.id}
+      })
+      res.json(orders)
+    }
+  } catch (err) {
+    next(err)
+  }
+})
