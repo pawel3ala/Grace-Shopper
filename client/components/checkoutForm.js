@@ -98,21 +98,25 @@ class CheckoutForm extends React.Component {
                 zip: this.state.shipAddressState.shipZip,
                 type: 'BILL_TO'
               },
-              totalPrice: this.props.orderTotal
+              totalPrice: this.props.orderTotal,
+              cart: this.props.cart
             }
             const newOrder = await Axios.post('/api/order', orderObj)
             const orderId = newOrder.data.id
+            const userId = newOrder.data.userId
             this.props.cart.map(async function(product) {
+              console.log(product)
+              const quantity = product.productQuantity - product.quantity
               const orderItemObj = {
+                userId,
+                productId: product.productId,
                 quantity: product.quantity,
                 price: product.price,
-                productId: product.productId,
                 orderId
               }
-              await Axios.post('/api/orderItem', orderItemObj)
+              this.props.createOrderItem(orderItemObj)
+              await Axios.put(`/${product.productId}/orderQty`, {quantity})
             })
-            // Currently causing a constant stream of calls to server
-            this.props.clearCart()
           } else {
             // If the same, use respective addressses
             let thisEmail = ''
@@ -145,14 +149,14 @@ class CheckoutForm extends React.Component {
             }
             const newOrder = await Axios.post('/api/order', orderObj)
             const orderId = newOrder.data.id
-            this.props.cart.map(async function(product) {
+            this.props.cart.map(product => {
               const orderItemObj = {
+                productId: product.productId,
                 quantity: product.quantity,
                 price: product.price,
-                productId: product.productId,
                 orderId
               }
-              await Axios.post('/api/orderItem', orderItemObj)
+              this.props.createOrderItem(orderItemObj)
             })
           }
         } else {
@@ -196,14 +200,14 @@ class CheckoutForm extends React.Component {
           }
           const newOrder = await Axios.post('/api/order', orderObj)
           const orderId = newOrder.data.id
-          this.props.cart.map(async function(product) {
+          this.props.cart.map(product => {
             const orderItemObj = {
+              productId: product.productId,
               quantity: product.quantity,
               price: product.price,
-              productId: product.productId,
               orderId
             }
-            await Axios.post('/api/orderItem', orderItemObj)
+            this.props.createOrderItem(orderItemObj)
           })
         } else {
           this.setState({
@@ -299,7 +303,6 @@ class CheckoutForm extends React.Component {
     })
   }
   render() {
-    // console.log(this.props.cart)
     let addresses
     this.props.addresses === undefined ||
     typeof this.props.addresses === 'string'

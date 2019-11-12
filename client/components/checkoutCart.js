@@ -27,8 +27,14 @@ class unconnectedCheckoutCart extends React.Component {
     this.props.fetchItems()
   }
   render() {
-    let cart
-    this.props.cart === undefined ? (cart = [0]) : (cart = this.props.cart)
+    let cartAll
+    this.props.cart === undefined
+      ? (cartAll = [0])
+      : (cartAll = this.props.cart)
+    let cart = cartAll.filter(cartItem => {
+      console.log(cartItem.orderId === null)
+      return cartItem.orderId === null
+    })
     return (
       <div className="cartContainer">
         <h3>Review Items</h3>

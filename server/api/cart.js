@@ -47,8 +47,10 @@ router.get('/', async (req, res, next) => {
       const cart = products.map(p => ({
         ...p.get(),
         quantity: +cartItems.find(c => c.productId === p.get().productId)
-          .quantity
+          .quantity,
+        orderId: +cartItems.find(c => c.productId === p.get().productId).orderId
       }))
+      console.log('cart from server', cart)
       res.json(cart)
     }
   } catch (err) {
@@ -78,7 +80,11 @@ router.post('/', async (req, res, next) => {
             ['quantity', 'productQuantity']
           ]
         })
-        req.session.cart.push({...newProduct.get(), quantity: +quantity})
+        req.session.cart.push({
+          ...newProduct.get(),
+          quantity: +quantity,
+          orderId: null
+        })
       }
       res.json(req.session.cart)
     } else {
@@ -114,6 +120,36 @@ router.put('/', async (req, res, next) => {
       const {user: {id: userId}} = req
       const [_, [cartItem]] = await CartItems.update(
         {quantity},
+        {
+          where: {userId, productId},
+          returning: true
+        }
+      )
+      if (!cartItem) throw new Error('Product not found')
+      res.json(cartItem)
+    }
+  } catch (err) {
+    next(err)
+  }
+})
+
+// PUT api/cart/order (updating cart to orderItem)
+router.put('/order', async (req, res, next) => {
+  // edge cases:
+  //   -can't order more than what is in stock
+  //   -if someone orders something that depletes the stock of a given item, all users with that
+  //   item in their cart can't order it
+  try {
+    const {body: {price, orderId, productId}} = req
+    if (!req.user) {
+      // handle unauthenticated user w/ cookie
+      await CartItems.create(req.body)
+      req.session.cart = []
+      res.status(200).end()
+    } else {
+      const {user: {id: userId}} = req
+      const [_, [cartItem]] = await CartItems.update(
+        {price, orderId},
         {
           where: {userId, productId},
           returning: true

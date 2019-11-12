@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const {Order, User, Address, OrderItems} = require('../db/models')
+const {Order, User, Address, Product} = require('../db/models')
 module.exports = router
 
 // POST api/order (adding new order)
@@ -11,10 +11,19 @@ router.post('/', async (req, res, next) => {
       // handle unauthenticated user w/ cookie
       const strEmail = email[0]
       const [{dataValues: {id: userID}}] = await User.findOrCreate({
-        where: {email: strEmail}
+        where: {email: strEmail},
+        defaults: {
+          fullName: billAddress.name,
+          guestUser: true
+        }
       })
       shipAddress.userId = userID
       billAddress.userId = userID
+      this.props.cart.map(async function(product) {
+        console.log(product)
+        const quantity = product.productQuantity - product.quantity
+        await Product.update(`/${product.productId}/orderQty`, {quantity})
+      })
       const userId = userID
       const shipData = await Address.create(shipAddress)
       const shipToAddressId = shipData.dataValues.id
@@ -37,6 +46,7 @@ router.post('/', async (req, res, next) => {
         where: {userId, type: 'SHIP_TO'},
         defaults: {...shipAddress}
       })
+      console.log('newShip', newShip)
       const newBill = await Address.findOrCreate({
         where: {userId, type: 'BILL_TO'},
         defaults: {...billAddress}
