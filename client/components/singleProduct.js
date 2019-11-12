@@ -10,7 +10,8 @@ import {
 import {addAnItem, fetchItems} from '../store/cart'
 import SingleReview from './singleReview'
 import AddReview from './addReview'
-import {getAverageRating} from '../../script/helperFuncs'
+import {getAverageRating, priceFormat} from '../../script/helperFuncs'
+import {Grid, Image, Rating} from 'semantic-ui-react'
 
 class unconnectedSingleProduct extends React.Component {
   constructor() {
@@ -55,47 +56,73 @@ class unconnectedSingleProduct extends React.Component {
       quantity > 20
         ? 'In Stock'
         : quantity > 0 ? 'Low in Stock' : 'Out of Stock'
+    let averageRating = getAverageRating(reviews)
     return (
-      <div className="singleProduct">
-        <img src={image} />
-        <div className="productInfo">
-          <div className="singleProductName">{name}</div>
-          <div>
-            Rating:{' '}
-            {getAverageRating(reviews) > 0
-              ? getAverageRating(reviews)
-              : 'No reviews'}
-          </div>
-          <div>Price: ${price}</div>
-          <div>Quantity: {productStatus}</div>
-          <div>description: {description}</div>
-        </div>
-        <form onSubmit={() => this.handleSubmit(event, price)}>
-          <select name="quantityAddToCart">
-            <option>1</option>
-            <option>2</option>
-            <option>3</option>
-            <option>4</option>
-          </select>
-          <button type="submit">Add to Cart</button>
-        </form>
-        <div className="productReviewsContainer">
-          <div className="reviewsHeader">Reviews</div>
-          {reviews.map(review => {
-            return (
-              <SingleReview
-                key={review.id}
-                review={review}
-                editReview={this.props.editReview}
-                fetchProduct={this.props.fetchProduct}
-                productId={this.props.match.params.productId}
-                userId={this.props.user.id}
-              />
-            )
-          })}
-          {this.props.user.id ? <AddReview addReview={this.addReview} /> : null}
-        </div>
-      </div>
+      <Grid centered>
+        <Grid.Row>
+          <Grid.Column width={5}>
+            <Image src={image} rounded bordered />
+          </Grid.Column>
+          <Grid.Column width={5}>
+            <Grid.Row as="h2">{name}</Grid.Row>
+            <Grid.Row style={{paddingTop: '0.5em'}}>
+              Rating:{' '}
+              {/*Need key prop to force Rating component to re render after data is fetched */}
+              {getAverageRating(reviews) > 0 ? (
+                <Rating
+                  key={averageRating}
+                  defaultRating={averageRating}
+                  icon="star"
+                  maxRating={5}
+                  disabled
+                />
+              ) : (
+                <Rating
+                  key={averageRating}
+                  defaultRating={0}
+                  icon="star"
+                  maxRating={5}
+                  disabled
+                />
+              )}
+            </Grid.Row>
+            <Grid.Row style={{paddingTop: '0.5em'}}>
+              Price: {priceFormat(price)}
+            </Grid.Row>
+            <Grid.Row style={{paddingTop: '0.5em'}}>
+              Quantity: {productStatus}
+            </Grid.Row>
+            <Grid.Row style={{paddingTop: '0.5em'}}>
+              Description: {description}
+            </Grid.Row>
+            <Grid.Row style={{paddingTop: '3.5em'}}>
+              <form onSubmit={() => this.handleSubmit(event)}>
+                <select name="quantityAddToCart">
+                  <option>1</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                </select>
+                <button type="submit">Add to Cart</button>
+              </form>
+            </Grid.Row>
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row as="h2"> Reviews</Grid.Row>
+        {reviews.map(review => {
+          return (
+            <SingleReview
+              key={review.id}
+              review={review}
+              editReview={this.props.editReview}
+              fetchProduct={this.props.fetchProduct}
+              productId={this.props.match.params.productId}
+              userId={this.props.user.id}
+            />
+          )
+        })}
+        {this.props.user.id ? <AddReview addReview={this.addReview} /> : null}
+      </Grid>
     )
   }
 }

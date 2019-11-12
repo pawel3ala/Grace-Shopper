@@ -34,6 +34,10 @@ const User = db.define('user', {
   guestUser: {
     type: Sequelize.BOOLEAN,
     default: false
+  },
+  isAdmin: {
+    type: Sequelize.BOOLEAN,
+    default: false
   }
 })
 
