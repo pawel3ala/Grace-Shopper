@@ -6,7 +6,7 @@ module.exports = router
 router.post('/', async (req, res, next) => {
   // body: {shipToAddressId, billToAddressId, email (based on auth), totalPrice}
   try {
-    const {body: {email, shipAddress, billAddress, totalPrice}} = req
+    const {body: {email, shipAddress, billAddress, totalPrice, cart}} = req
     if (!req.user) {
       // handle unauthenticated user w/ cookie
       const strEmail = email[0]
@@ -19,10 +19,12 @@ router.post('/', async (req, res, next) => {
       })
       shipAddress.userId = userID
       billAddress.userId = userID
-      this.props.cart.map(async function(product) {
-        console.log(product)
-        const quantity = product.productQuantity - product.quantity
-        await Product.update(`/${product.productId}/orderQty`, {quantity})
+      cart.map(async function(product) {
+        const newQuantity = product.productQuantity - product.quantity
+        await Product.update(
+          {quantity: newQuantity},
+          {where: {id: product.productId}}
+        )
       })
       const userId = userID
       const shipData = await Address.create(shipAddress)
@@ -53,6 +55,13 @@ router.post('/', async (req, res, next) => {
       })
       const shipToAddressId = shipAddress.id
       const billToAddressId = billAddress.id
+      cart.map(async function(product) {
+        const newQuantity = product.productQuantity - product.quantity
+        await Product.update(
+          {quantity: newQuantity},
+          {where: {id: product.productId}}
+        )
+      })
       const order = await Order.create({
         shipToAddressId,
         billToAddressId,

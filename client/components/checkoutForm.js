@@ -104,9 +104,7 @@ class CheckoutForm extends React.Component {
             const newOrder = await Axios.post('/api/order', orderObj)
             const orderId = newOrder.data.id
             const userId = newOrder.data.userId
-            this.props.cart.map(async function(product) {
-              console.log(product)
-              const quantity = product.productQuantity - product.quantity
+            this.props.cart.map(product => {
               const orderItemObj = {
                 userId,
                 productId: product.productId,
@@ -115,7 +113,6 @@ class CheckoutForm extends React.Component {
                 orderId
               }
               this.props.createOrderItem(orderItemObj)
-              await Axios.put(`/${product.productId}/orderQty`, {quantity})
             })
           } else {
             // If the same, use respective addressses
@@ -145,12 +142,15 @@ class CheckoutForm extends React.Component {
                 zip: this.state.billAddressState.billZip,
                 type: 'BILL_TO'
               },
-              totalPrice: this.props.orderTotal
+              totalPrice: this.props.orderTotal,
+              cart: this.props.cart
             }
             const newOrder = await Axios.post('/api/order', orderObj)
             const orderId = newOrder.data.id
+            const userId = newOrder.data.userId
             this.props.cart.map(product => {
               const orderItemObj = {
+                userId,
                 productId: product.productId,
                 quantity: product.quantity,
                 price: product.price,
@@ -196,7 +196,8 @@ class CheckoutForm extends React.Component {
             billAddress: {
               id: billAddress.id
             },
-            totalPrice: this.props.orderTotal
+            totalPrice: this.props.orderTotal,
+            cart: this.props.cart
           }
           const newOrder = await Axios.post('/api/order', orderObj)
           const orderId = newOrder.data.id
