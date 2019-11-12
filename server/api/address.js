@@ -35,16 +35,16 @@ router.post('/', async (req, res, next) => {
   // edge cases:
   //   ???????
   try {
-    console.log(req)
-    const {body: {productId, quantity}} = req
     if (!req.user) {
-      // handle unauthenticated user w/ cookie
-      req.session.address.push({})
-      res.json(req.session.address)
+      throw new Error('No!')
     } else {
       const {user: {id: userId}} = req
-      const address = await Address.create({productId, quantity, userId})
-      res.json(address)
+      const newShipAddress = {...req.body[0], userId}
+      const newBillAddress = {...req.body[1], userId}
+      const address = await Address.create(newShipAddress)
+      const address2 = await Address.create(newBillAddress)
+      const addressObj = {address, address2}
+      res.json(addressObj)
     }
   } catch (err) {
     next(err)

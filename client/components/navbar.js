@@ -8,7 +8,7 @@ const Navbar = ({handleClick, isLoggedIn}) => (
   <div>
     <h1>Grapefruit</h1>
     <div className="slogan">
-      <h4>"They're Gr-gr-grapefruit!!"</h4>
+      <h4>"They're Gr-r-reat Fruit!!"</h4>
       <div id="tm">
         <h6>TM</h6>
       </div>
@@ -21,6 +21,7 @@ const Navbar = ({handleClick, isLoggedIn}) => (
           <a href="#" onClick={handleClick}>
             Logout
           </a>
+          <Link to="/order">Orders</Link>
         </div>
       ) : (
         <div>
