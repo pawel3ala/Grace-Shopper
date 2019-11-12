@@ -1,7 +1,7 @@
 import React from 'react'
-import {useSelector, useDispatch} from 'react-redux'
-import {Field, reduxForm} from 'redux-form'
-import {Input, List, Sidebar} from 'semantic-ui-react'
+import {useSelector} from 'react-redux'
+import {Field, FormSection, reduxForm} from 'redux-form'
+import {Input, List, Rating, Grid, Sidebar} from 'semantic-ui-react'
 
 const createRenderer = render => ({
   input,
@@ -16,12 +16,12 @@ const createRenderer = render => ({
   </div>
 )
 
-const RenderInput = createRenderer((input, label) => (
-  <Input {...input} placeholder={label} />
+const RenderInput = createRenderer((input, label, {style}) => (
+  <Input {...input} style={style} placeholder={label} />
 ))
 
 const RenderFilter = createRenderer(({onChange, value}, label, {data}) => (
-  <List selection divided verticalAlign="middle">
+  <List animated selection divided verticalAlign="middle">
     {data.map(({id, name}) => (
       <List.Item key={id} onClick={() => onChange(id)}>
         <List.Header>{name}</List.Header>
@@ -30,19 +30,34 @@ const RenderFilter = createRenderer(({onChange, value}, label, {data}) => (
   </List>
 ))
 
-// const RenderSlider = createRenderer((input, label, ...rest) =>
-//   console.log(rest)
-// )
+const RenderRating = createRenderer(({onChange, value, name}, label) => (
+  <Rating
+    size="huge"
+    name={name}
+    label={label}
+    rating={value}
+    maxRating={5}
+    icon="star"
+    onRate={(evt, data) => onChange(data.rating)}
+  />
+))
+
+// const RenderRange = createRenderer((input, label) => console.log('hi'))
+const RangeComp = () => (
+  <Grid>
+    {[
+      {name: 'lte', label: 'Price Low'},
+      {name: 'gte', label: 'Price High'}
+    ].map(p => (
+      <Grid.Column key={p.name} width={4}>
+        <Field style={{width: '7rem'}} {...p} component={RenderInput} />
+      </Grid.Column>
+    ))}
+  </Grid>
+)
 
 const CatalogSidebar = ({handleSubmit, submitting}) => {
-  const dispatch = useDispatch()
-  const categories = useSelector(({categories}) => categories) || [
-    {id: 1, name: 'Cat'},
-    {id: 2, name: 'Dog'},
-    {id: 3, name: 'Lion'},
-    {id: 4, name: 'Gurturde'}
-  ]
-
+  const categories = useSelector(({categories}) => categories) || []
   return (
     <div style={{height: '100%', width: 300}}>
       <form onSubmit={handleSubmit}>
@@ -54,6 +69,10 @@ const CatalogSidebar = ({handleSubmit, submitting}) => {
           component={RenderFilter}
           data={categories}
         />
+        <br />
+        <FormSection name="price" label="Price Range" component={RangeComp} />
+        <br />
+        <Field name="review" label="Average Rating" component={RenderRating} />
       </form>
     </div>
   )
