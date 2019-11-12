@@ -19,8 +19,8 @@ router.get('/', async (req, res, next) => {
 // GET logged in user's addresses at /api/users/address
 router.get('/address', async (req, res, next) => {
   try {
-    // const {body: {user}} = req
-    const user = await User.findByPk(1)
+    const {user} = req
+    // const user = await User.findByPk(1)
     if (!req.user)
       res
         .status(200)

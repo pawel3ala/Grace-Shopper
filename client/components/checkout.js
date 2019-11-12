@@ -6,7 +6,12 @@ import {
   changeItem,
   clearAllItems
 } from '../store/cart'
-import {fetchAddress, changeAddress, getAddress} from '../store/address'
+import {
+  fetchAddress,
+  changeAddress,
+  getAddress,
+  addAddress
+} from '../store/address'
 import CheckoutForm from './checkoutForm'
 import {connect} from 'react-redux'
 import {StripeProvider, Elements} from 'react-stripe-elements'
@@ -61,6 +66,7 @@ class unconnectedCheckout extends React.Component {
               <CheckoutForm
                 cart={cart}
                 orderTotal={displayOrderTotal}
+                addAddress={this.props.addAddress}
                 getAddress={this.props.getAddress}
                 changeAddress={this.props.changeAddress}
                 addresses={this.props.addresses}
@@ -89,6 +95,7 @@ const mapDispatchToProps = dispatch => {
     changeItem: item => dispatch(changeItem(item)),
     clearCart: () => dispatch(clearAllItems()),
     getAddress: address => dispatch(getAddress(address)),
+    addAddress: address => dispatch(addAddress(address)),
     fetchAddress: () => dispatch(fetchAddress()),
     changeAddress: address => dispatch(changeAddress(address))
   }

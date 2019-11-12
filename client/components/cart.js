@@ -7,6 +7,7 @@ import {
   clearAllItems
 } from '../store/cart'
 import {useDispatch, useSelector} from 'react-redux'
+import {Link} from 'react-router-dom'
 
 export const Cart = props => {
   const dispatch = useDispatch()
@@ -32,7 +33,6 @@ export const Cart = props => {
     }
     dispatch(deleteItem(itemObj))
   }
-
   const cart = useSelector(({cart}) => cart) || []
   return (
     <div className="cartContainer">
@@ -63,7 +63,9 @@ export const Cart = props => {
             )
           })
         : 'Cart is Empty'}
-      <button type="button">Proceed to Checkout</button>
+      <Link to="/checkout">
+        <button type="button">Proceed to Checkout</button>
+      </Link>
     </div>
   )
 }

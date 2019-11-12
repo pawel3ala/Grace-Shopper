@@ -7,7 +7,7 @@ const stripe = new stripeLoader(process.env.STRIPE_SECRET)
 
 const charge = (tokenId, amt) => {
   return stripe.charges.create({
-    amount: amt * 100,
+    amount: Math.round(amt * 100),
     currency: 'usd',
     source: tokenId,
     description: 'Statement Description'
@@ -18,7 +18,6 @@ const charge = (tokenId, amt) => {
 router.post('/', async (req, res, next) => {
   // edge cases:
   //   ??????
-
   try {
     // user doesn't matter for Stripe
     const {body: {token, amount}} = req
