@@ -3,7 +3,8 @@ const db = require('../db')
 
 const CartItem = db.define('cart_item', {
   quantity: Sequelize.STRING,
-  price: Sequelize.INTEGER
+  price: Sequelize.INTEGER,
+  orderId: Sequelize.INTEGER
 })
 
 module.exports = CartItem
