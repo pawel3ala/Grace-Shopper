@@ -77,7 +77,13 @@ class unconnectedSingleProduct extends React.Component {
                   disabled
                 />
               ) : (
-                'No reviews'
+                <Rating
+                  key={averageRating}
+                  defaultRating={0}
+                  icon="star"
+                  maxRating={5}
+                  disabled
+                />
               )}
             </Grid.Row>
             <Grid.Row style={{paddingTop: '0.5em'}}>

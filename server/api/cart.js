@@ -12,7 +12,10 @@ router.get('/', async (req, res, next) => {
     if (!req.user) {
       // handle unauthenticated user w/ cookie
       const {session: {cart = []}} = req
-      res.json(cart)
+      let newCart = cart.map(item => {
+        return {...item, orderId: null}
+      })
+      res.json(newCart)
     } else {
       const {user} = req
       const productsPromise = Product.findAll({
@@ -48,7 +51,7 @@ router.get('/', async (req, res, next) => {
         ...p.get(),
         quantity: +cartItems.find(c => c.productId === p.get().productId)
           .quantity,
-        orderId: +cartItems.find(c => c.productId === p.get().productId).orderId
+        orderId: null
       }))
       res.json(cart)
     }

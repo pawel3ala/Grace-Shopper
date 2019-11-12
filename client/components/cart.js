@@ -3,12 +3,12 @@ import {
   fetchItems,
   addAnItem, // do we need this as part of the cart?
   deleteItem,
-  changeItem,
-  clearAllItems
+  changeItem
 } from '../store/cart'
 import {useDispatch, useSelector} from 'react-redux'
 import {priceFormat} from '../../script/helperFuncs'
 import {Grid, Image, Button} from 'semantic-ui-react'
+import {Link} from 'react-router-dom'
 
 export const Cart = props => {
   const dispatch = useDispatch()
@@ -59,12 +59,16 @@ export const Cart = props => {
         return (
           <Grid.Row key={item.productId}>
             <Grid.Column width={2}>
-              <Image src={item.image} size="small" bordered circular />
+              <Link to={`/product/${item.productId}`}>
+                <Image src={item.image} size="small" bordered circular />
+              </Link>
             </Grid.Column>
             <Grid.Column width={3}>
-              <Grid.Row>{item.name}</Grid.Row>
-              <Grid.Row>Price: {priceFormat(item.price)}</Grid.Row>
               <Grid.Row>
+                <Link to={`/product/${item.productId}`}>{item.name}</Link>
+              </Grid.Row>
+              <Grid.Row>Price: {priceFormat(item.price)}</Grid.Row>
+              <Grid.Row verticalAlign="middle">
                 Quantity:{' '}
                 <form>
                   <input
