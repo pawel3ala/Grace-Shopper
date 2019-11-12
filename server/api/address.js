@@ -56,7 +56,6 @@ router.put('/ship', async (req, res, next) => {
   // edge cases:
   //   ??????????
   try {
-    console.log(req.body)
     // const {body: {productId, quantity}} = req
     if (!req.user) {
       throw new Error("Y'ain't s'posed to be here! Go on! Git!")
@@ -79,7 +78,6 @@ router.put('/bill', async (req, res, next) => {
   // edge cases:
   //   ??????????
   try {
-    console.log(req.body)
     // const {body: {productId, quantity}} = req
     if (!req.user) {
       throw new Error("Y'ain't s'posed to be here! Go on! Git!")
@@ -103,7 +101,6 @@ router.delete('/', async (req, res, next) => {
     if (!req.user) {
       // handle unauthenticated user w/ cookie
       req.session.cart = req.session.cart.filter(d => {
-        console.log(d.productId, productId)
         return d.productId !== +productId
       })
       res.status(200).end()

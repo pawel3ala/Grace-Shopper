@@ -21,11 +21,12 @@ class unconnectedSingleProduct extends React.Component {
     this.props.fetchProduct(this.props.match.params.productId)
   }
 
-  async handleSubmit(event) {
+  async handleSubmit(event, price) {
     event.preventDefault()
     const itemObj = {
       productId: this.props.match.params.productId,
-      quantity: event.target.children[0].value
+      quantity: event.target.children[0].value,
+      price
     }
     await this.props.addToCart(itemObj)
     await this.props.fetchCart()
@@ -44,7 +45,6 @@ class unconnectedSingleProduct extends React.Component {
 
   // eslint-disable-next-line complexity
   render() {
-    console.log(this.props.user)
     const name = this.props.product.name || ''
     const quantity = this.props.product.quantity || ''
     const price = this.props.product.price || ''
@@ -70,7 +70,7 @@ class unconnectedSingleProduct extends React.Component {
           <div>Quantity: {productStatus}</div>
           <div>description: {description}</div>
         </div>
-        <form onSubmit={() => this.handleSubmit(event)}>
+        <form onSubmit={() => this.handleSubmit(event, price)}>
           <select name="quantityAddToCart">
             <option>1</option>
             <option>2</option>

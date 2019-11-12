@@ -12,7 +12,10 @@ router.get('/', async (req, res, next) => {
     if (!req.user) {
       // handle unauthenticated user w/ cookie
       const {session: {cart = []}} = req
-      res.json(cart)
+      let newCart = cart.map(item => {
+        return {...item, orderId: null}
+      })
+      res.json(newCart)
     } else {
       const {user} = req
       const productsPromise = Product.findAll({
@@ -31,13 +34,14 @@ router.get('/', async (req, res, next) => {
             attributes: [],
             where: {id: user.id},
             through: {
-              attributes: []
+              attributes: [],
+              where: {orderId: null}
             }
           }
         ]
       })
       const cartItemsPromise = CartItems.findAll({
-        where: {userId: user.id},
+        where: {userId: user.id, orderId: null},
         raw: true
       })
       const [products, cartItems] = [
@@ -48,9 +52,8 @@ router.get('/', async (req, res, next) => {
         ...p.get(),
         quantity: +cartItems.find(c => c.productId === p.get().productId)
           .quantity,
-        orderId: +cartItems.find(c => c.productId === p.get().productId).orderId
+        orderId: cartItems.find(c => c.productId === p.get().productId).orderId
       }))
-      console.log('cart from server', cart)
       res.json(cart)
     }
   } catch (err) {
@@ -65,7 +68,7 @@ router.post('/', async (req, res, next) => {
   //   -if someone orders something that depletes the stock of a given item, all users with that
   //   item in their cart can't order it
   try {
-    const {body: {productId, quantity}} = req
+    const {body: {productId, quantity, price}} = req
     if (!req.user) {
       // handle unauthenticated user w/ cookie
       if (!req.session.cart) req.session.cart = []
@@ -92,8 +95,8 @@ router.post('/', async (req, res, next) => {
       // findOrCreate prevents the cart item from being added if it already exists. Quantity will not be updated on CartItems
       // if the item is already in the cart
       const cartItem = await CartItems.findOrCreate({
-        where: {productId, userId},
-        defaults: {quantity}
+        where: {productId, userId, orderId: null},
+        defaults: {quantity, price}
       })
       res.json(cartItem)
     }
@@ -151,7 +154,7 @@ router.put('/order', async (req, res, next) => {
       const [_, [cartItem]] = await CartItems.update(
         {price, orderId},
         {
-          where: {userId, productId},
+          where: {userId, productId, orderId: null},
           returning: true
         }
       )

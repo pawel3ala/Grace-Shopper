@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 const router = require('express').Router()
 const {Order, User, Address, Product} = require('../db/models')
 module.exports = router
@@ -44,17 +45,22 @@ router.post('/', async (req, res, next) => {
       const {user: {id: userId}} = req
       shipAddress.userId = userId
       billAddress.userId = userId
+      let shipToAddressId = shipAddress.id
+      let billToAddressId = billAddress.id
       const newShip = await Address.findOrCreate({
         where: {userId, type: 'SHIP_TO'},
         defaults: {...shipAddress}
       })
-      console.log('newShip', newShip)
+      if (newShip[0].isNewRecord) {
+        shipToAddressId = newShip[0].dataValues.id
+      }
       const newBill = await Address.findOrCreate({
         where: {userId, type: 'BILL_TO'},
         defaults: {...billAddress}
       })
-      const shipToAddressId = shipAddress.id
-      const billToAddressId = billAddress.id
+      if (newBill[0].isNewRecord) {
+        billToAddressId = newBill[0].dataValues.id
+      }
       cart.map(async function(product) {
         const newQuantity = product.productQuantity - product.quantity
         await Product.update(

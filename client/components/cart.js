@@ -33,7 +33,10 @@ export const Cart = props => {
     }
     dispatch(deleteItem(itemObj))
   }
-  const cart = useSelector(({cart}) => cart) || []
+  const cartAll = useSelector(({cart}) => cart) || []
+  let cart = cartAll.filter(cartItem => {
+    return cartItem.orderId === null
+  })
   return (
     <div className="cartContainer">
       {cart.length > 0

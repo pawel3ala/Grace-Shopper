@@ -4,6 +4,7 @@
 /* eslint-disable camelcase */
 import React from 'react'
 import {CheckoutCart, UserHome} from './index'
+import UserEmailInput from './userEmailInput'
 import ShipAddressForm from './shipAddressFormRedux'
 import BillAddressForm from './billAddressFormRedux'
 import {CardElement, injectStripe} from 'react-stripe-elements'
@@ -47,7 +48,7 @@ class CheckoutForm extends React.Component {
     this.handleBillingAddress = this.handleBillingAddress.bind(this)
     this.handleUpdateEmail = this.handleUpdateEmail.bind(this)
   }
-  async handleOrderSubmit(event) {
+  async handleOrderSubmit(event, user) {
     event.preventDefault()
     // Checks if user/guest has an address to start with
     if (this.props.addresses.length === 0) {
@@ -118,7 +119,7 @@ class CheckoutForm extends React.Component {
             // If the same, use respective addressses
             let thisEmail = ''
             if (this.state.email === '') {
-              thisEmail = 'USE USER EMAIL'
+              thisEmail = user.email
             } else {
               thisEmail = this.state.email
             }
@@ -188,8 +189,14 @@ class CheckoutForm extends React.Component {
           this.setState({
             orderFail: false
           })
+          let thisEmail = ''
+          if (this.state.email === '') {
+            thisEmail = user.email
+          } else {
+            thisEmail = this.state.email
+          }
           const orderObj = {
-            email: this.state.email,
+            email: thisEmail,
             shipAddress: {
               id: shipAddress.id
             },
@@ -304,6 +311,10 @@ class CheckoutForm extends React.Component {
     })
   }
   render() {
+    let user
+    !this.props.user.hasOwnProperty('email')
+      ? (user = false)
+      : (user = this.props.user)
     let addresses
     this.props.addresses === undefined ||
     typeof this.props.addresses === 'string'
@@ -339,8 +350,16 @@ class CheckoutForm extends React.Component {
           />
         )}
         <br />
-        <form onSubmit={this.handleOrderSubmit}>
-          {this.state.emailUpdate ? (
+        <form onSubmit={() => this.handleOrderSubmit(event, user)}>
+          {user ? (
+            <UserEmailInput
+              emailUpdate={this.state.emailUpdate}
+              email={this.state.email}
+              handleEmailChange={this.handleEmailChange}
+              user={user}
+              handleUpdateEmail={this.handleUpdateEmail}
+            />
+          ) : (
             <div>
               <label htmlFor="email">E-mail:</label>
               <input
@@ -351,13 +370,6 @@ class CheckoutForm extends React.Component {
                 onChange={this.handleEmailChange}
               />
             </div>
-          ) : (
-            <div>E-mail: GET USER EMAIL</div>
-          )}
-          {this.state.emailUpdate ? null : (
-            <button type="button" onClick={this.handleUpdateEmail}>
-              Change Order Notification E-mail
-            </button>
           )}
           <br />
           <CardElement />

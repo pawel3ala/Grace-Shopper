@@ -63,6 +63,7 @@ class unconnectedCheckout extends React.Component {
             <Elements>
               <CheckoutForm
                 cart={cart}
+                user={this.props.user}
                 createOrderItem={this.props.createOrderItem}
                 orderTotal={displayOrderTotal}
                 addAddress={this.props.addAddress}
@@ -81,7 +82,8 @@ class unconnectedCheckout extends React.Component {
 const mapStateToProps = state => {
   return {
     cart: state.cart,
-    addresses: state.address
+    addresses: state.address,
+    user: state.user
   }
 }
 
