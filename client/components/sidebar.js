@@ -74,7 +74,9 @@ const CatalogSidebar = ({handleSubmit, submitting, sendQuery}) => {
         <br />
         <Field name="review" label="Average Rating" component={RenderRating} />
         <br />
-        <Button type="submit">Search</Button>
+        <Button type="submit" floated="right">
+          Search
+        </Button>
       </form>
     </div>
   )
