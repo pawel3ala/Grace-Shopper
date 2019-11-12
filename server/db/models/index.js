@@ -63,7 +63,7 @@ Merchant.belongsTo(Country)
 Order.belongsTo(Address, {as: 'shipToAddress'})
 Order.belongsTo(Address, {as: 'billToAddress'})
 Order.belongsTo(User)
-Order.belongsToMany(Product, {through: OrderItem, foreignKeyConstraint: true})
+Order.belongsToMany(Product, {through: CartItems})
 
 // Relations between USER and:
 User.belongsTo(Merchant)

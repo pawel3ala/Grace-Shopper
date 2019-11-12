@@ -65,12 +65,12 @@ class unconnectedCheckout extends React.Component {
             <Elements>
               <CheckoutForm
                 cart={cart}
+                clearCart={this.props.clearCart}
                 orderTotal={displayOrderTotal}
                 addAddress={this.props.addAddress}
                 getAddress={this.props.getAddress}
                 changeAddress={this.props.changeAddress}
                 addresses={this.props.addresses}
-                clearCart={this.props.clearCart}
               />
             </Elements>
           </StripeProvider>

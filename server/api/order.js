@@ -6,7 +6,6 @@ module.exports = router
 router.post('/', async (req, res, next) => {
   // body: {shipToAddressId, billToAddressId, email (based on auth), totalPrice}
   try {
-    console.log(req.body)
     const {body: {email, shipAddress, billAddress, totalPrice}} = req
     if (!req.user) {
       // handle unauthenticated user w/ cookie
@@ -15,6 +14,7 @@ router.post('/', async (req, res, next) => {
         where: {email: strEmail}
       })
       shipAddress.userId = userID
+      billAddress.userId = userID
       const userId = userID
       const shipData = await Address.create(shipAddress)
       const shipToAddressId = shipData.dataValues.id
@@ -29,8 +29,27 @@ router.post('/', async (req, res, next) => {
       })
       res.json(order)
     } else {
+      //NEED TO FINDORCREATE ADDRESS FOR NEW USER
       const {user: {id: userId}} = req
-      const order = await Order.create({...body, userId, status: 'PROCESSING'})
+      shipAddress.userId = userId
+      billAddress.userId = userId
+      const newShip = await Address.findOrCreate({
+        where: {userId, type: 'SHIP_TO'},
+        defaults: {...shipAddress}
+      })
+      const newBill = await Address.findOrCreate({
+        where: {userId, type: 'BILL_TO'},
+        defaults: {...billAddress}
+      })
+      const shipToAddressId = shipAddress.id
+      const billToAddressId = billAddress.id
+      const order = await Order.create({
+        shipToAddressId,
+        billToAddressId,
+        totalPrice,
+        userId,
+        status: 'PROCESSING'
+      })
       res.json(order)
     }
   } catch (err) {

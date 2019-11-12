@@ -1,3 +1,5 @@
+/* eslint-disable complexity */
+/* eslint-disable max-statements-per-line */
 /* eslint-disable max-statements */
 /* eslint-disable camelcase */
 import React from 'react'
@@ -14,6 +16,7 @@ class CheckoutForm extends React.Component {
       updateShip: false,
       enterBilling: false,
       updateBill: false,
+      emailUpdate: false,
       email: '',
       shipAddressState: {
         shipName: '',
@@ -42,6 +45,7 @@ class CheckoutForm extends React.Component {
     this.handleShipUpdate = this.handleShipUpdate.bind(this)
     this.handleBillUpdate = this.handleBillUpdate.bind(this)
     this.handleBillingAddress = this.handleBillingAddress.bind(this)
+    this.handleUpdateEmail = this.handleUpdateEmail.bind(this)
   }
   async handleOrderSubmit(event) {
     event.preventDefault()
@@ -97,11 +101,28 @@ class CheckoutForm extends React.Component {
               totalPrice: this.props.orderTotal
             }
             const newOrder = await Axios.post('/api/order', orderObj)
-            const orderId = newOrder.dataValues.id
+            const orderId = newOrder.data.id
+            this.props.cart.map(async function(product) {
+              const orderItemObj = {
+                quantity: product.quantity,
+                price: product.price,
+                productId: product.productId,
+                orderId
+              }
+              await Axios.post('/api/orderItem', orderItemObj)
+            })
+            // Currently causing a constant stream of calls to server
+            this.props.clearCart()
           } else {
             // If the same, use respective addressses
+            let thisEmail = ''
+            if (this.state.email === '') {
+              thisEmail = 'USE USER EMAIL'
+            } else {
+              thisEmail = this.state.email
+            }
             const orderObj = {
-              email: this.state.email,
+              email: thisEmail,
               shipAddress: {
                 name: this.state.shipAddressState.shipName,
                 street1: this.state.shipAddressState.shipStreet1,
@@ -123,7 +144,16 @@ class CheckoutForm extends React.Component {
               totalPrice: this.props.orderTotal
             }
             const newOrder = await Axios.post('/api/order', orderObj)
-            const orderId = newOrder.dataValues.id
+            const orderId = newOrder.data.id
+            this.props.cart.map(async function(product) {
+              const orderItemObj = {
+                quantity: product.quantity,
+                price: product.price,
+                productId: product.productId,
+                orderId
+              }
+              await Axios.post('/api/orderItem', orderItemObj)
+            })
           }
         } else {
           // If payment fails, set orderFail bool to true to display message
@@ -139,6 +169,9 @@ class CheckoutForm extends React.Component {
       const billAddress = this.props.addresses.filter(
         address => address.type === 'BILL_TO'
       )
+      const shipAddress = this.props.addresses.filter(
+        address => address.type === 'SHIP_TO'
+      )
       // Use billAddress for token name
       const tokenObj = {
         name: billAddress[0].name
@@ -150,6 +183,27 @@ class CheckoutForm extends React.Component {
         if (data.status) {
           this.setState({
             orderFail: false
+          })
+          const orderObj = {
+            email: this.state.email,
+            shipAddress: {
+              id: shipAddress.id
+            },
+            billAddress: {
+              id: billAddress.id
+            },
+            totalPrice: this.props.orderTotal
+          }
+          const newOrder = await Axios.post('/api/order', orderObj)
+          const orderId = newOrder.data.id
+          this.props.cart.map(async function(product) {
+            const orderItemObj = {
+              quantity: product.quantity,
+              price: product.price,
+              productId: product.productId,
+              orderId
+            }
+            await Axios.post('/api/orderItem', orderItemObj)
           })
         } else {
           this.setState({
@@ -239,7 +293,13 @@ class CheckoutForm extends React.Component {
       enterBilling: !this.state.enterBilling
     })
   }
+  handleUpdateEmail() {
+    this.setState({
+      emailUpdate: !this.state.emailUpdate
+    })
+  }
   render() {
+    // console.log(this.props.cart)
     let addresses
     this.props.addresses === undefined ||
     typeof this.props.addresses === 'string'
@@ -276,14 +336,25 @@ class CheckoutForm extends React.Component {
         )}
         <br />
         <form onSubmit={this.handleOrderSubmit}>
-          <label htmlFor="email">E-mail:</label>
-          <input
-            name="email"
-            required
-            type="email"
-            value={this.state.email}
-            onChange={this.handleEmailChange}
-          />
+          {this.state.emailUpdate ? (
+            <div>
+              <label htmlFor="email">E-mail:</label>
+              <input
+                name="email"
+                required
+                type="email"
+                value={this.state.email}
+                onChange={this.handleEmailChange}
+              />
+            </div>
+          ) : (
+            <div>E-mail: GET USER EMAIL</div>
+          )}
+          {this.state.emailUpdate ? null : (
+            <button type="button" onClick={this.handleUpdateEmail}>
+              Change Order Notification E-mail
+            </button>
+          )}
           <br />
           <CardElement />
           <br />
