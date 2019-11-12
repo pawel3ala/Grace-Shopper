@@ -47,7 +47,8 @@ router.get('/', async (req, res, next) => {
       const cart = products.map(p => ({
         ...p.get(),
         quantity: +cartItems.find(c => c.productId === p.get().productId)
-          .quantity
+          .quantity,
+        orderId: +cartItems.find(c => c.productId === p.get().productId).orderId
       }))
       res.json(cart)
     }
