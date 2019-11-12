@@ -26,6 +26,11 @@ const Navbar = ({handleClick, isLoggedIn}) => (
               Logout
             </a>
           </Grid.Column>
+
+          <Grid.Column>
+            <Link to="/order">Orders</Link>
+          </Grid.Column>
+
           <Grid.Column
             verticalAlign="middle"
             floated="right"

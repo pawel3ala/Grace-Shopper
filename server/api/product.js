@@ -51,6 +51,22 @@ router.put('/:productId', async (req, res, next) => {
   }
 })
 
+// PUT api/product/:productId/orderQty
+router.put('/:productId/orderQty', async (req, res, next) => {
+  try {
+    const {user, params: {productId}, body} = req
+    const [_, [product]] = await Product.update(body, {
+      where: {id: productId},
+      returning: true
+    })
+    if (!req.user || user.merchantId !== product.merchantId)
+      throw new Error('You are not the merchant of this item.')
+    res.json(product)
+  } catch (err) {
+    next(err)
+  }
+})
+
 // POST api/product/review
 router.post('/review', async (req, res, next) => {
   try {

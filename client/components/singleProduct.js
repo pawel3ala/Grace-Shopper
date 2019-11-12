@@ -27,7 +27,7 @@ class unconnectedSingleProduct extends React.Component {
     this.props.fetchProduct(this.props.match.params.productId)
   }
 
-  async handleSubmit(event) {
+  async handleSubmit(event, price) {
     event.preventDefault()
     if (event.target.children[0].value > this.props.product.quantity) {
       alert('Not enough stock')

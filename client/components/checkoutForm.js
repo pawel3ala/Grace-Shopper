@@ -4,6 +4,7 @@
 /* eslint-disable camelcase */
 import React from 'react'
 import {CheckoutCart, UserHome} from './index'
+import UserEmailInput from './userEmailInput'
 import ShipAddressForm from './shipAddressFormRedux'
 import BillAddressForm from './billAddressFormRedux'
 import {CardElement, injectStripe} from 'react-stripe-elements'
@@ -47,7 +48,7 @@ class CheckoutForm extends React.Component {
     this.handleBillingAddress = this.handleBillingAddress.bind(this)
     this.handleUpdateEmail = this.handleUpdateEmail.bind(this)
   }
-  async handleOrderSubmit(event) {
+  async handleOrderSubmit(event, user) {
     event.preventDefault()
     // Checks if user/guest has an address to start with
     if (this.props.addresses.length === 0) {
@@ -98,26 +99,27 @@ class CheckoutForm extends React.Component {
                 zip: this.state.shipAddressState.shipZip,
                 type: 'BILL_TO'
               },
-              totalPrice: this.props.orderTotal
+              totalPrice: this.props.orderTotal,
+              cart: this.props.cart
             }
             const newOrder = await Axios.post('/api/order', orderObj)
             const orderId = newOrder.data.id
-            this.props.cart.map(async function(product) {
+            const userId = newOrder.data.userId
+            this.props.cart.map(product => {
               const orderItemObj = {
+                userId,
+                productId: product.productId,
                 quantity: product.quantity,
                 price: product.price,
-                productId: product.productId,
                 orderId
               }
-              await Axios.post('/api/orderItem', orderItemObj)
+              this.props.createOrderItem(orderItemObj)
             })
-            // Currently causing a constant stream of calls to server
-            this.props.clearCart()
           } else {
             // If the same, use respective addressses
             let thisEmail = ''
             if (this.state.email === '') {
-              thisEmail = 'USE USER EMAIL'
+              thisEmail = user.email
             } else {
               thisEmail = this.state.email
             }
@@ -141,18 +143,21 @@ class CheckoutForm extends React.Component {
                 zip: this.state.billAddressState.billZip,
                 type: 'BILL_TO'
               },
-              totalPrice: this.props.orderTotal
+              totalPrice: this.props.orderTotal,
+              cart: this.props.cart
             }
             const newOrder = await Axios.post('/api/order', orderObj)
             const orderId = newOrder.data.id
-            this.props.cart.map(async function(product) {
+            const userId = newOrder.data.userId
+            this.props.cart.map(product => {
               const orderItemObj = {
+                userId,
+                productId: product.productId,
                 quantity: product.quantity,
                 price: product.price,
-                productId: product.productId,
                 orderId
               }
-              await Axios.post('/api/orderItem', orderItemObj)
+              this.props.createOrderItem(orderItemObj)
             })
           }
         } else {
@@ -184,26 +189,33 @@ class CheckoutForm extends React.Component {
           this.setState({
             orderFail: false
           })
+          let thisEmail = ''
+          if (this.state.email === '') {
+            thisEmail = user.email
+          } else {
+            thisEmail = this.state.email
+          }
           const orderObj = {
-            email: this.state.email,
+            email: thisEmail,
             shipAddress: {
               id: shipAddress.id
             },
             billAddress: {
               id: billAddress.id
             },
-            totalPrice: this.props.orderTotal
+            totalPrice: this.props.orderTotal,
+            cart: this.props.cart
           }
           const newOrder = await Axios.post('/api/order', orderObj)
           const orderId = newOrder.data.id
-          this.props.cart.map(async function(product) {
+          this.props.cart.map(product => {
             const orderItemObj = {
+              productId: product.productId,
               quantity: product.quantity,
               price: product.price,
-              productId: product.productId,
               orderId
             }
-            await Axios.post('/api/orderItem', orderItemObj)
+            this.props.createOrderItem(orderItemObj)
           })
         } else {
           this.setState({
@@ -299,7 +311,10 @@ class CheckoutForm extends React.Component {
     })
   }
   render() {
-    // console.log(this.props.cart)
+    let user
+    !this.props.user.hasOwnProperty('email')
+      ? (user = false)
+      : (user = this.props.user)
     let addresses
     this.props.addresses === undefined ||
     typeof this.props.addresses === 'string'
@@ -335,8 +350,16 @@ class CheckoutForm extends React.Component {
           />
         )}
         <br />
-        <form onSubmit={this.handleOrderSubmit}>
-          {this.state.emailUpdate ? (
+        <form onSubmit={() => this.handleOrderSubmit(event, user)}>
+          {user ? (
+            <UserEmailInput
+              emailUpdate={this.state.emailUpdate}
+              email={this.state.email}
+              handleEmailChange={this.handleEmailChange}
+              user={user}
+              handleUpdateEmail={this.handleUpdateEmail}
+            />
+          ) : (
             <div>
               <label htmlFor="email">E-mail:</label>
               <input
@@ -347,13 +370,6 @@ class CheckoutForm extends React.Component {
                 onChange={this.handleEmailChange}
               />
             </div>
-          ) : (
-            <div>E-mail: GET USER EMAIL</div>
-          )}
-          {this.state.emailUpdate ? null : (
-            <button type="button" onClick={this.handleUpdateEmail}>
-              Change Order Notification E-mail
-            </button>
           )}
           <br />
           <CardElement />
