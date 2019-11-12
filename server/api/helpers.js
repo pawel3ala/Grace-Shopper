@@ -37,4 +37,12 @@ const getProductQuery = query => {
   return {where, include}
 }
 
-module.exports = {getProductQuery}
+const adminValidate = (req, res, next) => {
+  if (req.user && req.user.isAdmin) {
+    next()
+  } else {
+    throw new Error('User needs admin privileges')
+  }
+}
+
+module.exports = {getProductQuery, adminValidate}
