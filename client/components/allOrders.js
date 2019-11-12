@@ -11,7 +11,6 @@ export const AllOrders = props => {
   }, [])
 
   const orders = useSelector(({orders}) => orders)
-  console.log(orders)
 
   return (
     <div>
@@ -19,9 +18,10 @@ export const AllOrders = props => {
         {orders.map(order => (
           <div key={order.id}>
             <div className="productDiv">
-              {/* <Link to={`/order/${order.id}`}> */}
-              <div>Order Number: {order.id}</div>
-              {/* </Link> */}
+              <Link to={`/order/${order.id}`}>
+                <div>Order Number: {order.id}</div>
+              </Link>
+              <div>Order Total Price: {order.totalPrice} </div>
               <div>Order Status: {order.status} </div>
               <div>Created at: {order.createdAt} </div>
             </div>
