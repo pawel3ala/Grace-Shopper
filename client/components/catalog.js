@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react'
 import {useSelector, useDispatch} from 'react-redux'
 import {Link} from 'react-router-dom'
 import {fetchCatalog} from '../store/catalog'
+import {fetchCategories} from '../store/categories'
 import CatalogSidebar from './sidebar'
 // import faker from 'faker'
 
@@ -48,6 +49,7 @@ export const Catalog = props => {
 
   useEffect(() => {
     dispatch(fetchCatalog(query))
+    dispatch(fetchCategories(query))
   }, [])
 
   const catalog = useSelector(({catalog}) => catalog)
