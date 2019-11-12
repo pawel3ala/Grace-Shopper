@@ -4,8 +4,8 @@ const sendMail = async function(obj) {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'gr8fruitltd@gmail.com',
-      pass: 'gR8fru1t99' // < ----- TODO: Need to figure how to keep credentials safe ...
+      user: process.env.EMAIL_ADDRESS,
+      pass: process.env.EMAIL_PASSWORD
     }
   })
 
@@ -21,10 +21,10 @@ const sendMail = async function(obj) {
 
 // Example
 // sendMail({
-//     to: 'pawel3ala@gmail.com',
-//     subject: 'Your order has been sucesfully placed',
-//     text: 'Your grapefruits are on the way',
-//     html: '<h1>Your grapefruits are on the way</h1>'
+//   to: 'pawel3ala@gmail.com',
+//   subject: 'Your order has been sucesfully placed',
+//   text: 'Your grapefruits are on the way',
+//   html: '<h1>Your grapefruits are on the way</h1>'
 // })
 
 module.exports = sendMail
