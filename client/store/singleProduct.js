@@ -51,9 +51,10 @@ export const editReview = review => {
   }
 }
 export const editProduct = product => {
-  return async () => {
+  return async dispatch => {
     try {
       await Axios.put(`/api/product/${product.id}`, product)
+      await dispatch(fetchProduct(product.id)) //update product info without a refresh
     } catch (err) {
       console.error(err)
     }
