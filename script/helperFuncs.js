@@ -37,3 +37,10 @@ export const getAverageRating = reviews => {
   }, 0)
   return (total / reviews.length).toPrecision(2)
 }
+
+export const priceFormat = price => {
+  const stringPrice = String(price)
+  return `$${stringPrice.slice(0, stringPrice.length - 2)}.${stringPrice.slice(
+    stringPrice.length - 2
+  )}`
+}
