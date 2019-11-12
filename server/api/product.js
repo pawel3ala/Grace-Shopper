@@ -1,6 +1,7 @@
 const router = require('express').Router()
-const {Product, Review} = require('../db/models')
+const {Product, Review, Category} = require('../db/models')
 const {getProductQuery} = require('./helpers')
+const db = require('../db/db')
 
 module.exports = router
 
@@ -18,6 +19,42 @@ router.get('/', async (req, res, next) => {
       // for multiple sort -- sort.split(",").map(s => s.split("."))
     })
     res.json(products)
+  } catch (err) {
+    next(err)
+  }
+})
+
+// GET api/product/category (get all categories)
+router.get('/category', async (req, res, next) => {
+  try {
+    const {where, include: [{where: categoryWhere}]} = getProductQuery(
+      req.query
+    )
+    console.log(db)
+    const categories = await Category.findAll({
+      where: categoryWhere,
+      group: ['category.id', 'category.name'],
+      attributes: [
+        'id',
+        'name',
+        [db.Sequelize.fn('COUNT', 'ProductCategory.id'), 'count']
+      ],
+      include: [
+        {
+          model: db.models.ProductCategory,
+          include: [
+            {
+              model: Product,
+              where,
+              attributes: []
+            }
+          ],
+          attributes: []
+          // through: {attributes: []}
+        }
+      ]
+    })
+    res.status(200).json(categories)
   } catch (err) {
     next(err)
   }

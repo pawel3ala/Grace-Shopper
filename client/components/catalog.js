@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react'
 import {useSelector, useDispatch} from 'react-redux'
 import {Link} from 'react-router-dom'
 import {fetchCatalog} from '../store/catalog'
+import CatalogSidebar from './sidebar'
 // import faker from 'faker'
 
 /**
@@ -52,6 +53,7 @@ export const Catalog = props => {
   const catalog = useSelector(({catalog}) => catalog)
   return (
     <div>
+      <CatalogSidebar />
       <div className="allProducts">
         {catalog.map(product => (
           <div key={product.id}>

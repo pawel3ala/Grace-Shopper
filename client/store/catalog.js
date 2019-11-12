@@ -1,13 +1,20 @@
 import Axios from 'axios'
 import {getUrlString} from '../../script/helperFuncs'
 
-const GET_PRODUCTS = 'GET_PRODUCTS'
+const [GET_PRODUCTS, GET_CATEGORIES] = ['GET_PRODUCTS', 'GET_CATEGORIES']
 
 //Action creators
 export const getProducts = products => {
   return {
     type: GET_PRODUCTS,
     products
+  }
+}
+
+export const getCategories = categories => {
+  return {
+    type: GET_CATEGORIES,
+    categories
   }
 }
 
