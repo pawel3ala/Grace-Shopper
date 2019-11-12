@@ -2,8 +2,9 @@ import React, {useEffect, useState} from 'react'
 import {useSelector, useDispatch} from 'react-redux'
 import {Link} from 'react-router-dom'
 import {fetchCatalog} from '../store/catalog'
-import {fetchCategories} from '../store/categories'
+import categoriesReducer, {fetchCategories} from '../store/categories'
 import CatalogSidebar from './sidebar'
+import {formValueSelector} from 'redux-form'
 // import faker from 'faker'
 
 /**
@@ -29,33 +30,55 @@ import CatalogSidebar from './sidebar'
 // dummyProducts()
 
 export const Catalog = props => {
-  const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(10)
-  const [sort, setSort] = useState('id.ASC')
-  const [search, setSearch] = useState('')
-  const [category, setCategory] = useState('')
-  const [price, setPrice] = useState({})
-  const [review, setReview] = useState({})
-  const query = {
-    page,
-    limit,
-    sort,
-    ...(search && {search}),
-    ...(category && {category}),
-    ...(Object.entries(price).length > 0 && {price}),
-    ...(Object.entries(review).length > 0 && {review})
-  }
+  // const [page, setPage] = useState(1)
+  // const [limit, setLimit] = useState(10)
+  // const [sort, setSort] = useState('id.ASC')
+  // const [search, setSearch] = useState('')
+  // const [category, setCategory] = useState('')
+  // const [price, setPrice] = useState({})
+  // const [review, setReview] = useState({})
   const dispatch = useDispatch()
+  const selector = formValueSelector('query')
+  const query = useSelector(state => {
+    const {page, limit, sort, search, category, price, review} = selector(
+      state,
+      'page',
+      'limit',
+      'sort',
+      'search',
+      'category',
+      'price',
+      'review'
+    )
 
-  useEffect(() => {
+    if (state.form.query)
+      return {
+        page,
+        limit,
+        sort,
+        ...(search && {search}),
+        ...(category && {category}),
+        ...(Object.entries(price).length > 0 && {price}),
+        ...(Object.entries(review).length > 0 && {review})
+      }
+    else return {}
+  })
+  const getNewData = () => {
     dispatch(fetchCatalog(query))
     dispatch(fetchCategories(query))
+  }
+
+  useEffect(() => {
+    getNewData()
   }, [])
 
   const catalog = useSelector(({catalog}) => catalog)
+
+  const sendQuery = () => getNewData()
+
   return (
     <div>
-      <CatalogSidebar />
+      <CatalogSidebar sendQuery={sendQuery} />
       <div className="allProducts">
         {catalog.map(product => (
           <div key={product.id}>

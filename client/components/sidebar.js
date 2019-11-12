@@ -1,7 +1,7 @@
 import React from 'react'
 import {useSelector} from 'react-redux'
 import {Field, FormSection, reduxForm} from 'redux-form'
-import {Input, List, Rating, Grid, Sidebar} from 'semantic-ui-react'
+import {Input, List, Rating, Grid, Button, Sidebar} from 'semantic-ui-react'
 
 const createRenderer = render => ({
   input,
@@ -38,7 +38,7 @@ const RenderRating = createRenderer(({onChange, value, name}, label) => (
     rating={value}
     maxRating={5}
     icon="star"
-    onRate={(evt, data) => onChange(data.rating)}
+    onRate={(_, data) => onChange({gte: data.rating})}
   />
 ))
 
@@ -46,8 +46,8 @@ const RenderRating = createRenderer(({onChange, value, name}, label) => (
 const RangeComp = () => (
   <Grid>
     {[
-      {name: 'lte', label: 'Price Low'},
-      {name: 'gte', label: 'Price High'}
+      {name: 'gte', label: 'Price Low'},
+      {name: 'lte', label: 'Price High'}
     ].map(p => (
       <Grid.Column key={p.name} width={4}>
         <Field style={{width: '7rem'}} {...p} component={RenderInput} />
@@ -56,15 +56,15 @@ const RangeComp = () => (
   </Grid>
 )
 
-const CatalogSidebar = ({handleSubmit, submitting}) => {
+const CatalogSidebar = ({handleSubmit, submitting, sendQuery}) => {
   const categories = useSelector(({categories}) => categories) || []
   return (
     <div style={{height: '100%', width: 300}}>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(sendQuery)}>
         <Field name="search" label="Search" component={RenderInput} />
         <br />
         <Field
-          name="categories"
+          name="category"
           label="Category Filter"
           component={RenderFilter}
           data={categories}
@@ -73,10 +73,24 @@ const CatalogSidebar = ({handleSubmit, submitting}) => {
         <FormSection name="price" label="Price Range" component={RangeComp} />
         <br />
         <Field name="review" label="Average Rating" component={RenderRating} />
+        <br />
+        <Button type="submit">Search</Button>
       </form>
     </div>
   )
 }
 
-export default reduxForm({form: 'query'})(CatalogSidebar)
+export default reduxForm({
+  form: 'query',
+  initialValues: {
+    sort: 'id.ASC',
+    page: 1,
+    limit: 10,
+    price: {},
+    review: {},
+    category: 0,
+    search: ''
+  },
+  destroyOnUnmount: false
+})(CatalogSidebar)
 // export default CatalogSidebar
