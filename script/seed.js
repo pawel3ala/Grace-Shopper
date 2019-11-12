@@ -159,7 +159,7 @@ async function seed() {
     })
   }
 
-  // Creates random CartItems as OrderItems
+  // Creates random Orders
   let statusArr = ['PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELED']
   for (let i = 0; i < 40; i++) {
     await Order.create({
@@ -170,26 +170,29 @@ async function seed() {
       billToAddressId: i + 121,
       userId: i + 1
     })
+  }
+  // Creates random CartItems as OrderItems
+  for (let i = 0; i < 40; i++) {
     await CartItems.create({
       quantity: Math.floor(Math.random() * 500),
-      userId: i + 1,
+      price: Number(faker.commerce.price()),
+      orderId: i + 1,
       productId: 4,
-      price: Number(faker.commerce.price()),
-      orderId: i + 1
+      userId: i + 1
     })
     await CartItems.create({
       quantity: Math.floor(Math.random() * 500),
-      userId: i + 1,
+      price: Number(faker.commerce.price()),
+      orderId: i + 1,
       productId: 5,
-      price: Number(faker.commerce.price()),
-      orderId: i + 1
+      userId: i + 1
     })
     await CartItems.create({
       quantity: Math.floor(Math.random() * 500),
-      userId: i + 1,
-      productId: 6,
       price: Number(faker.commerce.price()),
-      orderId: i + 1
+      orderId: i + 1,
+      productId: 6,
+      userId: i + 1
     })
   }
 
