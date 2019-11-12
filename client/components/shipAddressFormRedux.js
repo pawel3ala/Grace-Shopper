@@ -161,7 +161,7 @@ class UnreduxedShipAddressForm extends React.Component {
                   <button type="submit">Save Changes</button>
                 ) : (
                   <button type="button" onClick={this.props.handleShipUpdate}>
-                    Edit Shipping Address
+                    Change Shipping Address
                   </button>
                 )}
               </div>
