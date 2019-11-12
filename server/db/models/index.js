@@ -30,7 +30,7 @@ Category.belongsToMany(Product, {
   through: 'ProductCategory',
   foreignKeyConstraint: true
 })
-Category.hasMany(db.models.ProductCategory)
+// Category.hasMany(db.models.ProductCategory)
 
 // Relations between COUNTRY and:
 Country.hasMany(Merchant)
@@ -46,7 +46,7 @@ Product.belongsToMany(User, {through: CartItems, foreignKeyConstraint: true})
 Product.belongsTo(Merchant)
 Product.hasMany(Review)
 
-db.models.ProductCategory.belongsTo(Product)
+// db.models.ProductCategory.belongsTo(Product)
 
 // Relations between ADDRESS and:
 Address.belongsTo(User)
