@@ -10,7 +10,8 @@ import {
   SingleProduct,
   Cart,
   Checkout,
-  AllOrders
+  AllOrders,
+  singleOrder
 } from './components'
 import {me} from './store'
 
@@ -37,7 +38,8 @@ class Routes extends Component {
           <Switch>
             {/* Routes placed here are only available after logging in */}
             <Route path="/home" component={UserHome} />
-            <Route path="/order" component={AllOrders} />
+            <Route exact path="/order" component={AllOrders} />
+            <Route path="/order/:orderId" component={singleOrder} />
             <Route component={Catalog} />{' '}
             {/*Not sure where to place this, otherwise won't show catalog when logged in*/}
           </Switch>
