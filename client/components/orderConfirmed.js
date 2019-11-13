@@ -5,7 +5,7 @@ import {fetchSingleOrder} from '../store/singleOrder'
 import {priceFormat} from '../../script/helperFuncs'
 import {Link} from 'react-router-dom'
 
-export const singleOrder = props => {
+export const OrderConfirmed = props => {
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -13,11 +13,13 @@ export const singleOrder = props => {
   }, [])
 
   const singleOrderItems = useSelector(({singleOrder}) => singleOrder)
-
+  const userInfo = useSelector(({user}) => user)
+  console.log(userInfo)
+  console.log(singleOrderItems)
   return singleOrderItems.length > 0 ? (
     <Grid centered>
       <Grid.Row>
-        <Header as="h1">Order No. {props.match.params.orderId} Details:</Header>
+        <Header as="h2">Thanks For Your Order!!!!</Header>
       </Grid.Row>
       {singleOrderItems.map(item => {
         return (
@@ -68,3 +70,23 @@ export const singleOrder = props => {
     </Grid>
   )
 }
+
+// const mapStateToProps = state => {
+//   return {
+//     cart: state.cart
+//   }
+// }
+
+// const mapDispatchToProps = dispatch => {
+//   return {
+//     fetchItems: () => dispatch(fetchItems()),
+//     addToCart: item => dispatch(addAnItem(item)),
+//     deleteItem: item => dispatch(deleteItem(item)),
+//     changeItem: item => dispatch(changeItem(item)),
+//     clearCart: () => dispatch(clearAllItems())
+//   }
+// }
+
+// export const Cart = connect(mapStateToProps, mapDispatchToProps)(
+//   unconnectedCart
+// )
