@@ -21,21 +21,34 @@ export const singleOrder = props => {
   return (
     <div>
       <div className="allProducts">
-        <ul>
-          {singleOrderItems.map(item => (
-            <li key={item.id}>
+        {singleOrderItems.map(item => {
+          const price = String(item.price * item.quantity)
+          return (
+            <div key={item.productId}>
               <div>
                 <div className="productDiv">
                   <Link to={`/product/${item.productId}`}>
-                    <div>Product id: {item.productId}</div>
+                    <img src={item.image} className="allProductImg" />
                   </Link>
-                  <div>Quantity: {item.quantity} </div>
-                  <div>Price: {item.price} </div>
+                  <br />
+                  <div className="singleOrderProductDetails">
+                    <Link to={`/product/${item.productId}`}>
+                      <div>Item: {item.name}</div>
+                    </Link>
+                    <br />
+                    <div>Quantity: {item.quantity} </div>
+                    <br />
+                    <div>
+                      Subtotal: ${price.slice(0, price.length - 2)}.{price.slice(
+                        price.length - 2
+                      )}{' '}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </li>
-          ))}
-        </ul>
+            </div>
+          )
+        })}
       </div>
     </div>
   )
