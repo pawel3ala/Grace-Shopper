@@ -59,7 +59,8 @@ class SingleReview extends React.Component {
           />
         </Grid.Row>
         {//only the authed user who wrote that specific review can edit it
-        this.props.review.userId === this.props.userId ? (
+        this.props.review.userId === this.props.user.id ||
+        this.props.user.isAdmin ? (
           <button
             type="button"
             name={this.props.review.id}
