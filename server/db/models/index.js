@@ -4,7 +4,6 @@ const CartItems = require('./cart_item')
 const Category = require('./category')
 const Country = require('./country')
 const Merchant = require('./merchant')
-const OrderItem = require('./order_item')
 const Order = require('./order')
 const Product = require('./product')
 const Review = require('./review')
@@ -91,7 +90,6 @@ module.exports = {
   Category,
   Country,
   Merchant,
-  OrderItem,
   Order,
   Product,
   Review
