@@ -6,7 +6,7 @@ import categoriesReducer, {fetchCategories} from '../store/categories'
 import CatalogSidebar from './sidebar'
 import {queryParams} from '../../script/helperFuncs'
 import debounce from 'lodash.debounce'
-import {Sidebar, Grid} from 'semantic-ui-react'
+import {Sidebar, Grid, Container, Button, Icon} from 'semantic-ui-react'
 // import faker from 'faker'
 
 /**
@@ -55,7 +55,7 @@ export const Catalog = props => {
   // const sendQuery = () => getNewData()
 
   return (
-    <Sidebar.Pushable style={{height: '100vh'}}>
+    <Sidebar.Pushable style={{height: '70vh'}}>
       <CatalogSidebar />
       <Sidebar.Pusher as={Grid} className="allProducts">
         {catalog.map(product => (
@@ -70,6 +70,22 @@ export const Catalog = props => {
             </Link>
           </Grid.Column>
         ))}
+        <Container>
+          <Button
+            disabled={query.page === 1}
+            floated="left"
+            onClick={() => setQuery({page: query.page - 1})}
+          >
+            <Icon name="backward" />
+          </Button>
+          <Button
+            disabled={catalog.length < query.limit}
+            floated="right"
+            onClick={() => setQuery({page: query.page + 1})}
+          >
+            <Icon name="forward" />
+          </Button>
+        </Container>
       </Sidebar.Pusher>
     </Sidebar.Pushable>
   )

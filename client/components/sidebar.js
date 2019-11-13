@@ -13,7 +13,6 @@ import {
   Sidebar
 } from 'semantic-ui-react'
 import {queryParams} from '../../script/helperFuncs'
-// import throttle from 'lodash.throttle'
 
 const CatalogSidebar = () => {
   const categories = useSelector(({categories}) => categories) || []
