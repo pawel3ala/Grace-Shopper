@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const {OrderItem, Product, CartItems} = require('../db/models')
+const {OrderItem, Product, CartItems, User} = require('../db/models')
 module.exports = router
 
 // POST api/orderItem (adding item to order)
@@ -33,15 +33,44 @@ router.get('/:orderId', async (req, res, next) => {
       })
       res.json(orders)
     } else {
+      console.log('got here')
       const {user} = req
-      const orderItems = await CartItems.findAll({
-        where: {
-          // TODO: check if api is used by legit user
-          // so that nobody except admin, can view orders of differnet users
-          orderId: orderId
-        }
+      const productsPromise = Product.findAll({
+        attributes: [
+          ['id', 'productId'],
+          'name',
+          'image',
+          'price',
+          ['quantity', 'productQuantity']
+        ],
+        // user.getProducts() was returning through table data, so I wrote this to
+        // ensure that no extra data gets pulled
+        include: [
+          {
+            model: User,
+            attributes: [],
+            where: {id: user.id},
+            through: {
+              attributes: []
+            }
+          }
+        ]
       })
-      res.json(orderItems)
+      const cartItemsPromise = CartItems.findAll({
+        where: {orderId},
+        raw: true
+      })
+      const [products, cartItems] = [
+        await productsPromise,
+        await cartItemsPromise
+      ]
+      const cart = products.map(p => ({
+        ...p.get(),
+        quantity: +cartItems.find(c => c.productId === p.get().productId)
+          .quantity,
+        orderId: cartItems.find(c => c.productId === p.get().productId).orderId
+      }))
+      res.json(cart)
     }
   } catch (err) {
     next(err)
