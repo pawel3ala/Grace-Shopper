@@ -17,6 +17,7 @@ import CheckoutForm from './checkoutForm'
 import {Link} from 'react-router-dom'
 import {connect} from 'react-redux'
 import {StripeProvider, Elements} from 'react-stripe-elements'
+import {Grid} from 'semantic-ui-react'
 
 class unconnectedCheckout extends React.Component {
   constructor() {
@@ -55,28 +56,26 @@ class unconnectedCheckout extends React.Component {
     const displayOrderTotal = String(orderTotal)
     return (
       <div>
-        <div id="checkoutHeader">
-          <h1>
+        <Grid padded centered>
+          <Grid.Row as="h1" style={{paddingRight: '5rem'}}>
             Checkout (<Link to="/cart">{cartCount} items</Link>)
-          </h1>
-        </div>
+          </Grid.Row>
+        </Grid>
         <br />
-        <div>
-          <StripeProvider apiKey="pk_test_FjmwUNWUX5OIG2L1aadq9nkM00e6PJNafA">
-            <Elements>
-              <CheckoutForm
-                cart={cart}
-                user={this.props.user}
-                createOrderItem={this.props.createOrderItem}
-                orderTotal={displayOrderTotal}
-                addAddress={this.props.addAddress}
-                getAddress={this.props.getAddress}
-                changeAddress={this.props.changeAddress}
-                addresses={this.props.addresses}
-              />
-            </Elements>
-          </StripeProvider>
-        </div>
+        <StripeProvider apiKey="pk_test_FjmwUNWUX5OIG2L1aadq9nkM00e6PJNafA">
+          <Elements>
+            <CheckoutForm
+              cart={cart}
+              user={this.props.user}
+              createOrderItem={this.props.createOrderItem}
+              orderTotal={displayOrderTotal}
+              addAddress={this.props.addAddress}
+              getAddress={this.props.getAddress}
+              changeAddress={this.props.changeAddress}
+              addresses={this.props.addresses}
+            />
+          </Elements>
+        </StripeProvider>
       </div>
     )
   }
