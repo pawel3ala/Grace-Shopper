@@ -33,7 +33,6 @@ router.get('/:orderId', async (req, res, next) => {
       })
       res.json(orders)
     } else {
-      console.log('got here')
       const {user} = req
       const productsPromise = Product.findAll({
         attributes: [

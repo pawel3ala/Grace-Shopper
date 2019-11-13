@@ -26,7 +26,6 @@ export const fetchSingleOrder = orderId => {
   return async dispatch => {
     try {
       const {data} = await Axios.get(`/api/orderItem/${orderId}`)
-      console.log('DISPATCHING', data)
       dispatch(getSingleOrder(data))
     } catch (err) {
       console.error(err)
