@@ -37,7 +37,7 @@ const Navbar = ({handleClick, isLoggedIn}) => (
             width={3}
             textAlign="right"
           >
-            <Link to="/catalog">
+            <Link to="/">
               <Icon name="th" size="big" />
             </Link>
             <Link to="/cart">
