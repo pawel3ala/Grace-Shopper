@@ -41,7 +41,7 @@ router.get('/', async (req, res, next) => {
         ]
       })
       const cartItemsPromise = CartItems.findAll({
-        where: {userId: user.id, orderId: null},
+        where: {orderId},
         raw: true
       })
       const [products, cartItems] = [

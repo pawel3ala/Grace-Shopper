@@ -49,6 +49,9 @@ form div {
   flex-wrap: wrap;
   justify-content: center;
 }
+.singleOrderProductDetails {
+  display: grid;
+}
 
 .allProductImg {
   height: 10rem;
