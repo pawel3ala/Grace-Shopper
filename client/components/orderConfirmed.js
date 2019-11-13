@@ -1,53 +1,22 @@
 import React, {useEffect} from 'react'
-import {
-  fetchItems,
-  addAnItem,
-  deleteItem,
-  changeItem,
-  clearAllItems
-} from '../store/cart'
 import {useSelector, useDispatch} from 'react-redux'
 import {Grid, Image, GridColumn, Header} from 'semantic-ui-react'
 import {fetchSingleOrder} from '../store/singleOrder'
 import {priceFormat} from '../../script/helperFuncs'
-
-let dummyOrder = {
-  id: 3443543,
-  items: [
-    {
-      id: 1,
-      image: 'http://lorempixel.com/640/480',
-      name: 'Orange Grapefruit',
-      price: 34,
-      quantity: 3
-    },
-    {
-      id: 2,
-      image: 'http://lorempixel.com/640/480',
-      name: 'Grapefruit Tree',
-      price: 100,
-      quantity: 1
-    }
-  ],
-  totalQuantity: 4,
-  totalPrice: 100,
-  shipToAddress: '12233 Test Street',
-  billToAddress: '23232 Baker Street',
-  userId: 1
-}
+import {Link} from 'react-router-dom'
 
 export const OrderConfirmed = props => {
-  dummyOrder = dummyOrder ? dummyOrder : {}
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(fetchSingleOrder(41))
+    dispatch(fetchSingleOrder(props.match.params.orderId))
   }, [])
 
   const singleOrderItems = useSelector(({singleOrder}) => singleOrder)
-
+  const userInfo = useSelector(({user}) => user)
+  console.log(userInfo)
   console.log(singleOrderItems)
-  return (
+  return singleOrderItems.length > 0 ? (
     <Grid centered>
       <Grid.Row>
         <Header as="h2">Thanks For Your Order!!!!</Header>
@@ -55,11 +24,15 @@ export const OrderConfirmed = props => {
       {singleOrderItems.map(item => {
         return (
           <Grid.Row key={item.productId}>
-            <Grid.Column width={3}>
-              <Image src={item.image} />
+            <Grid.Column width={2}>
+              <Link to={`/product/${item.productId}`}>
+                <Image src={item.image} bordered circular size="small" />
+              </Link>
             </Grid.Column>
-            <GridColumn width={3} textAlign="left">
-              <Grid.Row> {item.name}</Grid.Row>
+            <GridColumn width={3} textAlign="left" verticalAlign="middle">
+              <Grid.Row>
+                <Link to={`/product/${item.productId}`}>{item.name}</Link>
+              </Grid.Row>
               <Grid.Row>Price: {priceFormat(item.price)}</Grid.Row>
               <Grid.Row>Quantity: {item.quantity}</Grid.Row>
             </GridColumn>
@@ -68,7 +41,7 @@ export const OrderConfirmed = props => {
       })}
       <Grid.Row>
         <Grid.Column width={5} textAlign="left">
-          <Grid.Row>Order Number: {dummyOrder.id}</Grid.Row>
+          <Grid.Row>Order Number: {props.match.params.orderId}</Grid.Row>
           <Grid.Row>
             Total Quantity:
             {' ' +
@@ -90,6 +63,10 @@ export const OrderConfirmed = props => {
           <Grid.Row>Billing Address: {dummyOrder.billToAddress}</Grid.Row> */}
         </Grid.Column>
       </Grid.Row>
+    </Grid>
+  ) : (
+    <Grid centered>
+      <Grid.Row as="h2">This order does not exist!</Grid.Row>
     </Grid>
   )
 }
