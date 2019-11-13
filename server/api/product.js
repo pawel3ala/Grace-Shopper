@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const {Product, Review, Merchant, User} = require('../db/models')
+const {Product, Review, Category, Merchant, User} = require('../db/models')
 const {getProductQuery} = require('./helpers')
 const db = require('../db/db')
 

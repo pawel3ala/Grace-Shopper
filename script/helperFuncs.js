@@ -1,3 +1,10 @@
+import {
+  useQueryParams,
+  NumberParam,
+  StringParam,
+  NumericObjectParam
+} from 'use-query-params'
+
 export const getUrlString = (params, keys = [], isArray = false) => {
   const p = Object.keys(params)
     .map(key => {
@@ -44,3 +51,14 @@ export const priceFormat = price => {
     stringPrice.length - 2
   )}`
 }
+
+export const queryParams = () =>
+  useQueryParams({
+    page: NumberParam,
+    limit: NumberParam,
+    sort: StringParam,
+    search: StringParam,
+    category: NumberParam,
+    price: NumericObjectParam,
+    review: NumericObjectParam
+  })

@@ -1,32 +1,31 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {useSelector} from 'react-redux'
-import {Field, FormSection, reduxForm} from 'redux-form'
 import {
   Input,
   List,
   Rating,
   Grid,
-  Button,
   Label,
   Segment,
   Header,
+  Button,
   Sidebar
 } from 'semantic-ui-react'
-import {
-  useQueryParams,
-  StringParam,
-  QueryParamProvider,
-  NumberParam
-} from 'use-query-params'
-
-const handleChange = () => {
-  console.log('ch-ch-ch-changes')
-}
-
-// const RenderRange = createRenderer((input, label) => console.log('hi'))
+import {queryParams} from '../../script/helperFuncs'
+// import throttle from 'lodash.throttle'
 
 const CatalogSidebar = () => {
   const categories = useSelector(({categories}) => categories) || []
+  const [
+    {page = 1, limit = 10, sort = 'id.ASC', search, category, price, review},
+    setQuery
+  ] = queryParams()
+
+  const handleChange = ({target: {name, value}}) => {
+    setQuery({[name]: value}, 'pushIn')
+  }
+
+  useEffect(() => setQuery({page, limit, sort}, 'pushIn'), [])
   return (
     <div style={{height: '100%', width: 350}}>
       <form>
@@ -34,6 +33,7 @@ const CatalogSidebar = () => {
           <Input
             icon={{name: 'search', circular: true}}
             name="search"
+            value={search}
             onChange={handleChange}
             placeholder="Search"
           />
@@ -52,10 +52,20 @@ const CatalogSidebar = () => {
                 floated="right"
               >
                 {categories.map(({id, name}) => (
-                  <List.Item key={id} onClick={handleChange}>
+                  <List.Item
+                    key={id}
+                    name="category"
+                    onClick={() => setQuery({page: 1, category: id}, 'pushIn')}
+                  >
                     <List.Header>{name}</List.Header>
                   </List.Item>
                 ))}
+                <Button
+                  type="button"
+                  onClick={() => setQuery({category: undefined}, 'pushIn')}
+                >
+                  Clear Filter
+                </Button>
               </List>
             </Grid.Column>
           </Grid>
@@ -69,14 +79,27 @@ const CatalogSidebar = () => {
             ].map(({name, label, dir}, i) => (
               <Grid.Column key={name} width={6}>
                 <Input
+                  type="number"
                   label={{
                     content: dir
                   }}
                   labelPosition={i % 2 ? 'right' : 'left'}
                   style={{width: '5rem'}}
                   name={name}
+                  value={price && price[name] / 100}
                   placeholder={label}
-                  onChange={handleChange}
+                  onChange={({target: {value}}) =>
+                    setQuery(
+                      {
+                        page: 1,
+                        price: {
+                          ...price,
+                          [name]: value ? value * 100 : undefined
+                        }
+                      },
+                      'pushIn'
+                    )
+                  }
                 />
               </Grid.Column>
             ))}
@@ -88,11 +111,15 @@ const CatalogSidebar = () => {
               <Label ribbon>Average Rating</Label>
               <Rating
                 size="huge"
-                name="rating"
+                name="review"
                 maxRating={5}
+                rating={(review && review.gte) || 0}
                 icon="star"
-                onRate={handleChange}
-              />
+                onRate={(_, {rating}) =>
+                  handleChange({target: {name: 'review', value: {gte: rating}}})
+                }
+              />{' '}
+              +
             </Segment>
             {/* <Button type="submit" floated="right">
               Search
