@@ -50,6 +50,7 @@ export const Cart = props => {
   let cartAll
   cartProp === undefined ? (cartAll = [0]) : (cartAll = cartProp)
   let cart = cartAll.filter(cartItem => cartItem.orderId === null)
+  console.log(cart)
   return cart.length > 0 ? (
     <Grid padded centered>
       <Grid.Row as="h1" style={{paddingLeft: '0.5em'}}>

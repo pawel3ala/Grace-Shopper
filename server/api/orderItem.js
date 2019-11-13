@@ -1,5 +1,12 @@
 const router = require('express').Router()
-const {OrderItem, Product, CartItems, User} = require('../db/models')
+const {
+  OrderItem,
+  Product,
+  CartItems,
+  User,
+  Order,
+  Address
+} = require('../db/models')
 module.exports = router
 
 // POST api/orderItem (adding item to order)
@@ -22,56 +29,67 @@ router.post('/', async (req, res, next) => {
 
 router.get('/:orderId', async (req, res, next) => {
   const {orderId} = req.params
+  console.log(orderId)
   try {
-    if (!req.user) {
-      throw new Error('Not available for unauthenticated users')
-    } else if (req.user.isAdmin) {
-      const orders = await CartItems.findAll({
-        where: {
-          orderId: orderId
-        }
-      })
-      res.json(orders)
-    } else {
-      const {user} = req
-      const productsPromise = Product.findAll({
-        attributes: [
-          ['id', 'productId'],
-          'name',
-          'image',
-          'price',
-          ['quantity', 'productQuantity']
-        ],
-        // user.getProducts() was returning through table data, so I wrote this to
-        // ensure that no extra data gets pulled
-        include: [
-          {
-            model: User,
+    // if (!req.user) {
+    //   throw new Error('Not available for unauthenticated users')
+    // } else {
+    // else if (req.user.isAdmin) {    Fix this later???????????????
+    //   const orders = await OrderItem.findAll({
+    //     where: {
+    //       orderId: orderId
+    //     }
+    //   })
+    //   res.json(orders)
+    // }
+    console.log('got here')
+    const cartItemsPromise = CartItems.findAll({
+      where: {orderId},
+      raw: true
+    })
+    const cartItems = await cartItemsPromise
+    let userId = cartItems[0].userId
+    const {user} = req
+    const productsPromise = Product.findAll({
+      attributes: [
+        ['id', 'productId'],
+        'name',
+        'image',
+        'price',
+        ['quantity', 'productQuantity']
+      ],
+      // user.getProducts() was returning through table data, so I wrote this to
+      // ensure that no extra data gets pulled
+      include: [
+        {
+          model: User,
+          attributes: [],
+          where: {id: userId},
+          through: {
             attributes: [],
-            where: {id: user.id},
-            through: {
-              attributes: [],
-              where: {orderId}
-            }
+            where: {orderId}
           }
-        ]
-      })
-      const cartItemsPromise = CartItems.findAll({
-        where: {orderId},
-        raw: true
-      })
-      const [products, cartItems] = [
-        await productsPromise,
-        await cartItemsPromise
+        }
       ]
-      const cart = products.map(p => ({
-        ...p.get(),
-        quantity: +cartItems.find(c => c.productId === p.get().productId)
-          .quantity,
-        orderId: cartItems.find(c => c.productId === p.get().productId).orderId
-      }))
-      res.json(cart)
-    }
+    })
+    const order = await Order.findByPk(orderId)
+    const shipAddressPromise = Address.findByPk(order.get().shipToAddressId)
+    const billAddressPromise = Address.findByPk(order.get().billToAddressId)
+    const [products, shipToAddress, billToAddress] = [
+      await productsPromise,
+      // await cartItemsPromise,
+      await shipAddressPromise,
+      await billAddressPromise
+    ]
+    console.log(order.get().shipToAddressId)
+    console.log(shipToAddress.get(), billToAddress.get())
+    const cart = products.map(p => ({
+      ...p.get(),
+      quantity: +cartItems.find(c => c.productId === p.get().productId)
+        .quantity,
+      orderId: cartItems.find(c => c.productId === p.get().productId).orderId
+    }))
+    res.json(cart)
   } catch (err) {
     next(err)
   }
