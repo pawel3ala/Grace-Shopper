@@ -27,9 +27,9 @@ form div {
   flex-wrap: wrap;
 }
 
-/* .navBar {
-  background-color: rgb(249,151,60);
-} */
+.navBar {
+  background-image: url('./grapefruitNavBackground.jpg');
+}
 
 #tm {
   display: flex;
