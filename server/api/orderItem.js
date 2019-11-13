@@ -1,5 +1,12 @@
 const router = require('express').Router()
-const {OrderItem, Product, CartItems, User} = require('../db/models')
+const {
+  OrderItem,
+  Product,
+  CartItems,
+  User,
+  Order,
+  Address
+} = require('../db/models')
 module.exports = router
 
 // POST api/orderItem (adding item to order)
@@ -22,17 +29,19 @@ router.post('/', async (req, res, next) => {
 
 router.get('/:orderId', async (req, res, next) => {
   const {orderId} = req.params
+  console.log(orderId)
   try {
     if (!req.user) {
       throw new Error('Not available for unauthenticated users')
-    } else if (req.user.isAdmin) {
-      const orders = await OrderItem.findAll({
-        where: {
-          orderId: orderId
-        }
-      })
-      res.json(orders)
     } else {
+      // else if (req.user.isAdmin) {    Fix this later???????????????
+      //   const orders = await OrderItem.findAll({
+      //     where: {
+      //       orderId: orderId
+      //     }
+      //   })
+      //   res.json(orders)
+      // }
       console.log('got here')
       const {user} = req
       const productsPromise = Product.findAll({
@@ -60,10 +69,17 @@ router.get('/:orderId', async (req, res, next) => {
         where: {orderId},
         raw: true
       })
-      const [products, cartItems] = [
+      const order = await Order.findByPk(orderId)
+      const shipAddressPromise = Address.findByPk(order.get().shipToAddressId)
+      const billAddressPromise = Address.findByPk(order.get().billToAddressId)
+      const [products, cartItems, shipToAddress, billToAddress] = [
         await productsPromise,
-        await cartItemsPromise
+        await cartItemsPromise,
+        await shipAddressPromise,
+        await billAddressPromise
       ]
+      console.log(order.get().shipToAddressId)
+      console.log(shipToAddress.get(), billToAddress.get())
       const cart = products.map(p => ({
         ...p.get(),
         quantity: +cartItems.find(c => c.productId === p.get().productId)

@@ -8,6 +8,8 @@ import {
 } from '../store/cart'
 import {useSelector, useDispatch} from 'react-redux'
 import {Grid, Image, GridColumn, Header} from 'semantic-ui-react'
+import {fetchSingleOrder} from '../store/singleOrder'
+import {priceFormat} from '../../script/helperFuncs'
 
 let dummyOrder = {
   id: 3443543,
@@ -36,21 +38,30 @@ let dummyOrder = {
 
 export const OrderConfirmed = props => {
   dummyOrder = dummyOrder ? dummyOrder : {}
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(fetchSingleOrder(41))
+  }, [])
+
+  const singleOrderItems = useSelector(({singleOrder}) => singleOrder)
+
+  console.log(singleOrderItems)
   return (
     <Grid centered>
       <Grid.Row>
-        <Header as="H2">Thanks For Your Order!!!!</Header>
+        <Header as="h2">Thanks For Your Order!!!!</Header>
       </Grid.Row>
-      {dummyOrder.items.map(item => {
+      {singleOrderItems.map(item => {
         return (
-          <Grid.Row key={item.id}>
+          <Grid.Row key={item.productId}>
             <Grid.Column width={3}>
               <Image src={item.image} />
             </Grid.Column>
             <GridColumn width={3} textAlign="left">
-              <Grid.Row>Item Name: {item.name}</Grid.Row>
-              <Grid.Row>Item Price: ${item.price}</Grid.Row>
-              <Grid.Row>Item Quantity: {item.quantity}</Grid.Row>
+              <Grid.Row> {item.name}</Grid.Row>
+              <Grid.Row>Price: {priceFormat(item.price)}</Grid.Row>
+              <Grid.Row>Quantity: {item.quantity}</Grid.Row>
             </GridColumn>
           </Grid.Row>
         )
@@ -58,10 +69,25 @@ export const OrderConfirmed = props => {
       <Grid.Row>
         <Grid.Column width={5} textAlign="left">
           <Grid.Row>Order Number: {dummyOrder.id}</Grid.Row>
-          <Grid.Row>Total Quantity: {dummyOrder.totalQuantity}</Grid.Row>
-          <Grid.Row>Total Price: ${dummyOrder.totalPrice}</Grid.Row>
-          <Grid.Row>Shipping Address: {dummyOrder.shipToAddress}</Grid.Row>
-          <Grid.Row>Billing Address: {dummyOrder.billToAddress}</Grid.Row>
+          <Grid.Row>
+            Total Quantity:
+            {' ' +
+              singleOrderItems.reduce((tot, item) => {
+                tot += item.quantity
+                return tot
+              }, 0)}
+          </Grid.Row>
+          <Grid.Row>
+            Total Price:
+            {priceFormat(
+              singleOrderItems.reduce((tot, item) => {
+                tot += item.price
+                return tot
+              }, 0)
+            )}
+          </Grid.Row>
+          {/* <Grid.Row>Shipping Address: {dummyOrder.shipToAddress}</Grid.Row>
+          <Grid.Row>Billing Address: {dummyOrder.billToAddress}</Grid.Row> */}
         </Grid.Column>
       </Grid.Row>
     </Grid>
