@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import {useSelector} from 'react-redux'
 import {
   Input,
@@ -9,6 +9,7 @@ import {
   Segment,
   Header,
   Button,
+  Icon,
   Sidebar
 } from 'semantic-ui-react'
 import {queryParams} from '../../script/helperFuncs'
@@ -25,9 +26,21 @@ const CatalogSidebar = () => {
     setQuery({[name]: value}, 'pushIn')
   }
 
+  // const [vis, setVis] = useState(false)
+  // setTimeout(() => {
+  //   setVis(!vis)
+  // }, 1000)
+  // console.log(vis)
+
   useEffect(() => setQuery({page, limit, sort}, 'pushIn'), [])
   return (
-    <div style={{height: '100%', width: 350}}>
+    <Sidebar
+      as={Segment}
+      animation="scale down"
+      direction="left"
+      visible={true}
+      width="wide"
+    >
       <form>
         <Grid.Column width={12}>
           <Input
@@ -118,8 +131,7 @@ const CatalogSidebar = () => {
                 onRate={(_, {rating}) =>
                   handleChange({target: {name: 'review', value: {gte: rating}}})
                 }
-              />{' '}
-              +
+              />
             </Segment>
             {/* <Button type="submit" floated="right">
               Search
@@ -127,7 +139,7 @@ const CatalogSidebar = () => {
           </Grid.Column>
         </Grid>
       </form>
-    </div>
+    </Sidebar>
   )
 }
 

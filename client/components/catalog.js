@@ -5,6 +5,8 @@ import {fetchCatalog} from '../store/catalog'
 import categoriesReducer, {fetchCategories} from '../store/categories'
 import CatalogSidebar from './sidebar'
 import {queryParams} from '../../script/helperFuncs'
+import debounce from 'lodash.debounce'
+import {Sidebar, Grid} from 'semantic-ui-react'
 // import faker from 'faker'
 
 /**
@@ -38,10 +40,12 @@ export const Catalog = props => {
     dispatch(fetchCatalog(query))
     dispatch(fetchCategories(query))
   }
+  const getData = debounce(getNewData, 250, {trailing: true})
 
   useEffect(
     () => {
-      getNewData()
+      getData()
+      return getData.cancel
     },
     [queryDirty]
   )
@@ -51,11 +55,11 @@ export const Catalog = props => {
   // const sendQuery = () => getNewData()
 
   return (
-    <div>
+    <Sidebar.Pushable style={{height: '100vh'}}>
       <CatalogSidebar />
-      <div className="allProducts">
+      <Sidebar.Pusher as={Grid} className="allProducts">
         {catalog.map(product => (
-          <div key={product.id}>
+          <Grid.Column width={3} key={product.id}>
             <div className="productDiv">
               <Link to={`/product/${product.id}`}>
                 <img className="allProductImg" src={product.image} />
@@ -64,10 +68,10 @@ export const Catalog = props => {
             <Link to={`/product/${product.id}`} className="productName">
               <div>{product.name}</div>
             </Link>
-          </div>
+          </Grid.Column>
         ))}
-      </div>
-    </div>
+      </Sidebar.Pusher>
+    </Sidebar.Pushable>
   )
 }
 
