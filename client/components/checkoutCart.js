@@ -84,7 +84,7 @@ class UnconnectedCheckoutCart extends React.Component {
               textAlign="center"
               style={{color: 'red', paddingTop: '7em'}}
             >
-              Cart is Empty
+              No Items To Checkout!
             </Grid.Column>
           </Grid>
         )}

@@ -185,6 +185,7 @@ class CheckoutForm extends React.Component {
             // }).catch(console.error)
             if (!this.props.user.hasOwnProperty('email')) {
               console.log('Thank you for your order!')
+              this.props.history.push(`/orderConfirmed/${orderId}`)
             } else {
               this.props.history.push(`/order/${orderId}`)
             }
@@ -234,6 +235,7 @@ class CheckoutForm extends React.Component {
             })
             if (!this.props.user.hasOwnProperty('email')) {
               console.log('Thank you for your order!')
+              this.props.history.push(`/orderConfirmed/${orderId}`)
             } else {
               this.props.history.push(`/order/${orderId}`)
             }

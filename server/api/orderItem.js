@@ -31,18 +31,6 @@ router.get('/:orderId', async (req, res, next) => {
   const {orderId} = req.params
   console.log(orderId)
   try {
-    // if (!req.user) {
-    //   throw new Error('Not available for unauthenticated users')
-    // } else {
-    // else if (req.user.isAdmin) {    Fix this later???????????????
-    //   const orders = await OrderItem.findAll({
-    //     where: {
-    //       orderId: orderId
-    //     }
-    //   })
-    //   res.json(orders)
-    // }
-    console.log('got here')
     const cartItemsPromise = CartItems.findAll({
       where: {orderId},
       raw: true
@@ -77,7 +65,6 @@ router.get('/:orderId', async (req, res, next) => {
     const billAddressPromise = Address.findByPk(order.get().billToAddressId)
     const [products, shipToAddress, billToAddress] = [
       await productsPromise,
-      // await cartItemsPromise,
       await shipAddressPromise,
       await billAddressPromise
     ]
