@@ -17,9 +17,16 @@ class EditProduct extends React.Component {
   }
 
   handleChange(event) {
-    this.setState({
-      [event.target.name]: event.target.value
-    })
+    if (event.target.name === 'price') {
+      this.setState({
+        [event.target.name]: +String(event.target.value)
+          .split('.')
+          .join('')
+      })
+    } else
+      this.setState({
+        [event.target.name]: event.target.value
+      })
   }
 
   handleSubmit(event) {
@@ -42,8 +49,15 @@ class EditProduct extends React.Component {
         <label>Price</label>
         <input
           type="number"
-          value={this.state.price}
+          value={
+            +(
+              String(this.state.price).slice(0, -2) +
+              '.' +
+              String(this.state.price).slice(-2)
+            )
+          }
           name="price"
+          step="0.01"
           onChange={this.handleChange}
         />
 
