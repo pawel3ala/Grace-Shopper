@@ -101,9 +101,11 @@ export const Cart = props => {
           </Button>
         </Grid.Column>
         <Grid.Column width={3}>
-          <Button color="yellow" type="button" floated="right">
-            Proceed to Checkout
-          </Button>
+          <Link to="/checkout">
+            <Button color="yellow" type="button" floated="right">
+              Proceed to Checkout
+            </Button>
+          </Link>
         </Grid.Column>
       </Grid.Row>
     </Grid>

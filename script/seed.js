@@ -64,7 +64,7 @@ async function seed() {
   let allProductsPromise = []
   for (let i = 0; i < 1200; i++) {
     let newProduct = Product.create({
-      name: `${faker.commerce.productName()}`,
+      name: `${faker.commerce.productMaterial()} ${faker.commerce.productAdjective()} Grapefruit`,
       quantity: Math.floor(Math.random() * 100),
       price: Number(faker.commerce.price()) + 100,
       image: `https://source.unsplash.com/collection/${i}/480x480`,

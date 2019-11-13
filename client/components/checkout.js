@@ -14,6 +14,7 @@ import {
   addAddress
 } from '../store/address'
 import CheckoutForm from './checkoutForm'
+import {Link} from 'react-router-dom'
 import {connect} from 'react-redux'
 import {StripeProvider, Elements} from 'react-stripe-elements'
 
@@ -55,7 +56,9 @@ class unconnectedCheckout extends React.Component {
     return (
       <div>
         <div id="checkoutHeader">
-          <h1>Checkout ({cartCount} items)</h1>
+          <h1>
+            Checkout (<Link to="/cart">{cartCount} items</Link>)
+          </h1>
         </div>
         <br />
         <div>
