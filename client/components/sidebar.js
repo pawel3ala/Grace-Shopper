@@ -18,7 +18,7 @@ import {queryParams} from '../../script/helperFuncs'
 const CatalogSidebar = () => {
   const categories = useSelector(({categories}) => categories) || []
   const [
-    {page = 1, limit = 10, sort = 'id.ASC', search, category, price, review},
+    {page = 1, limit = 15, sort = 'id.ASC', search, category, price, review},
     setQuery
   ] = queryParams()
 
