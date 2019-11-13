@@ -1,97 +1,303 @@
+/* eslint-disable complexity */
+/* eslint-disable max-statements-per-line */
+/* eslint-disable max-statements */
 /* eslint-disable camelcase */
 import React from 'react'
-import {CheckoutCart} from './index'
+import {CheckoutCart, UserHome} from './index'
+import UserEmailInput from './userEmailInput'
+import ShipAddressForm from './shipAddressFormRedux'
+import BillAddressForm from './billAddressFormRedux'
 import {CardElement, injectStripe} from 'react-stripe-elements'
 import Axios from 'axios'
-
-const shipAddress = {
-  name: 'Test Name',
-  line1: '123 Anywhere St.',
-  line2: 'Apt 3',
-  city: 'Townsville',
-  state: 'Ohio',
-  zip: '12345'
-}
-const billAddress = {
-  name: 'Test Name',
-  line1: '123 Anywhere St.',
-  line2: 'Apt 3',
-  city: 'Townsville',
-  state: 'Ohio',
-  zip: '12345'
-}
 
 class CheckoutForm extends React.Component {
   constructor() {
     super()
     this.state = {
       updateShip: false,
-      updateBill: false,
-      shipName: '',
-      shipLine1: '',
-      shipLine2: '',
-      shipCity: '',
-      shipState: '',
-      shipZip: '',
       enterBilling: false,
-      billName: '',
-      billLine1: '',
-      billLine2: '',
-      billCity: '',
-      billState: '',
-      billZip: ''
+      updateBill: false,
+      emailUpdate: false,
+      email: '',
+      shipAddressState: {
+        shipName: '',
+        shipStreet1: '',
+        shipStreet2: '',
+        shipCity: '',
+        shipState: '',
+        shipZip: ''
+      },
+      billAddressState: {
+        billName: '',
+        billStreet1: '',
+        billStreet2: '',
+        billCity: '',
+        billState: '',
+        billZip: ''
+      },
+      orderFail: false
     }
-    this.handleSubmit = this.handleSubmit.bind(this)
-    this.handleChange = this.handleChange.bind(this)
+    this.handleOrderSubmit = this.handleOrderSubmit.bind(this)
+    this.formShipSubmit = this.formShipSubmit.bind(this)
+    this.formBillSubmit = this.formBillSubmit.bind(this)
+    this.handleEmailChange = this.handleEmailChange.bind(this)
+    this.handleShipChange = this.handleShipChange.bind(this)
+    this.handleBillChange = this.handleBillChange.bind(this)
     this.handleShipUpdate = this.handleShipUpdate.bind(this)
-    this.handleShipSave = this.handleShipSave.bind(this)
     this.handleBillUpdate = this.handleBillUpdate.bind(this)
-    this.handleBillSave = this.handleBillSave.bind(this)
     this.handleBillingAddress = this.handleBillingAddress.bind(this)
+    this.handleUpdateEmail = this.handleUpdateEmail.bind(this)
   }
-  async handleSubmit(event) {
+  async handleOrderSubmit(event, user) {
     event.preventDefault()
-
-    try {
-      let {token} = await this.props.stripe.createToken({
-        name: this.state.billName
-      })
-      let amount = this.props.orderTotal / 100
-      const {data} = await Axios.post('/api/payment', {token, amount})
-      if (data.status) {
-        console.log('Success!')
+    // Checks if user/guest has an address to start with
+    if (this.props.addresses.length === 0) {
+      let tokenObj = {}
+      // Check if shipping/billing are the same
+      if (!this.state.enterBilling) {
+        // If the same, use shipping name for token
+        tokenObj = {
+          name: this.state.shipAddressState.shipName
+        }
       } else {
-        console.log('fail')
+        // If not the same, use billing name for token
+        tokenObj = {
+          name: this.state.billAddressState.billName
+        }
       }
-    } catch (err) {
-      throw err
+      try {
+        let {token} = await this.props.stripe.createToken(tokenObj)
+        let amount = this.props.orderTotal / 100
+        // Send payment to Strip
+        const {data} = await Axios.post('/api/payment', {token, amount})
+        if (data.status) {
+          // If prior payment attempt failed, reset orderFail bool to false
+          this.setState({
+            orderFail: false
+          })
+          // Now that order is successful, we create addresses for either guest or new user
+          // Check if shipping/billing are the same
+          if (!this.state.enterBilling) {
+            // If the same, use shipping info for both addressses
+            const orderObj = {
+              email: this.state.email,
+              shipAddress: {
+                name: this.state.shipAddressState.shipName,
+                street1: this.state.shipAddressState.shipStreet1,
+                street2: this.state.shipAddressState.shipStreet2,
+                city: this.state.shipAddressState.shipCity,
+                state: this.state.shipAddressState.shipState,
+                zip: this.state.shipAddressState.shipZip,
+                type: 'SHIP_TO'
+              },
+              billAddress: {
+                name: this.state.shipAddressState.shipName,
+                street1: this.state.shipAddressState.shipStreet1,
+                street2: this.state.shipAddressState.shipStreet2,
+                city: this.state.shipAddressState.shipCity,
+                state: this.state.shipAddressState.shipState,
+                zip: this.state.shipAddressState.shipZip,
+                type: 'BILL_TO'
+              },
+              totalPrice: this.props.orderTotal,
+              cart: this.props.cart
+            }
+            const newOrder = await Axios.post('/api/order', orderObj)
+            const orderId = newOrder.data.id
+            const userId = newOrder.data.userId
+            this.props.cart.map(product => {
+              const orderItemObj = {
+                userId,
+                productId: product.productId,
+                quantity: product.quantity,
+                price: product.price,
+                orderId
+              }
+              this.props.createOrderItem(orderItemObj)
+            })
+          } else {
+            // If the same, use respective addressses
+            let thisEmail = ''
+            if (this.state.email === '') {
+              thisEmail = user.email
+            } else {
+              thisEmail = this.state.email
+            }
+            const orderObj = {
+              email: thisEmail,
+              shipAddress: {
+                name: this.state.shipAddressState.shipName,
+                street1: this.state.shipAddressState.shipStreet1,
+                street2: this.state.shipAddressState.shipStreet2,
+                city: this.state.shipAddressState.shipCity,
+                state: this.state.shipAddressState.shipState,
+                zip: this.state.shipAddressState.shipZip,
+                type: 'SHIP_TO'
+              },
+              billAddress: {
+                name: this.state.billAddressState.billName,
+                street1: this.state.billAddressState.billStreet1,
+                street2: this.state.billAddressState.billStreet2,
+                city: this.state.billAddressState.billCity,
+                state: this.state.billAddressState.billState,
+                zip: this.state.billAddressState.billZip,
+                type: 'BILL_TO'
+              },
+              totalPrice: this.props.orderTotal,
+              cart: this.props.cart
+            }
+            const newOrder = await Axios.post('/api/order', orderObj)
+            const orderId = newOrder.data.id
+            const userId = newOrder.data.userId
+            this.props.cart.map(product => {
+              const orderItemObj = {
+                userId,
+                productId: product.productId,
+                quantity: product.quantity,
+                price: product.price,
+                orderId
+              }
+              this.props.createOrderItem(orderItemObj)
+            })
+          }
+        } else {
+          // If payment fails, set orderFail bool to true to display message
+          this.setState({
+            orderFail: true
+          })
+        }
+      } catch (err) {
+        throw err
+      }
+    } else {
+      // Dealing with an authenticated user, they have a billing address. Get it.
+      const billAddress = this.props.addresses.filter(
+        address => address.type === 'BILL_TO'
+      )
+      const shipAddress = this.props.addresses.filter(
+        address => address.type === 'SHIP_TO'
+      )
+      // Use billAddress for token name
+      const tokenObj = {
+        name: billAddress[0].name
+      }
+      try {
+        let {token} = await this.props.stripe.createToken(tokenObj)
+        let amount = this.props.orderTotal / 100
+        const {data} = await Axios.post('/api/payment', {token, amount})
+        if (data.status) {
+          this.setState({
+            orderFail: false
+          })
+          let thisEmail = ''
+          if (this.state.email === '') {
+            thisEmail = user.email
+          } else {
+            thisEmail = this.state.email
+          }
+          const orderObj = {
+            email: thisEmail,
+            shipAddress: {
+              id: shipAddress.id
+            },
+            billAddress: {
+              id: billAddress.id
+            },
+            totalPrice: this.props.orderTotal,
+            cart: this.props.cart
+          }
+          const newOrder = await Axios.post('/api/order', orderObj)
+          const orderId = newOrder.data.id
+          this.props.cart.map(product => {
+            const orderItemObj = {
+              productId: product.productId,
+              quantity: product.quantity,
+              price: product.price,
+              orderId
+            }
+            this.props.createOrderItem(orderItemObj)
+          })
+        } else {
+          this.setState({
+            orderFail: true
+          })
+        }
+      } catch (err) {
+        throw err
+      }
     }
   }
-  handleChange(event) {
+  handleEmailChange() {
     this.setState({
-      [event.target.name]: event.target.value
+      email: [event.target.value]
+    })
+  }
+  formShipSubmit(values) {
+    if (!this.state.enterBilling) {
+      const shipAddress = {
+        name: values.shipName,
+        street1: values.shipStreet1,
+        street2: values.shipStreet2,
+        city: values.shipCity,
+        state: values.shipState,
+        zip: values.shipZip,
+        type: 'SHIP_TO'
+      }
+      const billAddress = {
+        name: values.shipName,
+        street1: values.shipStreet1,
+        street2: values.shipStreet2,
+        city: values.shipCity,
+        state: values.shipState,
+        zip: values.shipZip,
+        type: 'BILL_TO'
+      }
+      this.props.changeAddress([shipAddress, billAddress])
+    } else {
+      const shipAddress = {
+        name: values.shipName,
+        street1: values.shipStreet1,
+        street2: values.shipStreet2,
+        city: values.shipCity,
+        state: values.shipState,
+        zip: values.shipZip,
+        type: 'SHIP_TO'
+      }
+      this.props.changeAddress([shipAddress])
+    }
+  }
+  formBillSubmit(values) {
+    const billAddress = {
+      name: values.billName,
+      street1: values.billStreet1,
+      street2: values.billStreet2,
+      city: values.billCity,
+      state: values.billState,
+      zip: values.billZip,
+      type: 'BILL_TO'
+    }
+    this.props.changeAddress([billAddress])
+  }
+  handleShipChange(name, value) {
+    this.setState({
+      shipAddressState: {...this.state.shipAddressState, [name]: value}
+    })
+  }
+  handleBillChange(name, value) {
+    this.setState({
+      billAddressState: {...this.state.billAddressState, [name]: value}
     })
   }
   handleShipUpdate() {
+    event.preventDefault()
     this.setState({
-      updateShip: !this.state.updateShip,
-      shipName: shipAddress.name,
-      shipLine1: shipAddress.line1,
-      shipLine2: shipAddress.line2,
-      shipCity: shipAddress.city,
-      shipState: shipAddress.state,
-      shipZip: shipAddress.zip
+      updateShip: !this.state.updateShip
     })
   }
   handleBillUpdate() {
+    event.preventDefault()
     this.setState({
-      updateBill: !this.state.updateBill,
-      billName: billAddress.name,
-      billLine1: billAddress.line1,
-      billLine2: billAddress.line2,
-      billCity: billAddress.city,
-      billState: billAddress.state,
-      billZip: billAddress.zip
+      updateBill: !this.state.updateBill
     })
   }
   handleBillingAddress() {
@@ -99,208 +305,95 @@ class CheckoutForm extends React.Component {
       enterBilling: !this.state.enterBilling
     })
   }
-  handleShipSave() {
-    // this.props.changeAddress()
-    // this.props.fetchAddress()
+  handleUpdateEmail() {
     this.setState({
-      updateShip: !this.state.updateShip
+      emailUpdate: !this.state.emailUpdate
     })
-    console.log('saved')
-  }
-  handleBillSave() {
-    // this.props.changeAddress()
-    // this.props.fetchAddress()
-    this.setState({
-      updateBill: !this.state.updateBill
-    })
-    console.log('saved')
   }
   render() {
+    let user
+    !this.props.user.hasOwnProperty('email')
+      ? (user = false)
+      : (user = this.props.user)
+    let addresses
+    this.props.addresses === undefined ||
+    typeof this.props.addresses === 'string'
+      ? (addresses = [0])
+      : (addresses = this.props.addresses)
+    const shipAddress = addresses.filter(address => address.type === 'SHIP_TO')
+    const billAddress = addresses.filter(address => address.type === 'BILL_TO')
     return (
       <div className="orderForm">
-        <form onSubmit={this.handleSubmit}>
-          {this.state.updateShip ? (
-            <div>
-              <label htmlFor="shipName">
-                Name:
-                <input
-                  name="shipName"
-                  value={this.state.shipName}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <br />
-              <label htmlFor="shipLine1">
-                Street Address:
-                <input
-                  name="shipLine1"
-                  value={this.state.shipLine1}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <br />
-              <label htmlFor="shipLine2">
-                Apt/Suite:
-                <input
-                  name="shipLine2"
-                  value={this.state.shipLine2}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <br />
-              <label htmlFor="shipCity">
-                City:
-                <input
-                  name="shipCity"
-                  value={this.state.shipCity}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <br />
-              <label htmlFor="shipState">
-                State:
-                <input
-                  name="shipState"
-                  value={this.state.shipState}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <br />
-              <label htmlFor="shipZip">
-                Postal Code:
-                <input
-                  name="shipZip"
-                  value={this.state.shipZip}
-                  onChange={this.handleChange}
-                />
-              </label>
-            </div>
+        <ShipAddressForm
+          onSubmit={values => this.formShipSubmit(values)}
+          shipAddress={shipAddress}
+          shipAddressState={this.state.shipAddressState}
+          handleShipChange={this.handleShipChange}
+          handleShipUpdate={this.handleShipUpdate}
+          updateShip={this.state.updateShip}
+        />
+        <div>
+          <input
+            type="checkbox"
+            onChange={this.handleBillingAddress}
+            defaultChecked
+          />Billing and Shipping are the same.
+        </div>
+        {!this.state.enterBilling ? null : (
+          <BillAddressForm
+            onSubmit={this.formBillSubmit}
+            billAddress={billAddress}
+            billAddressState={this.state.billAddressState}
+            handleBillChange={this.handleBillChange}
+            handleBillUpdate={this.handleBillUpdate}
+            updateBill={this.state.updateBill}
+          />
+        )}
+        <br />
+        <form onSubmit={() => this.handleOrderSubmit(event, user)}>
+          {user ? (
+            <UserEmailInput
+              emailUpdate={this.state.emailUpdate}
+              email={this.state.email}
+              handleEmailChange={this.handleEmailChange}
+              user={user}
+              handleUpdateEmail={this.handleUpdateEmail}
+            />
           ) : (
             <div>
-              <div>Name: {shipAddress.name}</div>
-              <br />
-              <div>Street Address: {shipAddress.line1}</div>
-              <br />
-              <div>Apt/Suite: {shipAddress.line2}</div>
-              <br />
-              <div>City: {shipAddress.city}</div>
-              <br />
-              <div>State: {shipAddress.state}</div>
-              <br />
-              <div>Postal Code: {shipAddress.zip}</div>
+              <label htmlFor="email">E-mail:</label>
+              <input
+                name="email"
+                required
+                type="email"
+                value={this.state.email}
+                onChange={this.handleEmailChange}
+              />
             </div>
           )}
           <br />
-          <div>
-            {this.state.updateShip ? (
-              <button type="button" onClick={this.handleShipSave}>
-                Save Changes
-              </button>
-            ) : (
-              <button type="button" onClick={this.handleShipUpdate}>
-                Edit Shipping Address
-              </button>
-            )}
-          </div>
-          <div>
-            <input
-              type="checkbox"
-              onChange={this.handleBillingAddress}
-              defaultChecked
-            />Billing and Shipping are the same.
-          </div>
-          <br />
-          {!this.state.enterBilling ? null : this.state.updateBill ? (
-            <div>
-              <label htmlFor="billName">
-                Name:
-                <input
-                  name="billName"
-                  value={this.state.billName}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <br />
-              <label htmlFor="billLine1">
-                Street Address:
-                <input
-                  name="billLine1"
-                  value={this.state.billLine1}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <br />
-              <label htmlFor="billLine2">
-                Apt/Suite:
-                <input
-                  name="billLine2"
-                  value={this.state.billLine2}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <br />
-              <label htmlFor="billCity">
-                City:
-                <input
-                  name="billCity"
-                  value={this.state.billCity}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <br />
-              <label htmlFor="billState">
-                State:
-                <input
-                  name="billState"
-                  value={this.state.billState}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <br />
-              <label htmlFor="billZip">
-                Postal Code:
-                <input
-                  name="billZip"
-                  value={this.state.billZip}
-                  onChange={this.handleChange}
-                />
-              </label>
-            </div>
-          ) : (
-            <div>
-              <div>Name: {billAddress.name}</div>
-              <br />
-              <div>Street Address: {billAddress.line1}</div>
-              <br />
-              <div>Apt/Suite: {billAddress.line2}</div>
-              <br />
-              <div>City: {billAddress.city}</div>
-              <br />
-              <div>State: {billAddress.state}</div>
-              <br />
-              <div>Postal Code: {billAddress.zip}</div>
-            </div>
-          )}
-          <br />
-          {!this.state.enterBilling ? null : this.state.updateBill ? (
-            <button type="button" onClick={this.handleBillSave}>
-              Save Changes
-            </button>
-          ) : (
-            <button type="button" onClick={this.handleBillUpdate}>
-              Edit Billing Address
-            </button>
-          )}
           <CardElement />
           <br />
           <CheckoutCart />
           <button type="submit">Confirm Order</button>
-          <div>
-            Order Total: ${this.props.orderTotal.slice(
-              0,
-              this.props.orderTotal.length - 2
-            )}.{this.props.orderTotal.slice(this.props.orderTotal.length - 2)}
-          </div>
+          {this.props.orderTotal === '0' ? (
+            <div>Order Total: $0</div>
+          ) : (
+            <div>
+              Order Total: ${this.props.orderTotal.slice(
+                0,
+                this.props.orderTotal.length - 2
+              )}.{this.props.orderTotal.slice(this.props.orderTotal.length - 2)}
+            </div>
+          )}
+          {this.state.orderFail ? (
+            <div>
+              <h3>
+                Your card failed to process correctly.<br />Please try a new
+                card or check that the details are correct.
+              </h3>
+            </div>
+          ) : null}
         </form>
       </div>
     )

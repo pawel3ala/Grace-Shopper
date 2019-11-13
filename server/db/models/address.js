@@ -5,7 +5,10 @@ const Address = db.define('address', {
   name: {
     type: Sequelize.STRING
   },
-  street: {
+  street1: {
+    type: Sequelize.STRING
+  },
+  street2: {
     type: Sequelize.STRING
   },
   city: {

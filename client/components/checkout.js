@@ -4,9 +4,15 @@ import {
   addAnItem,
   deleteItem,
   changeItem,
-  clearAllItems
+  clearAllItems,
+  createOrderItem
 } from '../store/cart'
-import {fetchAddress, changeAddress} from '../store/address'
+import {
+  fetchAddress,
+  changeAddress,
+  getAddress,
+  addAddress
+} from '../store/address'
 import CheckoutForm from './checkoutForm'
 import {connect} from 'react-redux'
 import {StripeProvider, Elements} from 'react-stripe-elements'
@@ -30,25 +36,22 @@ class unconnectedCheckout extends React.Component {
     await this.props.changeItem(itemObj)
     this.props.fetchItems()
   }
-  handleOrder() {
-    // this.props.createOrder()
-    // this.props.fetchOrder()
-    // this.props.setOrderItems()
-    this.props.clearCart()
-  }
   render() {
-    let cart
-    this.props.cart === undefined ? (cart = [0]) : (cart = this.props.cart)
+    let cartAll
+    this.props.cart === undefined
+      ? (cartAll = [0])
+      : (cartAll = this.props.cart)
+    let cart = cartAll.filter(cartItem => cartItem.orderId === null)
     const cartCount = cart.reduce((accum, currentVal) => {
       accum += currentVal.quantity
       return accum
     }, 0)
     const orderTotal = cart.reduce((accum, currentVal) => {
-      accum += currentVal.total
+      const itemSubtotal = currentVal.quantity * currentVal.price
+      accum += itemSubtotal
       return accum
     }, 0)
-    // const displayOrderTotal = String(orderTotal)
-    const displayOrderTotal = String(234)
+    const displayOrderTotal = String(orderTotal)
     return (
       <div>
         <div id="checkoutHeader">
@@ -59,12 +62,14 @@ class unconnectedCheckout extends React.Component {
           <StripeProvider apiKey="pk_test_FjmwUNWUX5OIG2L1aadq9nkM00e6PJNafA">
             <Elements>
               <CheckoutForm
-                address="this.props.address"
                 cart={cart}
+                user={this.props.user}
+                createOrderItem={this.props.createOrderItem}
                 orderTotal={displayOrderTotal}
+                addAddress={this.props.addAddress}
+                getAddress={this.props.getAddress}
                 changeAddress={this.props.changeAddress}
-                fetchAddress={this.props.fetchAddress}
-                clearCart={this.props.clearCart}
+                addresses={this.props.addresses}
               />
             </Elements>
           </StripeProvider>
@@ -77,7 +82,8 @@ class unconnectedCheckout extends React.Component {
 const mapStateToProps = state => {
   return {
     cart: state.cart,
-    address: state.address
+    addresses: state.address,
+    user: state.user
   }
 }
 
@@ -87,7 +93,10 @@ const mapDispatchToProps = dispatch => {
     addToCart: item => dispatch(addAnItem(item)),
     deleteItem: item => dispatch(deleteItem(item)),
     changeItem: item => dispatch(changeItem(item)),
+    createOrderItem: orderItem => dispatch(createOrderItem(orderItem)),
     clearCart: () => dispatch(clearAllItems()),
+    getAddress: address => dispatch(getAddress(address)),
+    addAddress: address => dispatch(addAddress(address)),
     fetchAddress: () => dispatch(fetchAddress()),
     changeAddress: address => dispatch(changeAddress(address))
   }

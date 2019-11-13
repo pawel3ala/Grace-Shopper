@@ -26,14 +26,14 @@ export default addressReducer
 export const fetchAddress = () => {
   return async dispatch => {
     try {
-      const {data} = await Axios.get('/api/address')
+      const {data} = await Axios.get('/api/users/address')
       dispatch(getAddress(data))
     } catch (err) {
       console.error(err)
     }
   }
 }
-export const addAnAddress = address => {
+export const addAddress = address => {
   return async () => {
     try {
       await Axios.post('/api/address', address)
@@ -54,7 +54,16 @@ export const deleteItem = address => {
 export const changeAddress = address => {
   return async () => {
     try {
-      await Axios.put(`/api/address`, address)
+      if (address.length === 2) {
+        const shipAddress = address[0]
+        const billAddress = address[1]
+        await Axios.put(`/api/address/ship`, shipAddress)
+        await Axios.put(`/api/address/bill`, billAddress)
+      } else if (address[0].type === 'SHIP_TO') {
+        await Axios.put(`/api/address/ship`, address[0])
+      } else {
+        await Axios.put(`/api/address/bill`, address[0])
+      }
     } catch (err) {
       console.error(err)
     }

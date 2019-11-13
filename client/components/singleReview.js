@@ -1,4 +1,5 @@
 import React from 'react'
+import {Grid, Form, Rating} from 'semantic-ui-react'
 
 class SingleReview extends React.Component {
   constructor(props) {
@@ -12,6 +13,7 @@ class SingleReview extends React.Component {
     this.changeToEdit = this.changeToEdit.bind(this)
     this.changeToNoEdit = this.changeToNoEdit.bind(this)
     this.handleChange = this.handleChange.bind(this)
+    this.cancelEdit = this.cancelEdit.bind(this)
   }
   changeToEdit() {
     this.setState({
@@ -31,16 +33,31 @@ class SingleReview extends React.Component {
     await this.props.fetchProduct(this.props.productId)
     this.setState({editMode: false})
   }
-  handleChange(event) {
-    this.setState({[event.target.name]: event.target.value})
+  cancelEdit() {
+    this.setState({editMode: false})
+  }
+  handleChange(event, data) {
+    if (data) {
+      //This is so we can grab the data from react ui star value for ratings
+      this.setState({
+        [data.name]: data.rating
+      })
+    } else this.setState({[event.target.name]: event.target.value})
   }
 
   render() {
     return !this.state.editMode ? (
-      <div>
-        <div>{this.props.review.title}</div>
-        <div>{this.props.review.content}</div>
-        <div>{this.props.review.stars}</div>
+      <Grid.Column width={4} textAlign="center">
+        <Grid.Row>{this.props.review.title}</Grid.Row>
+        <Grid.Row>{this.props.review.content}</Grid.Row>
+        <Grid.Row>
+          <Rating
+            rating={this.props.review.stars}
+            icon="star"
+            maxRating={5}
+            disabled
+          />
+        </Grid.Row>
         {//only the authed user who wrote that specific review can edit it
         this.props.review.userId === this.props.userId ? (
           <button
@@ -51,45 +68,54 @@ class SingleReview extends React.Component {
             Edit Review
           </button>
         ) : null}
-      </div>
+      </Grid.Column>
     ) : (
-      <div>
-        <input
-          type="text"
-          name="title"
-          value={this.state.title}
-          onChange={this.handleChange}
-        />
-        {this.state.title.length === 0 ? <div>Title needs an input</div> : null}
-        <textarea
-          type="text"
-          name="content"
-          value={this.state.content}
-          onChange={this.handleChange}
-        />
-        {this.state.content.length < 12 ? (
-          <div>Content needs to be more than 12 characters</div>
-        ) : null //give user an idea on what is needed
-        }
-        <input
-          type="number"
-          name="stars"
-          min="0"
-          max="5"
-          value={this.state.stars}
-          onChange={this.handleChange}
-        />
-        {/*cant send a review with less than 12 characters or will fail sequelize validation*/}
-        <button
-          type="button"
-          onClick={this.changeToNoEdit}
-          disabled={
-            this.state.content.length < 12 || this.state.title.length === 0
+      <Grid.Row>
+        <Form>
+          <input
+            type="text"
+            name="title"
+            value={this.state.title}
+            onChange={this.handleChange}
+          />
+          {this.state.title.length === 0 ? (
+            <div>Title needs an input</div>
+          ) : null}
+          <textarea
+            type="text"
+            name="content"
+            value={this.state.content}
+            onChange={this.handleChange}
+          />
+          {this.state.content.length < 12 ? (
+            <div>Content needs to be more than 12 characters</div>
+          ) : null //give user an idea on what is needed
           }
-        >
-          Done
-        </button>
-      </div>
+          <Rating
+            rating={this.state.stars}
+            icon="star"
+            maxRating={5}
+            onRate={
+              this
+                .handleChange /*uses onRate instead of onChange and passes event,data instead of just event */
+            }
+            name="stars"
+          />
+          {/*cant send a review with less than 12 characters or will fail sequelize validation*/}
+          <button
+            type="button"
+            onClick={this.changeToNoEdit}
+            disabled={
+              this.state.content.length < 12 || this.state.title.length === 0
+            }
+          >
+            Done
+          </button>
+          <button type="button" onClick={this.cancelEdit}>
+            Cancel
+          </button>
+        </Form>
+      </Grid.Row>
     )
   }
 }

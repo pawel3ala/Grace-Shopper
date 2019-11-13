@@ -12,7 +12,10 @@ router.get('/', async (req, res, next) => {
     if (!req.user) {
       // handle unauthenticated user w/ cookie
       const {session: {cart = []}} = req
-      res.json(cart)
+      let newCart = cart.map(item => {
+        return {...item, orderId: null}
+      })
+      res.json(newCart)
     } else {
       const {user} = req
       const productsPromise = Product.findAll({
@@ -31,13 +34,14 @@ router.get('/', async (req, res, next) => {
             attributes: [],
             where: {id: user.id},
             through: {
-              attributes: []
+              attributes: [],
+              where: {orderId: null}
             }
           }
         ]
       })
       const cartItemsPromise = CartItems.findAll({
-        where: {userId: user.id},
+        where: {userId: user.id, orderId: null},
         raw: true
       })
       const [products, cartItems] = [
@@ -47,7 +51,8 @@ router.get('/', async (req, res, next) => {
       const cart = products.map(p => ({
         ...p.get(),
         quantity: +cartItems.find(c => c.productId === p.get().productId)
-          .quantity
+          .quantity,
+        orderId: cartItems.find(c => c.productId === p.get().productId).orderId
       }))
       res.json(cart)
     }
@@ -63,24 +68,36 @@ router.post('/', async (req, res, next) => {
   //   -if someone orders something that depletes the stock of a given item, all users with that
   //   item in their cart can't order it
   try {
-    const {body: {productId, quantity}} = req
+    const {body: {productId, quantity, price}} = req
     if (!req.user) {
       // handle unauthenticated user w/ cookie
       if (!req.session.cart) req.session.cart = []
-      const newProduct = await Product.findByPk(productId, {
-        attributes: [
-          ['id', 'productId'],
-          'name',
-          'image',
-          'price',
-          ['quantity', 'productQuantity']
-        ]
-      })
-      req.session.cart.push({...newProduct.get(), quantity: +quantity})
+      // check to see if item is in the cart before adding
+      if (req.session.cart.every(({productId: id}) => id !== +productId)) {
+        const newProduct = await Product.findByPk(productId, {
+          attributes: [
+            ['id', 'productId'],
+            'name',
+            'image',
+            'price',
+            ['quantity', 'productQuantity']
+          ]
+        })
+        req.session.cart.push({
+          ...newProduct.get(),
+          quantity: +quantity,
+          orderId: null
+        })
+      }
       res.json(req.session.cart)
     } else {
       const {user: {id: userId}} = req
-      const cartItem = await CartItems.create({productId, quantity, userId})
+      // findOrCreate prevents the cart item from being added if it already exists. Quantity will not be updated on CartItems
+      // if the item is already in the cart
+      const cartItem = await CartItems.findOrCreate({
+        where: {productId, userId, orderId: null},
+        defaults: {quantity, price}
+      })
       res.json(cartItem)
     }
   } catch (err) {
@@ -108,6 +125,36 @@ router.put('/', async (req, res, next) => {
         {quantity},
         {
           where: {userId, productId},
+          returning: true
+        }
+      )
+      if (!cartItem) throw new Error('Product not found')
+      res.json(cartItem)
+    }
+  } catch (err) {
+    next(err)
+  }
+})
+
+// PUT api/cart/order (updating cart to orderItem)
+router.put('/order', async (req, res, next) => {
+  // edge cases:
+  //   -can't order more than what is in stock
+  //   -if someone orders something that depletes the stock of a given item, all users with that
+  //   item in their cart can't order it
+  try {
+    const {body: {price, orderId, productId}} = req
+    if (!req.user) {
+      // handle unauthenticated user w/ cookie
+      await CartItems.create(req.body)
+      req.session.cart = []
+      res.status(200).end()
+    } else {
+      const {user: {id: userId}} = req
+      const [_, [cartItem]] = await CartItems.update(
+        {price, orderId},
+        {
+          where: {userId, productId, orderId: null},
           returning: true
         }
       )

@@ -38,11 +38,29 @@ router.get('/:productId', async (req, res, next) => {
 // PUT api/product/:productId
 router.put('/:productId', async (req, res, next) => {
   try {
-    const {params: {productId}, body} = req
+    const {user, params: {productId}, body} = req
     const [_, [product]] = await Product.update(body, {
       where: {id: productId},
       returning: true
     })
+    if (!req.user || user.merchantId !== product.merchantId)
+      throw new Error('You are not the merchant of this item.')
+    res.json(product)
+  } catch (err) {
+    next(err)
+  }
+})
+
+// PUT api/product/:productId/orderQty
+router.put('/:productId/orderQty', async (req, res, next) => {
+  try {
+    const {user, params: {productId}, body} = req
+    const [_, [product]] = await Product.update(body, {
+      where: {id: productId},
+      returning: true
+    })
+    if (!req.user || user.merchantId !== product.merchantId)
+      throw new Error('You are not the merchant of this item.')
     res.json(product)
   } catch (err) {
     next(err)
@@ -82,8 +100,15 @@ router.put('/review/:reviewId', async (req, res, next) => {
 // DELETE api/product/:productId
 router.delete('/:productId', async (req, res, next) => {
   try {
-    const {params: {productId}} = req
-    await Product.destroy({where: {id: productId}})
+    if (!req.user) throw new Error('Not logged in')
+    const {user: {merchantId}, params: {productId}} = req
+    await (await Product.findByPk(productId)).setMerchant(1)
+    const destroyed = await Product.destroy({
+      where: {id: productId, merchantId},
+      returning: true
+    })
+    if (!destroyed)
+      throw new Error(`Cannot delete product with ID of ${productId}`)
     res.status(200).send('OK')
   } catch (err) {
     next(err)
@@ -93,8 +118,9 @@ router.delete('/:productId', async (req, res, next) => {
 // POST api/product/
 router.post('/', async (req, res, next) => {
   try {
-    const {params: {body}} = req
-    const product = await Product.create(body)
+    if (!req.user || !req.user.merchantId) throw new Error('Not authorized')
+    const {user: {merchantId}, params: {body}} = req
+    const product = await Product.create({...body, merchantId})
     res.json(product)
   } catch (err) {
     next(err)

@@ -8,7 +8,7 @@ import {
 } from '../store/cart'
 import {connect} from 'react-redux'
 
-class unconnectedCheckoutCart extends React.Component {
+class UnconnectedCheckoutCart extends React.Component {
   constructor() {
     super()
     this.handleChange = this.handleChange.bind(this)
@@ -27,35 +27,48 @@ class unconnectedCheckoutCart extends React.Component {
     this.props.fetchItems()
   }
   render() {
-    let cart
-    this.props.cart === undefined ? (cart = [0]) : (cart = this.props.cart)
+    let cartAll
+    this.props.cart === undefined
+      ? (cartAll = [0])
+      : (cartAll = this.props.cart)
+    let cart = cartAll.filter(cartItem => {
+      return cartItem.orderId === null
+    })
     return (
       <div className="cartContainer">
         <h3>Review Items</h3>
         {cart.length > 0
           ? cart.map(item => {
               const price = String(item.price)
+              const itemSubtotal = item.price * item.quantity
+              const displayItemSubtotal = String(itemSubtotal)
               return (
                 <div key={item.productId} className="productCart">
                   <img src={item.image} />
                   <div>Name: {item.name}</div>
                   <div>
-                    Price: ${price.slice(0, price.length - 2)}.{price.slice(
+                    Unit Price: ${price.slice(0, price.length - 2)}.{price.slice(
                       price.length - 2
                     )}
                   </div>
                   <div>
                     Quantity:{' '}
-                    <form>
-                      <input
-                        name={item.productId}
-                        type="number"
-                        min="1"
-                        max={item.productQuantity}
-                        value={item.quantity}
-                        onChange={this.handleChange}
-                      />
-                    </form>
+                    <input
+                      name={item.productId}
+                      type="number"
+                      min="1"
+                      max={item.productQuantity}
+                      value={item.quantity}
+                      onChange={this.handleChange}
+                    />
+                    <div>
+                      Item Subtotal: ${displayItemSubtotal.slice(
+                        0,
+                        displayItemSubtotal.length - 2
+                      )}.{displayItemSubtotal.slice(
+                        displayItemSubtotal.length - 2
+                      )}
+                    </div>
                   </div>
                 </div>
               )
@@ -84,5 +97,5 @@ const mapDispatchToProps = dispatch => {
 }
 
 export const CheckoutCart = connect(mapStateToProps, mapDispatchToProps)(
-  unconnectedCheckoutCart
+  UnconnectedCheckoutCart
 )

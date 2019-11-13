@@ -10,7 +10,8 @@ const {
   Review,
   CartItems,
   Merchant,
-  Address
+  Address,
+  Order
 } = require('../server/db/models')
 const faker = require('faker')
 
@@ -65,10 +66,8 @@ async function seed() {
     let newProduct = Product.create({
       name: `${faker.commerce.productName()}`,
       quantity: Math.floor(Math.random() * 100),
-      price: Number(faker.commerce.price()),
-      image: `https://source.unsplash.com/collection/${Math.floor(
-        Math.random() * 1000000
-      )}/480x480`,
+      price: Number(faker.commerce.price()) + 100,
+      image: `https://source.unsplash.com/collection/${i}/480x480`,
       description: faker.lorem.paragraph()
     })
     allProductsPromise.push(newProduct)
@@ -92,6 +91,55 @@ async function seed() {
     newReview.setProduct(faker.random.arrayElement(allProducts))
   }
 
+  //Creates random Addresses
+  // const shipTypes = ['BILL_TO', 'SHIP_TO']
+  const aptSuite = ['Apt', 'Suite']
+  for (let i = 0; i < 120; i++) {
+    let newAddress = await Address.create({
+      name: `${faker.name.firstName()} ${faker.name.lastName()}`,
+      street1: faker.address.streetAddress(false),
+      street2: `${faker.random.arrayElement(aptSuite)} ${Math.ceil(
+        Math.random() * 998
+      )}`,
+      city: faker.address.city(),
+      state: faker.address.state(),
+      zip: faker.address.zipCode(),
+      type: 'BILL_TO',
+      default: true
+    })
+    newAddress.setUser(allUsers[i])
+  }
+  for (let i = 0; i < 120; i++) {
+    let newAddress = await Address.create({
+      name: `${faker.name.firstName()} ${faker.name.lastName()}`,
+      street1: faker.address.streetAddress(false),
+      street2: `${faker.random.arrayElement(aptSuite)} ${Math.ceil(
+        Math.random() * 998
+      )}`,
+      city: faker.address.city(),
+      state: faker.address.state(),
+      zip: faker.address.zipCode(),
+      type: 'SHIP_TO',
+      default: true
+    })
+    newAddress.setUser(allUsers[i])
+  }
+  // for (let i = 0; i < 300; i++) {
+  //   let newAddress = await Address.create({
+  //     name: `${faker.name.firstName()} ${faker.name.lastName()}`,
+  //     street1: faker.address.streetAddress(false),
+  //     street2: `${faker.random.arrayElement(aptSuite)} ${Math.ceil(
+  //       Math.random() * 998
+  //     )}`,
+  //     city: faker.address.city(),
+  //     state: faker.address.state(),
+  //     zip: faker.address.zipCode(),
+  //     type: faker.random.arrayElement(shipTypes),
+  //     default: false
+  //   })
+  //   newAddress.setUser(faker.random.arrayElement(allUsers))
+  // }
+
   // Creates random Carts
   for (let i = 0; i < 120; i++) {
     await CartItems.create({
@@ -111,6 +159,43 @@ async function seed() {
     })
   }
 
+  // Creates random Orders
+  let statusArr = ['PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELED']
+  for (let i = 0; i < 40; i++) {
+    await Order.create({
+      status: faker.random.arrayElement(statusArr),
+      totalPrice:
+        Number(faker.commerce.price()) + Math.floor(Math.random() * 2000),
+      shipToAddressId: i + 1,
+      billToAddressId: i + 121,
+      userId: i + 1
+    })
+  }
+  // Creates random CartItems as OrderItems
+  for (let i = 0; i < 40; i++) {
+    await CartItems.create({
+      quantity: Math.floor(Math.random() * 500),
+      price: Number(faker.commerce.price()),
+      orderId: i + 1,
+      productId: 4,
+      userId: i + 1
+    })
+    await CartItems.create({
+      quantity: Math.floor(Math.random() * 500),
+      price: Number(faker.commerce.price()),
+      orderId: i + 1,
+      productId: 5,
+      userId: i + 1
+    })
+    await CartItems.create({
+      quantity: Math.floor(Math.random() * 500),
+      price: Number(faker.commerce.price()),
+      orderId: i + 1,
+      productId: 6,
+      userId: i + 1
+    })
+  }
+
   //Creates random Merchants
   for (let i = 0; i < 10; i++) {
     let newMerchant = await Merchant.create({
@@ -118,19 +203,6 @@ async function seed() {
     })
     newMerchant.setUser(allUsers[i])
     newMerchant.setCountry(allCountries[i])
-  }
-  //Creates random Addresses
-  let shipTypes = ['BILL_TO', 'SHIP_TO']
-  for (let i = 0; i < 300; i++) {
-    let newAddress = await Address.create({
-      name: `${faker.name.firstName()} ${faker.name.lastName()}`,
-      street: faker.address.streetAddress(false),
-      city: faker.address.city(),
-      state: faker.address.state(),
-      zip: faker.address.zipCode(),
-      type: faker.random.arrayElement(shipTypes)
-    })
-    newAddress.setUser(allUsers[i])
   }
 
   console.log(`seeded successfully`)

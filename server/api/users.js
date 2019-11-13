@@ -1,8 +1,9 @@
 const router = require('express').Router()
 const {User} = require('../db/models')
+const {adminValidate} = require('./helpers')
 module.exports = router
 
-router.get('/', async (req, res, next) => {
+router.get('/', adminValidate, async (req, res, next) => {
   try {
     const users = await User.findAll({
       // explicitly select only the id and email fields - even though
@@ -19,13 +20,14 @@ router.get('/', async (req, res, next) => {
 // GET logged in user's addresses at /api/users/address
 router.get('/address', async (req, res, next) => {
   try {
-    // const {body: {user}} = req
-    const user = await User.findByPk(1)
+    const {user} = req
     if (!req.user)
       res
         .status(200)
         .json()
         .end()
+    const addresses = await user.getAddresses()
+    console.log(addresses)
     res.status(200).json(await user.getAddresses())
   } catch (err) {
     next(err)

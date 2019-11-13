@@ -9,8 +9,9 @@ import {
   Catalog,
   SingleProduct,
   Cart,
-  OrderConfirmed,
-  Checkout
+  Checkout,
+  AllOrders,
+  singleOrder
 } from './components'
 import {me} from './store'
 
@@ -33,15 +34,18 @@ class Routes extends Component {
         <Route path="/checkout" component={Checkout} />
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
-        <Route path="/orderconfirmed" component={OrderConfirmed} />
-        <Route component={Catalog} />
         {isLoggedIn && (
           <Switch>
             {/* Routes placed here are only available after logging in */}
             <Route path="/home" component={UserHome} />
+            <Route exact path="/order" component={AllOrders} />
+            <Route path="/order/:orderId" component={singleOrder} />
+            <Route component={Catalog} />{' '}
+            {/*Not sure where to place this, otherwise won't show catalog when logged in*/}
           </Switch>
         )}
         {/* Displays our Login component as a fallback */}
+        <Route component={Catalog} />
       </Switch>
     )
   }

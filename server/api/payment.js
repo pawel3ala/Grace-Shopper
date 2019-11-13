@@ -6,8 +6,9 @@ module.exports = router
 const stripe = new stripeLoader(process.env.STRIPE_SECRET)
 
 const charge = (tokenId, amt) => {
+  let newAmt = amt * 100
   return stripe.charges.create({
-    amount: amt * 100,
+    amount: Math.round(newAmt),
     currency: 'usd',
     source: tokenId,
     description: 'Statement Description'
@@ -18,14 +19,12 @@ const charge = (tokenId, amt) => {
 router.post('/', async (req, res, next) => {
   // edge cases:
   //   ??????
-
-  // body: {orderId, productId, price, qty}
   try {
     // user doesn't matter for Stripe
     const {body: {token, amount}} = req
     let data = await charge(token.id, amount)
     res.send(data)
   } catch (err) {
-    next(err)
+    res.send(err)
   }
 })
