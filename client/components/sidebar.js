@@ -9,7 +9,7 @@ import {
   Segment,
   Header,
   Button,
-  Icon,
+  Select,
   Sidebar
 } from 'semantic-ui-react'
 import {queryParams} from '../../script/helperFuncs'
@@ -117,6 +117,49 @@ const CatalogSidebar = () => {
             ))}
           </Grid>
         </Segment>
+        <Segment vertical>
+          <Grid>
+            <Grid.Column width={6}>
+              <Segment>
+                <Label attached="top left">Filter</Label>
+                <select
+                  name="sortCol"
+                  value={sort.split('.')[0]}
+                  onChange={({target: {value}}) =>
+                    setQuery({sort: `${value}.${sort.split('.')[1]}`})
+                  }
+                >
+                  <option name="id" value="id" />
+                  <option name="name" value="name">
+                    Name
+                  </option>
+                  <option name="price" value="price">
+                    Price
+                  </option>
+                </select>
+              </Segment>
+            </Grid.Column>
+            <Grid.Column width={6}>
+              <Segment>
+                <Label attached="top left">Direction</Label>
+                <select
+                  name="sortCol"
+                  value={sort.split('.')[1]}
+                  onChange={({target: {value}}) =>
+                    setQuery({sort: `${sort.split('.')[0]}.${value}`})
+                  }
+                >
+                  <option name="ASC" value="ASC">
+                    Low to High
+                  </option>
+                  <option name="DESC" value="DESC">
+                    High to Low
+                  </option>
+                </select>
+              </Segment>
+            </Grid.Column>
+          </Grid>
+        </Segment>
         <Grid centered>
           <Grid.Column>
             <Segment>
@@ -128,7 +171,9 @@ const CatalogSidebar = () => {
                 rating={(review && review.gte) || 0}
                 icon="star"
                 onRate={(_, {rating}) =>
-                  handleChange({target: {name: 'review', value: {gte: rating}}})
+                  handleChange({
+                    target: {name: 'review', value: {gte: rating}}
+                  })
                 }
               />
             </Segment>
