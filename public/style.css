@@ -49,8 +49,23 @@ form div {
   flex-wrap: wrap;
   justify-content: center;
 }
+
+#singleOrderHeader {
+  margin: auto;
+  width: 50%;
+  border: 3px solid rgb(255, 211, 134);
+  padding: 3rem;
+}
+
 .singleOrderProductDetails {
   display: grid;
+  padding: 1rem;
+}
+.singleOrderProducts {
+  margin: auto;
+  width: 50%;
+  border: 3px solid rgba(255, 140, 138, 0.879);
+  padding: 1rem;
 }
 
 .allProductImg {
