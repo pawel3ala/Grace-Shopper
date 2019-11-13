@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const {Product, Review, Category} = require('../db/models')
+const {Product, Review, Merchant, User} = require('../db/models')
 const {getProductQuery} = require('./helpers')
 const db = require('../db/db')
 
@@ -98,6 +98,22 @@ router.put('/:productId', async (req, res, next) => {
       where: {id: productId},
       returning: true
     })
+    if (!req.user || (user.merchantId !== product.merchantId && !user.isAdmin))
+      throw new Error('You are not the merchant of this item.')
+    res.json(product)
+  } catch (err) {
+    next(err)
+  }
+})
+
+// PUT api/product/:productId/orderQty
+router.put('/:productId/orderQty', async (req, res, next) => {
+  try {
+    const {user, params: {productId}, body} = req
+    const [_, [product]] = await Product.update(body, {
+      where: {id: productId},
+      returning: true
+    })
     if (!req.user || user.merchantId !== product.merchantId)
       throw new Error('You are not the merchant of this item.')
     res.json(product)
@@ -156,7 +172,13 @@ router.delete('/:productId', async (req, res, next) => {
 // POST api/product/
 router.post('/', async (req, res, next) => {
   try {
-    if (!req.user || !req.user.merchantId) throw new Error('Not authorized')
+    if (!req.user || !req.user.merchantId || !req.user.isAdmin)
+      throw new Error('Not authorized')
+    // const newMerchant = await Merchant.create({merchantName:req.user.name})
+    // if(newMerchant) {
+    //   const admin = await User.findByPk(req.user.id)
+    //   await admin.update({merchantId: newMerchant.id})
+    // }
     const {user: {merchantId}, params: {body}} = req
     const product = await Product.create({...body, merchantId})
     res.json(product)

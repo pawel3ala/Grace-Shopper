@@ -6,9 +6,11 @@ import {
   changeItem,
   clearAllItems
 } from '../store/cart'
+import {Link} from 'react-router-dom'
+import {Field, reduxForm} from 'redux-form'
 import {connect} from 'react-redux'
 
-class unconnectedCheckoutCart extends React.Component {
+class UnconnectedCheckoutCart extends React.Component {
   constructor() {
     super()
     this.handleChange = this.handleChange.bind(this)
@@ -27,8 +29,13 @@ class unconnectedCheckoutCart extends React.Component {
     this.props.fetchItems()
   }
   render() {
-    let cart
-    this.props.cart === undefined ? (cart = [0]) : (cart = this.props.cart)
+    let cartAll
+    this.props.cart === undefined
+      ? (cartAll = [0])
+      : (cartAll = this.props.cart)
+    let cart = cartAll.filter(cartItem => {
+      return cartItem.orderId === null
+    })
     return (
       <div className="cartContainer">
         <h3>Review Items</h3>
@@ -39,8 +46,13 @@ class unconnectedCheckoutCart extends React.Component {
               const displayItemSubtotal = String(itemSubtotal)
               return (
                 <div key={item.productId} className="productCart">
-                  <img src={item.image} />
-                  <div>Name: {item.name}</div>
+                  <Link to={`/product/${item.productId}`}>
+                    <img src={item.image} />
+                  </Link>
+                  <div>
+                    Name:{' '}
+                    <Link to={`/product/${item.productId}`}>{item.name}</Link>
+                  </div>
                   <div>
                     Unit Price: ${price.slice(0, price.length - 2)}.{price.slice(
                       price.length - 2
@@ -92,5 +104,5 @@ const mapDispatchToProps = dispatch => {
 }
 
 export const CheckoutCart = connect(mapStateToProps, mapDispatchToProps)(
-  unconnectedCheckoutCart
+  UnconnectedCheckoutCart
 )

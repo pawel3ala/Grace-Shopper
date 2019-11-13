@@ -10,27 +10,36 @@ import {
 import {addAnItem, fetchItems} from '../store/cart'
 import SingleReview from './singleReview'
 import AddReview from './addReview'
-import {getAverageRating} from '../../script/helperFuncs'
-import {Grid, Image, Icon, Rating} from 'semantic-ui-react'
+import {getAverageRating, priceFormat} from '../../script/helperFuncs'
+import {Grid, Image, Rating, Button} from 'semantic-ui-react'
+import EditProduct from './editProduct'
 
 class unconnectedSingleProduct extends React.Component {
   constructor() {
     super()
+    this.state = {
+      editProduct: false
+    }
     this.addReview = this.addReview.bind(this)
+    this.changeEditProductMode = this.changeEditProductMode.bind(this)
   }
   componentDidMount() {
     this.props.fetchProduct(this.props.match.params.productId)
   }
 
-  async handleSubmit(event) {
+  async handleSubmit(event, price) {
     event.preventDefault()
-    const itemObj = {
-      productId: this.props.match.params.productId,
-      quantity: event.target.children[0].value
+    if (event.target.children[0].value > this.props.product.quantity) {
+      alert('Not enough stock')
+    } else {
+      const itemObj = {
+        productId: this.props.match.params.productId,
+        quantity: event.target.children[0].value
+      }
+      await this.props.addToCart(itemObj)
+      await this.props.fetchCart()
+      this.props.history.push('/cart')
     }
-    await this.props.addToCart(itemObj)
-    await this.props.fetchCart()
-    this.props.history.push('/cart')
   }
 
   async addReview(review) {
@@ -43,9 +52,15 @@ class unconnectedSingleProduct extends React.Component {
     await this.props.fetchProduct(this.props.match.params.productId)
   }
 
+  changeEditProductMode() {
+    const newState = !this.state.editProduct
+    this.setState({editProduct: newState})
+  }
+
   // eslint-disable-next-line complexity
   render() {
     console.log(this.props.user)
+    console.log(this.props.product.merchantId === this.props.user.merchantId)
     const name = this.props.product.name || ''
     const quantity = this.props.product.quantity || ''
     const price = this.props.product.price || ''
@@ -56,28 +71,39 @@ class unconnectedSingleProduct extends React.Component {
       quantity > 20
         ? 'In Stock'
         : quantity > 0 ? 'Low in Stock' : 'Out of Stock'
+    let averageRating = getAverageRating(reviews)
     return (
       <Grid centered>
         <Grid.Row>
           <Grid.Column width={5}>
-            <Image src={image} />
+            <Image src={image} rounded bordered />
           </Grid.Column>
           <Grid.Column width={5}>
             <Grid.Row as="h2">{name}</Grid.Row>
             <Grid.Row style={{paddingTop: '0.5em'}}>
               Rating:{' '}
+              {/*Need key prop to force Rating component to re render after data is fetched */}
               {getAverageRating(reviews) > 0 ? (
                 <Rating
-                  defaultRating={getAverageRating(reviews)}
+                  key={averageRating}
+                  defaultRating={averageRating}
                   icon="star"
                   maxRating={5}
-                  disabled={true}
+                  disabled
                 />
               ) : (
-                'No reviews'
+                <Rating
+                  key={averageRating}
+                  defaultRating={0}
+                  icon="star"
+                  maxRating={5}
+                  disabled
+                />
               )}
             </Grid.Row>
-            <Grid.Row style={{paddingTop: '0.5em'}}>Price: ${price}</Grid.Row>
+            <Grid.Row style={{paddingTop: '0.5em'}}>
+              Price: {priceFormat(price)}
+            </Grid.Row>
             <Grid.Row style={{paddingTop: '0.5em'}}>
               Quantity: {productStatus}
             </Grid.Row>
@@ -97,6 +123,32 @@ class unconnectedSingleProduct extends React.Component {
             </Grid.Row>
           </Grid.Column>
         </Grid.Row>
+        {this.props.user.isAdmin ||
+        this.props.product.merchantId === this.props.user.merchantId ? (
+          this.state.editProduct ? (
+            <Grid.Row>
+              <EditProduct
+                key={name}
+                name={name}
+                price={price}
+                quantity={quantity}
+                description={description}
+                image={image}
+                productId={this.props.match.params.productId}
+                editProduct={this.props.editProduct}
+                changeEditProductMode={this.changeEditProductMode}
+              />
+            </Grid.Row>
+          ) : (
+            <Button
+              color="green"
+              type="button"
+              onClick={this.changeEditProductMode}
+            >
+              Edit Product
+            </Button>
+          )
+        ) : null}
         <Grid.Row as="h2"> Reviews</Grid.Row>
         {reviews.map(review => {
           return (
@@ -106,7 +158,7 @@ class unconnectedSingleProduct extends React.Component {
               editReview={this.props.editReview}
               fetchProduct={this.props.fetchProduct}
               productId={this.props.match.params.productId}
-              userId={this.props.user.id}
+              user={this.props.user}
             />
           )
         })}

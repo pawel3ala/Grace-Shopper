@@ -41,8 +41,10 @@ Product.belongsToMany(Category, {
   through: 'ProductCategory',
   foreignKeyConstraint: true
 })
-Product.belongsToMany(Order, {through: OrderItem, foreignKeyConstraint: true})
-Product.belongsToMany(User, {through: CartItems, foreignKeyConstraint: true})
+// Product.belongsToMany(Order, {through: OrderItem, foreignKeyConstraint: true})
+Product.belongsToMany(User, {through: {model: CartItems, unique: false}})
+Order.belongsToMany(Product, {through: {model: CartItems, unique: false}})
+User.belongsToMany(Product, {through: {model: CartItems, unique: false}})
 Product.belongsTo(Merchant)
 Product.hasMany(Review)
 
@@ -67,12 +69,11 @@ Merchant.belongsTo(Country)
 Order.belongsTo(Address, {as: 'shipToAddress'})
 Order.belongsTo(Address, {as: 'billToAddress'})
 Order.belongsTo(User)
-Order.belongsToMany(Product, {through: OrderItem, foreignKeyConstraint: true})
+// Order.hasMany(CartItems)
 
 // Relations between USER and:
 User.belongsTo(Merchant)
 User.hasMany(Review)
-User.belongsToMany(Product, {through: CartItems, foreignKeyConstraint: true})
 User.belongsTo(Country)
 User.hasMany(Address)
 User.hasMany(Order)

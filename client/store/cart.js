@@ -75,6 +75,15 @@ export const changeItem = item => {
     }
   }
 }
+export const createOrderItem = orderItem => {
+  return async () => {
+    try {
+      await Axios.put(`/api/cart/order`, orderItem)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+}
 export const clearAllItems = () => {
   return async dispatch => {
     try {

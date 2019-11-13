@@ -6,8 +6,9 @@ module.exports = router
 const stripe = new stripeLoader(process.env.STRIPE_SECRET)
 
 const charge = (tokenId, amt) => {
+  let newAmt = amt * 100
   return stripe.charges.create({
-    amount: Math.round(amt * 100),
+    amount: Math.round(newAmt),
     currency: 'usd',
     source: tokenId,
     description: 'Statement Description'
