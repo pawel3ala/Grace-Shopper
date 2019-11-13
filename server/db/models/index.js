@@ -8,6 +8,7 @@ const OrderItem = require('./order_item')
 const Order = require('./order')
 const Product = require('./product')
 const Review = require('./review')
+const db = require('../db')
 
 /**
  * If we had any associations to make, this would be a great place to put them!
@@ -29,6 +30,7 @@ Category.belongsToMany(Product, {
   through: 'ProductCategory',
   foreignKeyConstraint: true
 })
+// Category.hasMany(db.models.ProductCategory)
 
 // Relations between COUNTRY and:
 Country.hasMany(Merchant)
@@ -45,6 +47,8 @@ Order.belongsToMany(Product, {through: {model: CartItems, unique: false}})
 User.belongsToMany(Product, {through: {model: CartItems, unique: false}})
 Product.belongsTo(Merchant)
 Product.hasMany(Review)
+
+// db.models.ProductCategory.belongsTo(Product)
 
 // Relations between ADDRESS and:
 Address.belongsTo(User)

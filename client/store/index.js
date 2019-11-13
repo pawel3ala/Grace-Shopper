@@ -10,12 +10,14 @@ import catalogReducer from './catalog'
 import addressReducer from './address'
 import ordersReducer from './orders'
 import singleOrderReducer from './singleOrder'
+import categoriesReducer from './categories'
 
 const reducer = combineReducers({
   user: userReducer,
   cart: cartReducer,
   singleProduct: singleProductReducer,
   catalog: catalogReducer,
+  categories: categoriesReducer,
   address: addressReducer,
   orders: ordersReducer,
   singleOrder: singleOrderReducer,

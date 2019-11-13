@@ -2,6 +2,11 @@ import React, {useEffect, useState} from 'react'
 import {useSelector, useDispatch} from 'react-redux'
 import {Link} from 'react-router-dom'
 import {fetchCatalog} from '../store/catalog'
+import categoriesReducer, {fetchCategories} from '../store/categories'
+import CatalogSidebar from './sidebar'
+import {queryParams} from '../../script/helperFuncs'
+import debounce from 'lodash.debounce'
+import {Sidebar, Grid} from 'semantic-ui-react'
 // import faker from 'faker'
 
 /**
@@ -27,34 +32,34 @@ import {fetchCatalog} from '../store/catalog'
 // dummyProducts()
 
 export const Catalog = props => {
-  const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(10)
-  const [sort, setSort] = useState('id.ASC')
-  const [search, setSearch] = useState('')
-  const [category, setCategory] = useState('')
-  const [price, setPrice] = useState({})
-  const [review, setReview] = useState({})
-  const query = {
-    page,
-    limit,
-    sort,
-    ...(search && {search}),
-    ...(category && {category}),
-    ...(Object.entries(price).length > 0 && {price}),
-    ...(Object.entries(review).length > 0 && {review})
-  }
   const dispatch = useDispatch()
+  const [queryDirty, setQuery] = queryParams()
+  const query = JSON.parse(JSON.stringify(queryDirty))
 
-  useEffect(() => {
+  const getNewData = () => {
     dispatch(fetchCatalog(query))
-  }, [])
+    dispatch(fetchCategories(query))
+  }
+  const getData = debounce(getNewData, 250, {trailing: true})
+
+  useEffect(
+    () => {
+      getData()
+      return getData.cancel
+    },
+    [queryDirty]
+  )
 
   const catalog = useSelector(({catalog}) => catalog)
+
+  // const sendQuery = () => getNewData()
+
   return (
-    <div>
-      <div className="allProducts">
+    <Sidebar.Pushable style={{height: '100vh'}}>
+      <CatalogSidebar />
+      <Sidebar.Pusher as={Grid} className="allProducts">
         {catalog.map(product => (
-          <div key={product.id}>
+          <Grid.Column width={3} key={product.id}>
             <div className="productDiv">
               <Link to={`/product/${product.id}`}>
                 <img className="allProductImg" src={product.image} />
@@ -63,10 +68,10 @@ export const Catalog = props => {
             <Link to={`/product/${product.id}`} className="productName">
               <div>{product.name}</div>
             </Link>
-          </div>
+          </Grid.Column>
         ))}
-      </div>
-    </div>
+      </Sidebar.Pusher>
+    </Sidebar.Pushable>
   )
 }
 

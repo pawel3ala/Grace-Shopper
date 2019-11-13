@@ -1,6 +1,7 @@
 const router = require('express').Router()
-const {Product, Review, Merchant, User} = require('../db/models')
+const {Product, Review, Category, Merchant, User} = require('../db/models')
 const {getProductQuery} = require('./helpers')
+const db = require('../db/db')
 
 module.exports = router
 
@@ -18,6 +19,60 @@ router.get('/', async (req, res, next) => {
       // for multiple sort -- sort.split(",").map(s => s.split("."))
     })
     res.json(products)
+  } catch (err) {
+    next(err)
+  }
+})
+
+// GET api/product/category (get all categories)
+router.get('/category', async (req, res, next) => {
+  try {
+    // getProductQuery returns an object where and a single-index array include where the first
+    // index includes an object with a where statement.
+    const {where, include: [{where: categoryWhere}]} = getProductQuery(
+      req.query
+    )
+
+    // it makes me INREDIBLY sad to comment this out because I thought it was working
+    // and I broke my brain to try and figure this out and at the end of it all the counts
+    // were off (notably a query that should return 0 results shows up as 1 item in each
+    // category). But I'll leave it here for posterity.
+
+    // const categories = await Category.findAll({
+    //   where: categoryWhere,
+    //   group: ['category.id', 'category.name'],
+    //   attributes: [
+    //     'id',
+    //     'name',
+    //     [db.Sequelize.fn('COUNT', 'ProductCategory.id'), 'count']
+    //   ],
+    //   include: [
+    //     {
+    //       model: db.models.ProductCategory,
+    //       attributes: [],
+    //       include: [
+    //         {
+    //           model: Product,
+    //           where,
+    //           attributes: []
+    //         }
+    //       ]
+    //     }
+    //   ]
+    // })
+
+    const categories = await Category.findAll({
+      where: categoryWhere,
+      order: [['id', 'ASC']],
+      include: [
+        {
+          model: Product,
+          where,
+          attributes: []
+        }
+      ]
+    })
+    res.status(200).json(categories)
   } catch (err) {
     next(err)
   }
@@ -83,7 +138,6 @@ router.post('/review', async (req, res, next) => {
 router.put('/review/:reviewId', async (req, res, next) => {
   try {
     if (!req.user) throw new Error('Not logged in')
-    // Need to handle the case where a user tries to edit a review that isn't theirs!
     const {params: {reviewId}, body, user: {id: userId}} = req
     const review = await Review.update(
       {userId, ...body},

@@ -1,5 +1,6 @@
 body {
   font-family: sans-serif;
+  overflow: hidden;
   /* background-color: rgb(228, 99, 87); */
 }
 
@@ -39,9 +40,7 @@ form div {
 
 /* Catalog */
 .allProducts {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  height: 100vh;
 }
 
 .productDiv {

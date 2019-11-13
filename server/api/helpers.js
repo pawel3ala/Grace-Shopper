@@ -22,7 +22,7 @@ const getProductQuery = query => {
       name: {[Op.iLike]: `%${search}%`},
       description: {[Op.iLike]: `%${search}%`}
     }
-  if (category) include[0].where = {name: category}
+  if (category) include[0].where = {id: category}
   // do we want multi-category filtering?
   if (price) {
     where.price = {}
