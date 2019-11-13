@@ -7,8 +7,9 @@ import {
   clearAllItems
 } from '../store/cart'
 import {Link} from 'react-router-dom'
-import {Field, reduxForm} from 'redux-form'
 import {connect} from 'react-redux'
+import {Grid, Image} from 'semantic-ui-react'
+import {priceFormat} from '../../script/helperFuncs'
 
 class UnconnectedCheckoutCart extends React.Component {
   constructor() {
@@ -37,29 +38,28 @@ class UnconnectedCheckoutCart extends React.Component {
       return cartItem.orderId === null
     })
     return (
-      <div className="cartContainer">
-        <h3>Review Items</h3>
-        {cart.length > 0
-          ? cart.map(item => {
-              const price = String(item.price)
-              const itemSubtotal = item.price * item.quantity
-              const displayItemSubtotal = String(itemSubtotal)
-              console.log(item.quantity)
-              return (
-                <div key={item.productId} className="productCart">
+      <Grid padded centered>
+        <Grid.Row as="h1" style={{paddingLeft: '0.5em'}}>
+          Review Items
+        </Grid.Row>
+        {cart.length > 0 ? (
+          cart.map(item => {
+            const price = String(item.price)
+            const itemSubtotal = item.price * item.quantity
+            const displayItemSubtotal = String(itemSubtotal)
+            return (
+              <Grid.Row key={item.productId}>
+                <Grid.Column width={2}>
                   <Link to={`/product/${item.productId}`}>
-                    <img src={item.image} />
+                    <Image src={item.image} size="small" bordered circular />
                   </Link>
-                  <div>
-                    Name:{' '}
+                </Grid.Column>
+                <Grid.Column width={3}>
+                  <Grid.Row>
                     <Link to={`/product/${item.productId}`}>{item.name}</Link>
-                  </div>
-                  <div>
-                    Unit Price: ${price.slice(0, price.length - 2)}.{price.slice(
-                      price.length - 2
-                    )}
-                  </div>
-                  <div>
+                  </Grid.Row>
+                  <Grid.Row>Unit Price: {priceFormat(price)}</Grid.Row>
+                  <Grid.Row verticalAlign="middle">
                     Quantity:{' '}
                     <input
                       name={item.productId}
@@ -69,20 +69,26 @@ class UnconnectedCheckoutCart extends React.Component {
                       value={item.quantity}
                       onChange={this.handleChange}
                     />
-                    <div>
-                      Item Subtotal: ${displayItemSubtotal.slice(
-                        0,
-                        displayItemSubtotal.length - 2
-                      )}.{displayItemSubtotal.slice(
-                        displayItemSubtotal.length - 2
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )
-            })
-          : 'Cart is Empty'}
-      </div>
+                  </Grid.Row>
+                  <Grid.Row>
+                    Item Subtotal: {priceFormat(displayItemSubtotal)}
+                  </Grid.Row>
+                </Grid.Column>
+              </Grid.Row>
+            )
+          })
+        ) : (
+          <Grid centered as="h1">
+            <Grid.Column
+              width={16}
+              textAlign="center"
+              style={{color: 'red', paddingTop: '7em'}}
+            >
+              Cart is Empty
+            </Grid.Column>
+          </Grid>
+        )}
+      </Grid>
     )
   }
 }

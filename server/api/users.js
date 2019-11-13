@@ -27,7 +27,6 @@ router.get('/address', async (req, res, next) => {
         .json()
         .end()
     const addresses = await user.getAddresses()
-    console.log(addresses)
     res.status(200).json(await user.getAddresses())
   } catch (err) {
     next(err)

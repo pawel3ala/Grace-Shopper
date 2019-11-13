@@ -39,7 +39,6 @@ router.post('/', async (req, res, next) => {
         userId,
         status: 'PROCESSING'
       })
-      console.log('did this path')
       res.json(order)
     } else {
       const {user: {id: userId}} = req
@@ -75,7 +74,6 @@ router.post('/', async (req, res, next) => {
         userId,
         status: 'PROCESSING'
       })
-      console.log('actually, did this path')
       res.json(order)
     }
   } catch (err) {

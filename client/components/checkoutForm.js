@@ -3,14 +3,14 @@
 /* eslint-disable max-statements */
 /* eslint-disable camelcase */
 import React from 'react'
-import {CheckoutCart, UserHome} from './index'
-import UserEmailInput from './userEmailInput'
+import {CheckoutCart} from './index'
 import ShipAddressForm from './shipAddressFormRedux'
 import BillAddressForm from './billAddressFormRedux'
 import {withRouter} from 'react-router-dom'
 import {CardElement, injectStripe} from 'react-stripe-elements'
+import {priceFormat} from '../../script/helperFuncs'
+import {Form, Grid, Button, Checkbox} from 'semantic-ui-react'
 // import sendMail from '../../script/email_sender'
-// const throttle = require('lodash.throttle')
 import Axios from 'axios'
 
 class CheckoutForm extends React.Component {
@@ -18,7 +18,7 @@ class CheckoutForm extends React.Component {
     super()
     this.state = {
       updateShip: false,
-      enterBilling: false,
+      enterBilling: true,
       updateBill: false,
       emailUpdate: false,
       email: '',
@@ -61,7 +61,7 @@ class CheckoutForm extends React.Component {
   }
   async handleOrderSubmit(event, user) {
     event.preventDefault()
-    this.throttle(5000)
+    this.throttle(10000)
     // Checks if user/guest has an address to start with
     if (this.props.addresses.length === 0) {
       let tokenObj = {}
@@ -409,7 +409,11 @@ class CheckoutForm extends React.Component {
       : (shipAddressBool = {guest: false})
     return (
       <div className="orderForm">
-        <div>Shipping Address:</div>
+        <Grid>
+          <Grid.Row as="h3" style={{paddingLeft: '11rem'}}>
+            Shipping Address:
+          </Grid.Row>
+        </Grid>
         <ShipAddressForm
           onSubmit={values => this.formShipSubmit(values)}
           shipAddress={shipAddress}
@@ -420,16 +424,22 @@ class CheckoutForm extends React.Component {
         />
         {shipAddressBool.guest ? (
           <div>
-            <div>
-              <input
-                type="checkbox"
-                onChange={this.handleBillingAddress}
-                defaultChecked
-              />Billing and Shipping are the same.
-            </div>
+            <Form>
+              <Form.Field style={{paddingLeft: '38rem'}}>
+                <Checkbox
+                  toggle
+                  label="Billing and Shipping are the same."
+                  onChange={this.handleBillingAddress}
+                />
+              </Form.Field>
+            </Form>
             {!this.state.enterBilling ? null : (
               <div>
-                <div>Billing Address:</div>
+                <Grid>
+                  <Grid.Row as="h3" style={{paddingLeft: '11rem'}}>
+                    Billing Address:
+                  </Grid.Row>
+                </Grid>
                 <BillAddressForm
                   onSubmit={this.formBillSubmit}
                   billAddress={billAddress}
@@ -443,7 +453,11 @@ class CheckoutForm extends React.Component {
           </div>
         ) : (
           <div>
-            <div>Billing Address:</div>
+            <Grid>
+              <Grid.Row as="h3" style={{paddingLeft: '11rem'}}>
+                Billing Address:
+              </Grid.Row>
+            </Grid>
             <BillAddressForm
               onSubmit={this.formBillSubmit}
               billAddress={billAddress}
@@ -456,45 +470,57 @@ class CheckoutForm extends React.Component {
         )}
         <br />
         <form onSubmit={() => this.handleOrderSubmit(event, user)}>
+          <Grid>
+            <Grid.Row as="h4" style={{paddingLeft: '19rem'}}>
+              E-Mail:
+            </Grid.Row>
+          </Grid>
           {user ? (
-            <div>E-mail: {this.props.user.email}</div>
+            <Form>
+              <Form.Group>
+                <Form.Input readonly placeholder={this.props.user.email} />
+              </Form.Group>
+            </Form>
           ) : (
-            <div>
-              <label htmlFor="email">E-mail:</label>
-              <input
-                name="email"
-                required
-                type="email"
-                value={this.state.email}
-                onChange={this.handleEmailChange}
-              />
-            </div>
+            <Form padded centered>
+              <Form.Group>
+                <Form.Input
+                  style={{paddingLeft: '17rem'}}
+                  fluid
+                  placeholder="grapefruitFan42@grapefruits.com"
+                  width={12}
+                  value={this.state.email}
+                  onChange={this.handleEmailChange}
+                />
+              </Form.Group>
+            </Form>
           )}
           <br />
-          <CardElement />
+          <CardElement className="cardElement" />
           <br />
           <CheckoutCart />
-          <button type="submit" disabled={this.state.confirmButton}>
-            Confirm Order
-          </button>
-          {this.props.orderTotal === '0' ? (
-            <div>Order Total: $0</div>
-          ) : (
-            <div>
-              Order Total: ${this.props.orderTotal.slice(
-                0,
-                this.props.orderTotal.length - 2
-              )}.{this.props.orderTotal.slice(this.props.orderTotal.length - 2)}
-            </div>
-          )}
-          {this.state.orderFail ? (
-            <div>
-              <h3>
+          <Grid padded centered>
+            {this.state.orderFail ? (
+              <Grid.Row as="h3">
                 Your card failed to process correctly.<br />Please try a new
                 card or check that the details are correct.
-              </h3>
-            </div>
-          ) : null}
+              </Grid.Row>
+            ) : null}
+            {this.props.orderTotal === '0' ? (
+              <Grid.Row as="h2" columns={1}>
+                Order Total: $0
+              </Grid.Row>
+            ) : (
+              <Grid.Row as="h2" columns={1}>
+                Order Total: {priceFormat(this.props.orderTotal)}
+              </Grid.Row>
+            )}
+            <Grid.Row columns={1}>
+              <Button type="submit" disabled={this.state.confirmButton}>
+                Confirm Order
+              </Button>
+            </Grid.Row>
+          </Grid>
         </form>
       </div>
     )

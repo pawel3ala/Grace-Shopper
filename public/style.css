@@ -44,6 +44,19 @@ form div {
   justify-content: center;
 }
 
+.allProductImg {
+  height: 10rem;
+  width: 13rem;
+  padding: 2rem 1rem 2rem 1rem;
+}
+
+.productName {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Single Order Display */
 .productDiv {
   display: flex;
   flex-wrap: wrap;
@@ -68,18 +81,6 @@ form div {
   padding: 1rem;
 }
 
-.allProductImg {
-  height: 10rem;
-  width: 13rem;
-  padding: 2rem 1rem 2rem 1rem;
-}
-
-.productName {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
 /*Single Product */
 .singleProduct {
   display: flex;
@@ -94,7 +95,6 @@ form div {
 .productInfo {
   margin-left: 3rem;
   width: 35rem;
-  /* border: 5px solid red; */
 }
 
 .singleProductName {
@@ -119,11 +119,14 @@ form div {
   width: 5rem;
 }
 
+.cardElement {
+}
+
 /* Checkout */
 
 .StripeElement {
   display: block;
-  margin: 10px 0 20px 0;
+  margin: 5rem 5rem 5rem 32rem;
   max-width: 500px;
   padding: 10px 14px;
   font-size: 1em;

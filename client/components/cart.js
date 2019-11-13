@@ -56,7 +56,6 @@ export const Cart = props => {
         Shopping Cart
       </Grid.Row>
       {cart.map(item => {
-        console.log(item)
         return (
           <Grid.Row key={item.productId}>
             <Grid.Column width={2}>

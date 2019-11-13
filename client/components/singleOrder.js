@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react'
 import {useSelector, useDispatch} from 'react-redux'
 import {Link} from 'react-router-dom'
-import {Grid, Image, Button} from 'semantic-ui-react'
+import {Grid, Image} from 'semantic-ui-react'
 import {fetchSingleOrder} from '../store/singleOrder'
+import {priceFormat} from '../../script/helperFuncs'
 
 // Items with quantity and subtotal
 // Link to the original product detail page
@@ -24,41 +25,31 @@ export const singleOrder = props => {
   }
 
   return (
-    <div>
-      <h1 id="singleOrderHeader">
+    <Grid padded centered>
+      <Grid.Row as="h1" style={{paddingLeft: '0.5em'}}>
         Order No. {singleOrderItems[0].orderId} Details:
-      </h1>
-      <br />
-      <div className="singleOrderProducts">
-        {singleOrderItems.map(item => {
-          const price = String(item.price * item.quantity)
-          return (
-            <div key={item.productId}>
-              <div>
-                <div className="productDiv">
-                  <Link to={`/product/${item.productId}`}>
-                    <img src={item.image} className="allProductImg" />
-                  </Link>
-                  <br />
-                  <div className="singleOrderProductDetails">
-                    <Link to={`/product/${item.productId}`}>
-                      <div>Item: {item.name}</div>
-                    </Link>
-                    <br />
-                    <div>Quantity: {item.quantity} </div>
-                    <br />
-                    <div>
-                      Subtotal: ${price.slice(0, price.length - 2)}.{price.slice(
-                        price.length - 2
-                      )}{' '}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )
-        })}
-      </div>
-    </div>
+      </Grid.Row>
+      {singleOrderItems.map(item => {
+        const price = String(item.price * item.quantity)
+        return (
+          <Grid.Row key={item.productId}>
+            <Grid.Column width={2}>
+              <Link to={`/product/${item.productId}`}>
+                <Image src={item.image} size="small" bordered circular />
+              </Link>
+            </Grid.Column>
+            <Grid.Column width={3}>
+              <Grid.Row>
+                <Link to={`/product/${item.productId}`}>{item.name}</Link>
+              </Grid.Row>
+              <Grid.Row verticalAlign="middle">
+                Quantity: {item.quantity}
+              </Grid.Row>
+              <Grid.Row>Subtotal: {priceFormat(price)}</Grid.Row>
+            </Grid.Column>
+          </Grid.Row>
+        )
+      })}
+    </Grid>
   )
 }

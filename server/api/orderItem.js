@@ -26,14 +26,13 @@ router.get('/:orderId', async (req, res, next) => {
     if (!req.user) {
       throw new Error('Not available for unauthenticated users')
     } else if (req.user.isAdmin) {
-      const orders = await OrderItem.findAll({
+      const orders = await CartItems.findAll({
         where: {
           orderId: orderId
         }
       })
       res.json(orders)
     } else {
-      console.log('got here')
       const {user} = req
       const productsPromise = Product.findAll({
         attributes: [
@@ -51,7 +50,8 @@ router.get('/:orderId', async (req, res, next) => {
             attributes: [],
             where: {id: user.id},
             through: {
-              attributes: []
+              attributes: [],
+              where: {orderId}
             }
           }
         ]
