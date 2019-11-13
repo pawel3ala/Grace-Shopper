@@ -39,6 +39,7 @@ router.post('/', async (req, res, next) => {
         userId,
         status: 'PROCESSING'
       })
+      console.log('did this path')
       res.json(order)
     } else {
       const {user: {id: userId}} = req
@@ -50,14 +51,14 @@ router.post('/', async (req, res, next) => {
         where: {userId, type: 'SHIP_TO'},
         defaults: {...shipAddress}
       })
-      if (newShip[0].isNewRecord) {
+      if (!newShip[0].isNewRecord) {
         shipToAddressId = newShip[0].dataValues.id
       }
       const newBill = await Address.findOrCreate({
         where: {userId, type: 'BILL_TO'},
         defaults: {...billAddress}
       })
-      if (newBill[0].isNewRecord) {
+      if (!newBill[0].isNewRecord) {
         billToAddressId = newBill[0].dataValues.id
       }
       cart.map(async function(product) {
@@ -74,6 +75,7 @@ router.post('/', async (req, res, next) => {
         userId,
         status: 'PROCESSING'
       })
+      console.log('actually, did this path')
       res.json(order)
     }
   } catch (err) {

@@ -7,7 +7,10 @@ import {CheckoutCart, UserHome} from './index'
 import UserEmailInput from './userEmailInput'
 import ShipAddressForm from './shipAddressFormRedux'
 import BillAddressForm from './billAddressFormRedux'
+import {withRouter} from 'react-router-dom'
 import {CardElement, injectStripe} from 'react-stripe-elements'
+// import sendMail from '../../script/email_sender'
+// const throttle = require('lodash.throttle')
 import Axios from 'axios'
 
 class CheckoutForm extends React.Component {
@@ -35,9 +38,11 @@ class CheckoutForm extends React.Component {
         billState: '',
         billZip: ''
       },
-      orderFail: false
+      orderFail: false,
+      confirmButton: false
     }
     this.handleOrderSubmit = this.handleOrderSubmit.bind(this)
+    this.throttle = this.throttle.bind(this)
     this.formShipSubmit = this.formShipSubmit.bind(this)
     this.formBillSubmit = this.formBillSubmit.bind(this)
     this.handleEmailChange = this.handleEmailChange.bind(this)
@@ -48,8 +53,15 @@ class CheckoutForm extends React.Component {
     this.handleBillingAddress = this.handleBillingAddress.bind(this)
     this.handleUpdateEmail = this.handleUpdateEmail.bind(this)
   }
+  throttle(limit) {
+    this.setState({
+      confirmButton: true
+    })
+    setTimeout(() => limit)
+  }
   async handleOrderSubmit(event, user) {
     event.preventDefault()
+    this.throttle(5000)
     // Checks if user/guest has an address to start with
     if (this.props.addresses.length === 0) {
       let tokenObj = {}
@@ -115,6 +127,67 @@ class CheckoutForm extends React.Component {
               }
               this.props.createOrderItem(orderItemObj)
             })
+            const orderNo = Math.floor(Math.random() * 9000000000000)
+            const orderDetails = this.props.cart.map(item => {
+              return (
+                <div key={item.id}>
+                  <img src={item.image} />
+                  <br />
+                  <div>Item: {item.name}</div>
+                  <br />
+                  <div>Amount: {item.quantity}</div>
+                  <br />
+                  <div>Subtotal: {item.quantity * item.price}</div>
+                  <br />
+                </div>
+              )
+            })
+            const shippingAddress = (
+              <div>
+                <div>Name: {this.state.shipAddressState.shipName}</div>
+                <br />
+                <div>Street: {this.state.shipAddressState.shipStreet1}</div>
+                <br />
+                <div>Apt/Suite: {this.state.shipAddressState.shipStreet2}</div>
+                <br />
+                <div>City: {this.state.shipAddressState.shipCity}</div>
+                <br />
+                <div>State: {this.state.shipAddressState.shipState}</div>
+                <br />
+                <div>Zip Code: {this.state.shipAddressState.shipZip}</div>
+                <br />
+              </div>
+            )
+            const emailHTML = (
+              <div>
+                <h1>Thank you for your order!!</h1>
+                <h1>Your grapefruits are on the way!!</h1>
+                <h3>Order No. {orderNo} Details:</h3>
+                <div>
+                  <h3>Shipping Address:</h3>
+                </div>
+                {shippingAddress}
+                <div>
+                  <h3>Order details:</h3>
+                </div>
+                <div>{orderDetails}</div>
+                <div>
+                  <h3>Order Total: {this.props.orderTotal}</h3>
+                </div>
+              </div>
+            )
+            // sendMail({
+            //   to: this.state.email,
+            //   subject: `Order No. ${orderNo} from Grapefruits.com`,
+            //   text:
+            //     'Your order is in our system being processed! Here are the details!',
+            //   html: emailHTML
+            // }).catch(console.error)
+            if (!this.props.user.hasOwnProperty('email')) {
+              console.log('Thank you for your order!')
+            } else {
+              this.props.history.push(`/order/${orderId}`)
+            }
           } else {
             // If the same, use respective addressses
             let thisEmail = ''
@@ -159,11 +232,17 @@ class CheckoutForm extends React.Component {
               }
               this.props.createOrderItem(orderItemObj)
             })
+            if (!this.props.user.hasOwnProperty('email')) {
+              console.log('Thank you for your order!')
+            } else {
+              this.props.history.push(`/order/${orderId}`)
+            }
           }
         } else {
           // If payment fails, set orderFail bool to true to display message
           this.setState({
-            orderFail: true
+            orderFail: true,
+            confirmButton: false
           })
         }
       } catch (err) {
@@ -217,9 +296,11 @@ class CheckoutForm extends React.Component {
             }
             this.props.createOrderItem(orderItemObj)
           })
+          this.props.history.push(`/order/${orderId}`)
         } else {
           this.setState({
-            orderFail: true
+            orderFail: true,
+            confirmButton: false
           })
         }
       } catch (err) {
@@ -322,8 +403,13 @@ class CheckoutForm extends React.Component {
       : (addresses = this.props.addresses)
     const shipAddress = addresses.filter(address => address.type === 'SHIP_TO')
     const billAddress = addresses.filter(address => address.type === 'BILL_TO')
+    let shipAddressBool
+    shipAddress[0] === undefined
+      ? (shipAddressBool = {guest: true})
+      : (shipAddressBool = {guest: false})
     return (
       <div className="orderForm">
+        <div>Shipping Address:</div>
         <ShipAddressForm
           onSubmit={values => this.formShipSubmit(values)}
           shipAddress={shipAddress}
@@ -332,33 +418,46 @@ class CheckoutForm extends React.Component {
           handleShipUpdate={this.handleShipUpdate}
           updateShip={this.state.updateShip}
         />
-        <div>
-          <input
-            type="checkbox"
-            onChange={this.handleBillingAddress}
-            defaultChecked
-          />Billing and Shipping are the same.
-        </div>
-        {!this.state.enterBilling ? null : (
-          <BillAddressForm
-            onSubmit={this.formBillSubmit}
-            billAddress={billAddress}
-            billAddressState={this.state.billAddressState}
-            handleBillChange={this.handleBillChange}
-            handleBillUpdate={this.handleBillUpdate}
-            updateBill={this.state.updateBill}
-          />
+        {shipAddressBool.guest ? (
+          <div>
+            <div>
+              <input
+                type="checkbox"
+                onChange={this.handleBillingAddress}
+                defaultChecked
+              />Billing and Shipping are the same.
+            </div>
+            {!this.state.enterBilling ? null : (
+              <div>
+                <div>Billing Address:</div>
+                <BillAddressForm
+                  onSubmit={this.formBillSubmit}
+                  billAddress={billAddress}
+                  billAddressState={this.state.billAddressState}
+                  handleBillChange={this.handleBillChange}
+                  handleBillUpdate={this.handleBillUpdate}
+                  updateBill={this.state.updateBill}
+                />
+              </div>
+            )}{' '}
+          </div>
+        ) : (
+          <div>
+            <div>Billing Address:</div>
+            <BillAddressForm
+              onSubmit={this.formBillSubmit}
+              billAddress={billAddress}
+              billAddressState={this.state.billAddressState}
+              handleBillChange={this.handleBillChange}
+              handleBillUpdate={this.handleBillUpdate}
+              updateBill={this.state.updateBill}
+            />
+          </div>
         )}
         <br />
         <form onSubmit={() => this.handleOrderSubmit(event, user)}>
           {user ? (
-            <UserEmailInput
-              emailUpdate={this.state.emailUpdate}
-              email={this.state.email}
-              handleEmailChange={this.handleEmailChange}
-              user={user}
-              handleUpdateEmail={this.handleUpdateEmail}
-            />
+            <div>E-mail: {this.props.user.email}</div>
           ) : (
             <div>
               <label htmlFor="email">E-mail:</label>
@@ -375,7 +474,9 @@ class CheckoutForm extends React.Component {
           <CardElement />
           <br />
           <CheckoutCart />
-          <button type="submit">Confirm Order</button>
+          <button type="submit" disabled={this.state.confirmButton}>
+            Confirm Order
+          </button>
           {this.props.orderTotal === '0' ? (
             <div>Order Total: $0</div>
           ) : (
@@ -400,4 +501,4 @@ class CheckoutForm extends React.Component {
   }
 }
 
-export default injectStripe(CheckoutForm)
+export default injectStripe(withRouter(CheckoutForm))

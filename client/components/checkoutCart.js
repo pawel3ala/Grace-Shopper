@@ -6,6 +6,8 @@ import {
   changeItem,
   clearAllItems
 } from '../store/cart'
+import {Link} from 'react-router-dom'
+import {Field, reduxForm} from 'redux-form'
 import {connect} from 'react-redux'
 
 class UnconnectedCheckoutCart extends React.Component {
@@ -44,8 +46,13 @@ class UnconnectedCheckoutCart extends React.Component {
               const displayItemSubtotal = String(itemSubtotal)
               return (
                 <div key={item.productId} className="productCart">
-                  <img src={item.image} />
-                  <div>Name: {item.name}</div>
+                  <Link to={`/product/${item.productId}`}>
+                    <img src={item.image} />
+                  </Link>
+                  <div>
+                    Name:{' '}
+                    <Link to={`/product/${item.productId}`}>{item.name}</Link>
+                  </div>
                   <div>
                     Unit Price: ${price.slice(0, price.length - 2)}.{price.slice(
                       price.length - 2

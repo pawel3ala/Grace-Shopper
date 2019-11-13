@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const {OrderItem, Product} = require('../db/models')
+const {OrderItem, Product, CartItems} = require('../db/models')
 module.exports = router
 
 // POST api/orderItem (adding item to order)
@@ -34,7 +34,7 @@ router.get('/:orderId', async (req, res, next) => {
       res.json(orders)
     } else {
       const {user} = req
-      const orderItems = await OrderItem.findAll({
+      const orderItems = await CartItems.findAll({
         where: {
           // TODO: check if api is used by legit user
           // so that nobody except admin, can view orders of differnet users
