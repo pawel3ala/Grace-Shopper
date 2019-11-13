@@ -17,8 +17,6 @@ export const singleOrder = props => {
 
   let singleOrderItems = useSelector(({singleOrder}) => singleOrder)
 
-  console.log('singleOrder', singleOrder)
-
   if (singleOrderItems.length === 0) {
     singleOrderItems = [0]
   }

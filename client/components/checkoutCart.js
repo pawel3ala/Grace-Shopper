@@ -44,7 +44,6 @@ class UnconnectedCheckoutCart extends React.Component {
               const price = String(item.price)
               const itemSubtotal = item.price * item.quantity
               const displayItemSubtotal = String(itemSubtotal)
-              console.log(item.quantity)
               return (
                 <div key={item.productId} className="productCart">
                   <Link to={`/product/${item.productId}`}>
