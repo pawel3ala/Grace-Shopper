@@ -9,9 +9,7 @@ import {
   Segment,
   Header,
   Button,
-  Select,
   Sidebar,
-  GridColumn,
   Icon
 } from 'semantic-ui-react'
 import {queryParams} from '../../script/helperFuncs'
@@ -56,7 +54,7 @@ const CatalogSidebar = () => {
     >
       <form>
         <Grid style={{marginBottom: -40, marginLeft: -40}}>
-          <GridColumn floated="left">
+          <Grid.Column floated="left">
             <Button
               icon
               color="red"
@@ -67,7 +65,7 @@ const CatalogSidebar = () => {
             >
               <Icon name="close" />
             </Button>
-          </GridColumn>
+          </Grid.Column>
         </Grid>
         <Grid.Column width={12}>
           <Input
@@ -211,7 +209,7 @@ const CatalogSidebar = () => {
           </Grid.Column>
         </Grid>
         <Grid style={{marginTop: -40}}>
-          <GridColumn textAlign="right" floated="right">
+          <Grid.Column textAlign="right" floated="right">
             <Button
               icon
               color="green"
@@ -222,7 +220,7 @@ const CatalogSidebar = () => {
             >
               Done
             </Button>
-          </GridColumn>
+          </Grid.Column>
         </Grid>
       </form>
     </Sidebar>
