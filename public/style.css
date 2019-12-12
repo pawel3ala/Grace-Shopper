@@ -44,19 +44,6 @@ form div {
   flex-wrap: wrap;
 }
 
-.sidebar {
-  position: fixed;
-}
-
-.pushable:not(body) {
-  transform: none;
-}
-
-.pushable:not(body) > .ui.sidebar,
-.pushable:not(body) > .fixed .pushable:not(body) > .pusher:after {
-  position: fixed;
-}
-
 .sidebarDiv {
   flex: 0 0 30%;
 }
