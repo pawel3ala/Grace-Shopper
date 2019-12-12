@@ -73,7 +73,7 @@
     "sequelize": "^5.15.1",
     "socket.io": "^2.2.0",
     "stripe": "^7.13.0",
-    "use-query-params": "^0.4.4"
+    "use-query-params": "^0.4.5"
   },
   "devDependencies": {
     "@babel/core": "^7.4.3",
