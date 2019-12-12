@@ -9,8 +9,8 @@ import {
   Segment,
   Header,
   Button,
-  Select,
-  Sidebar
+  Sidebar,
+  Icon
 } from 'semantic-ui-react'
 import {queryParams} from '../../script/helperFuncs'
 
@@ -21,26 +21,52 @@ const CatalogSidebar = () => {
     setQuery
   ] = queryParams()
 
+  const [vis, setVis] = useState(false)
   const handleChange = ({target: {name, value}}) => {
     setQuery({[name]: value}, 'pushIn')
   }
 
-  // const [vis, setVis] = useState(false)
   // setTimeout(() => {
   //   setVis(!vis)
   // }, 1000)
   // console.log(vis)
 
   useEffect(() => setQuery({page, limit, sort}, 'pushIn'), [])
-  return (
+  return !vis ? (
+    <Button
+      type="button"
+      color="blue"
+      style={{marginLeft: 10}}
+      onClick={() => {
+        event.preventDefault()
+        setVis(!vis)
+      }}
+    >
+      Filter
+    </Button>
+  ) : (
     <Sidebar
       as={Segment}
       animation="scale down"
       direction="left"
-      visible={true}
+      visible={vis}
       width="wide"
     >
       <form>
+        <Grid style={{marginBottom: -40, marginLeft: -40}}>
+          <Grid.Column floated="left">
+            <Button
+              icon
+              color="red"
+              onClick={() => {
+                event.preventDefault()
+                setVis(!vis)
+              }}
+            >
+              <Icon name="close" />
+            </Button>
+          </Grid.Column>
+        </Grid>
         <Grid.Column width={12}>
           <Input
             icon={{name: 'search', circular: true}}
@@ -180,6 +206,20 @@ const CatalogSidebar = () => {
             {/* <Button type="submit" floated="right">
               Search
             </Button> */}
+          </Grid.Column>
+        </Grid>
+        <Grid style={{marginTop: -40}}>
+          <Grid.Column textAlign="right" floated="right">
+            <Button
+              icon
+              color="green"
+              onClick={() => {
+                event.preventDefault()
+                setVis(!vis)
+              }}
+            >
+              Done
+            </Button>
           </Grid.Column>
         </Grid>
       </form>

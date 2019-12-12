@@ -56,44 +56,39 @@ export const Catalog = props => {
 
   return (
     <Sidebar.Pushable style={{height: '70vh'}}>
-      <div className="allProductsContainer">
-        <div className="sidebar">
-          <CatalogSidebar style={{position: 'fixed'}} />
-        </div>
-        <div className="sidebarDiv" />
-        <div className="allProductsDiv">
-          <Sidebar.Pusher as={Grid} className="allProducts">
-            {catalog.map(product => (
-              <Grid.Column width={3} key={product.id}>
-                <div className="productDiv">
-                  <Link to={`/product/${product.id}`}>
-                    <img className="allProductImg" src={product.image} />
-                  </Link>
-                </div>
-                <Link to={`/product/${product.id}`} className="productName">
-                  <div>{product.name}</div>
-                </Link>
-              </Grid.Column>
-            ))}
-            <Container>
-              <Button
-                disabled={query.page === 1}
-                floated="left"
-                onClick={() => setQuery({page: query.page - 1})}
-              >
-                <Icon name="backward" />
-              </Button>
-              <Button
-                disabled={catalog.length < query.limit}
-                floated="right"
-                onClick={() => setQuery({page: query.page + 1})}
-              >
-                <Icon name="forward" />
-              </Button>
-            </Container>
-          </Sidebar.Pusher>
-        </div>
-      </div>
+      <CatalogSidebar />
+      <Sidebar.Pusher as={Grid} className="allProducts" centered={true}>
+        {catalog.map(product => (
+          <Grid.Column width={3} key={product.id}>
+            <div className="productDiv">
+              <Link to={`/product/${product.id}`}>
+                <img className="allProductImg" src={product.image} />
+              </Link>
+            </div>
+            <Link to={`/product/${product.id}`} className="productName">
+              <div>{product.name}</div>
+            </Link>
+          </Grid.Column>
+        ))}
+        <Container>
+          <Button
+            disabled={query.page === 1}
+            floated="left"
+            onClick={() => setQuery({page: query.page - 1})}
+            color="blue"
+          >
+            <Icon name="backward" />
+          </Button>
+          <Button
+            disabled={catalog.length < query.limit}
+            floated="right"
+            onClick={() => setQuery({page: query.page + 1})}
+            color="blue"
+          >
+            <Icon name="forward" />
+          </Button>
+        </Container>
+      </Sidebar.Pusher>
     </Sidebar.Pushable>
   )
 }
