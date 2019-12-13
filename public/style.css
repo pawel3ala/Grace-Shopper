@@ -39,6 +39,20 @@ form div {
 }
 
 /* Catalog */
+.allProductsContainer {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.sidebarDiv {
+  flex: 0 0 30%;
+}
+
+.allProductsDiv {
+  flex: 0 0 70%;
+  max-width: 70%;
+}
+
 .allProducts {
   height: 100vh;
 }

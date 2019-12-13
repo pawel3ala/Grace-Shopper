@@ -57,7 +57,7 @@ export const Catalog = props => {
   return (
     <Sidebar.Pushable style={{height: '70vh'}}>
       <CatalogSidebar />
-      <Sidebar.Pusher as={Grid} className="allProducts">
+      <Sidebar.Pusher as={Grid} className="allProducts" centered={true}>
         {catalog.map(product => (
           <Grid.Column width={3} key={product.id}>
             <div className="productDiv">
@@ -75,6 +75,7 @@ export const Catalog = props => {
             disabled={query.page === 1}
             floated="left"
             onClick={() => setQuery({page: query.page - 1})}
+            color="blue"
           >
             <Icon name="backward" />
           </Button>
@@ -82,6 +83,7 @@ export const Catalog = props => {
             disabled={catalog.length < query.limit}
             floated="right"
             onClick={() => setQuery({page: query.page + 1})}
+            color="blue"
           >
             <Icon name="forward" />
           </Button>
