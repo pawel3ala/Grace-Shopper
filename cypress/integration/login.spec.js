@@ -28,9 +28,8 @@ describe('Login', () => {
 
       cy.get('input[name=email]').type(email)
       cy.get('input[name=password]').type(`${password}{enter}`)
+      cy.get('h3').should('contain', `Welcome, ${email}`)
     })
-
-    cy.get('h3').should('contain', 'Welcome, pawel@fsa.com')
 
     cy.url().should('include', '/home')
     cy.get('a[href="#"]').should('contain', 'Logout')
@@ -44,9 +43,8 @@ describe('Login', () => {
 
       cy.get('input[name=email]').type(email)
       cy.get('input[name=password]').type(`${password}{enter}`)
+      cy.get('h3').should('contain', `Welcome, ${email}`)
     })
-
-    cy.get('h3').should('contain', 'Welcome, pawel@fsa.com')
 
     cy.url().should('include', '/home')
     cy.get('a[href="#"]').click()

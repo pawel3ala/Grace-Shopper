@@ -46,8 +46,12 @@ context('Homepage with stubbed database', function() {
     cy.fixture('products_0_15.json').then(json => {
       cy.route('GET', '/api/*', json)
     })
+    cy.fixture('credentials').then(credentials => {
+      const {email} = credentials
+      const {password} = credentials
+      cy.loginByForm(email, password)
+    })
 
-    cy.loginByForm('pawel@fsa.com', 'pawel')
     cy.get('a[href="/"] i').click()
     cy.get('a img[class="allProductImg"]').should('have.length', 15)
   })
@@ -55,7 +59,11 @@ context('Homepage with stubbed database', function() {
 
 context('Homepage - initial redux state ', function() {
   it('checks if catalog has 15 items', function() {
-    cy.loginByForm('pawel@fsa.com', 'pawel')
+    cy.fixture('credentials').then(credentials => {
+      const {email} = credentials
+      const {password} = credentials
+      cy.loginByForm(email, password)
+    })
     cy.get('a img[class="allProductImg"]').should('have.length', 15)
     cy
       .window()

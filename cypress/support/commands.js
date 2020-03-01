@@ -25,27 +25,25 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
 Cypress.Commands.add('loginByForm', (email, password) => {
-    cy.visit('/')
-    Cypress.log({
-        name: 'loginByForm',
-        message: `${email} | ${password}`,
-    })
+  cy.visit('/')
+  Cypress.log({
+    name: 'loginByForm',
+    message: `${email} | ${password}`
+  })
 
-    return cy.request({
-        method: 'POST',
-        url: '/auth/login',
-        form: true,
-        body: {
-            email,
-            password
-        },
-    })
+  return cy.request({
+    method: 'POST',
+    url: '/auth/login',
+    form: true,
+    body: {
+      email,
+      password
+    }
+  })
 })
 
-// Cypress.Commands.verifyShopingCart('verifyShopingCart', (arrayOfProducts) => {
-
-//     arrayOfProducts.forEach((prod) => {
-//         cy.get(`a[href='/product/${prod.id}']`)
-//     })
-// })
-
+Cypress.Commands.add('verifyShopingCart', arrayOfProducts => {
+  arrayOfProducts.forEach(prod => {
+    cy.get(`a[href='/product/${prod.id}']`)
+  })
+})
