@@ -20,3 +20,6 @@ ReactDOM.render(
   </Provider>,
   document.getElementById('app')
 )
+
+// expose store when run in Cypress
+window.store = store

@@ -1,0 +1,242 @@
+[
+  {
+    "id": 1,
+    "name": "Fish",
+    "quantity": 6,
+    "price": 608,
+    "image": "https://source.unsplash.com/collection/2/480x480",
+    "description": "Temporibus commodi voluptatum. Nihil voluptatem molestiae cumque. Eaque et harum odio nihil saepe quis. Nisi ea dolorem maxime. Id autem ullam ex odit veniam doloribus enim commodi unde. Assumenda libero repellat nesciunt mollitia.",
+    "createdAt": "2019-11-12T22:24:38.493Z",
+    "updatedAt": "2019-11-12T22:24:38.493Z",
+    "merchantId": null,
+    "categories": [
+      {
+        "name": "Grapefruit Seeds"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Ergonomic Steel Computer",
+    "quantity": 69,
+    "price": 453,
+    "image": "https://source.unsplash.com/collection/3/480x480",
+    "description": "Aut vero praesentium. Eos aliquid adipisci et molestiae. Voluptatem porro aut sint debitis voluptas aspernatur. Eos fuga recusandae et nam et quia amet.",
+    "createdAt": "2019-11-12T22:24:38.493Z",
+    "updatedAt": "2019-11-12T22:25:53.700Z",
+    "merchantId": null,
+    "categories": [
+      {
+        "name": "Grapefruit Movies"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Awesome Metal Sausages",
+    "quantity": 0,
+    "price": 375,
+    "image": "https://source.unsplash.com/collection/4/480x480",
+    "description": "Voluptas exercitationem odit odio. Adipisci incidunt aliquam recusandae illum velit vitae vero. Et harum voluptatum.",
+    "createdAt": "2019-11-12T22:24:38.493Z",
+    "updatedAt": "2019-11-12T22:28:14.978Z",
+    "merchantId": null,
+    "categories": [
+      {
+        "name": "Grapefruit Trees"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Refined Fresh Chicken",
+    "quantity": 45,
+    "price": 802,
+    "image": "https://source.unsplash.com/collection/0/480x480",
+    "description": "Culpa dolores sint sunt dignissimos earum minima. Animi error rerum. Et veritatis accusamus beatae earum. Quis quis autem ut esse et ab et sit. Vel inventore nobis non molestias facere qui est mollitia.",
+    "createdAt": "2019-11-12T22:24:38.492Z",
+    "updatedAt": "2019-11-12T22:24:38.492Z",
+    "merchantId": null,
+    "categories": [
+      {
+        "name": "Grapefruit"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Rustic Plastic Ball",
+    "quantity": 20,
+    "price": 145,
+    "image": "https://source.unsplash.com/collection/1/480x480",
+    "description": "Est repellat eligendi officiis illo sint laborum id dolore. Aliquid blanditiis neque quae temporibus. Eligendi eligendi est voluptatibus. Hic eveniet libero et dolore quidem repudiandae cupiditate. Fugiat dignissimos atque iusto rem doloremque beatae provident harum autem. Sit harum eaque debitis consectetur qui quae.",
+    "createdAt": "2019-11-12T22:24:38.493Z",
+    "updatedAt": "2019-11-12T22:24:38.493Z",
+    "merchantId": null,
+    "categories": [
+      {
+        "name": "Grapefruit Movies"
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Incredible Fresh Chicken",
+    "quantity": 11,
+    "price": 791,
+    "image": "https://source.unsplash.com/collection/5/480x480",
+    "description": "Sit et voluptatem atque nihil inventore dolores nihil. Non minus hic id alias voluptas iure rerum. Non natus sapiente qui et cupiditate eos quasi ipsum libero. A praesentium ducimus vel illo a tempora porro sed. Soluta reiciendis sed ratione aliquid. Placeat minus enim quidem libero qui doloremque doloremque aut omnis.",
+    "createdAt": "2019-11-12T22:24:38.493Z",
+    "updatedAt": "2019-11-12T22:29:18.238Z",
+    "merchantId": null,
+    "categories": [
+      {
+        "name": "Grapefruit Trees"
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "name": "Refined Steel Table",
+    "quantity": 24,
+    "price": 1029,
+    "image": "https://source.unsplash.com/collection/6/480x480",
+    "description": "Consectetur repellat ad autem vel facilis pariatur. Dolor et inventore culpa molestiae repellat sunt vel sequi minima. Ducimus totam quidem voluptates.",
+    "createdAt": "2019-11-12T22:24:38.493Z",
+    "updatedAt": "2019-11-12T22:24:38.493Z",
+    "merchantId": null,
+    "categories": [
+      {
+        "name": "Grapefruit Seeds"
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "name": "Handcrafted Soft Hat",
+    "quantity": 5,
+    "price": 689,
+    "image": "https://source.unsplash.com/collection/7/480x480",
+    "description": "Aut consequatur aut aliquam quas temporibus. Esse corporis est iusto dolorem et a doloribus. Voluptas ipsam explicabo non animi beatae quis ut saepe voluptate. Molestias aut qui et quibusdam quae sunt animi praesentium voluptatem. Ab ea eum consectetur commodi totam.",
+    "createdAt": "2019-11-12T22:24:38.493Z",
+    "updatedAt": "2019-11-12T22:24:38.493Z",
+    "merchantId": null,
+    "categories": [
+      {
+        "name": "Grapefruit"
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "name": "Refined Cotton Table",
+    "quantity": 60,
+    "price": 930,
+    "image": "https://source.unsplash.com/collection/8/480x480",
+    "description": "Et fugit quos dolor voluptas accusantium quod eos nemo quas. Est et omnis autem. Sint soluta officia amet magni inventore est dignissimos nostrum.",
+    "createdAt": "2019-11-12T22:24:38.493Z",
+    "updatedAt": "2019-11-12T22:24:38.493Z",
+    "merchantId": null,
+    "categories": [
+      {
+        "name": "Grapefruit"
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "name": "Incredible Cotton Pizza",
+    "quantity": 8,
+    "price": 410,
+    "image": "https://source.unsplash.com/collection/9/480x480",
+    "description": "Est laborum in laudantium et sit ipsum incidunt explicabo aspernatur. Et sed enim optio aliquid aspernatur et error. Eligendi dolorum dolorum sunt. Optio non est ipsam.",
+    "createdAt": "2019-11-12T22:24:38.493Z",
+    "updatedAt": "2019-11-12T22:24:38.493Z",
+    "merchantId": null,
+    "categories": [
+      {
+        "name": "Grapefruit Trees"
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "name": "Handcrafted Metal Table",
+    "quantity": 30,
+    "price": 698,
+    "image": "https://source.unsplash.com/collection/10/480x480",
+    "description": "Sed temporibus sed nulla aut est alias omnis vel distinctio. Quis velit rerum amet et dolores nostrum ea illo. Distinctio atque excepturi saepe in omnis dolorem dicta quis nulla.",
+    "createdAt": "2019-11-12T22:24:38.493Z",
+    "updatedAt": "2019-11-12T22:24:38.493Z",
+    "merchantId": null,
+    "categories": [
+      {
+        "name": "Grapefruit Seeds"
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "name": "Small Soft Chicken",
+    "quantity": 89,
+    "price": 1076,
+    "image": "https://source.unsplash.com/collection/11/480x480",
+    "description": "Omnis aut quae sit voluptate. Sit dicta veniam sit repellendus iste nulla sit omnis. Accusamus molestiae itaque id numquam nulla dolorum explicabo dolorem voluptatem. Sunt quas praesentium repudiandae.",
+    "createdAt": "2019-11-12T22:24:38.493Z",
+    "updatedAt": "2019-11-12T22:24:38.493Z",
+    "merchantId": null,
+    "categories": [
+      {
+        "name": "Grapefruit Trees"
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "name": "Fantastic Soft Hat",
+    "quantity": 21,
+    "price": 443,
+    "image": "https://source.unsplash.com/collection/12/480x480",
+    "description": "Culpa voluptas tenetur et eius quia esse. Et deserunt voluptas. Maxime et ad ut architecto. Qui perferendis laborum earum sit facilis. Quam est dolorem rerum reprehenderit voluptatem molestiae molestiae rerum quaerat.",
+    "createdAt": "2019-11-12T22:24:38.493Z",
+    "updatedAt": "2019-11-12T22:24:38.493Z",
+    "merchantId": null,
+    "categories": [
+      {
+        "name": "Grapefruit Movies"
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "name": "Handcrafted Fresh Chair",
+    "quantity": 45,
+    "price": 462,
+    "image": "https://source.unsplash.com/collection/13/480x480",
+    "description": "Officia ut inventore facilis aut vitae eum eius. Sequi corporis quisquam quo non omnis veniam aut voluptate dolorum. Blanditiis eveniet accusantium ipsa consectetur. Et iusto ea occaecati sapiente voluptatibus dolores nihil atque ratione. Distinctio ut quod non quam sed ut ipsa reiciendis. Tenetur sit eos voluptas nihil.",
+    "createdAt": "2019-11-12T22:24:38.494Z",
+    "updatedAt": "2019-11-12T22:24:38.494Z",
+    "merchantId": null,
+    "categories": [
+      {
+        "name": "Grapefruit Trees"
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "name": "Generic Steel Hat",
+    "quantity": 9,
+    "price": 879,
+    "image": "https://source.unsplash.com/collection/14/480x480",
+    "description": "Impedit voluptates ad. Possimus voluptatum blanditiis nemo. Voluptate optio dicta mollitia. Perferendis iste vel et qui et ut iusto saepe. Fugiat mollitia sequi et.",
+    "createdAt": "2019-11-12T22:24:38.494Z",
+    "updatedAt": "2019-11-12T22:24:38.494Z",
+    "merchantId": null,
+    "categories": [
+      {
+        "name": "Grapefruit Trees"
+      }
+    ]
+  }
+]
