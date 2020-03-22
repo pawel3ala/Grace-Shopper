@@ -27,7 +27,7 @@ script:
   #   ## print all Travis environment variables for debugging
   - $(npm bin)/print-env TRAVIS
   - "NODE_ENV='test' npm run start"
-  - npm run script/seed.js
+  - npm run seed
   - npm run cy:run
   # after all tests finish running we need
   # to kill all background jobs (like "npm start &")
