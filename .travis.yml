@@ -5,6 +5,15 @@ services:
 - postgresql
 addons:
   postgresql: '10'
+cache:
+  # cache both npm modules and Cypress binary
+  directories:
+    - ~/.npm
+    - ~/.cache
+  override:
+    - npm ci
+    - npm run cy:verify
+    - npm run cy:info
 dist: xenial
 notifications:
   email:
@@ -15,8 +24,13 @@ install:
 before_script:
 - psql -c 'create database "grace-shopper-test";' -U postgres
 script:
-- npm test
-- npm run build-client
+  #   ## print all Travis environment variables for debugging
+  - $(npm bin)/print-env TRAVIS
+  - npm run start:ci &
+  - npm run cy:run -- --record
+  # after all tests finish running we need
+  # to kill all background jobs (like "npm start &")
+  - kill $(jobs -p) || true
 before_deploy:
 - rm -rf node_modules
 deploy:
