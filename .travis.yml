@@ -22,7 +22,7 @@ before_deploy:
 deploy:
   skip_cleanup: true # prevents travis from deleting the build
   provider: heroku
-  app: grapefruitshopper # see README
+  app: gc-test99 # see README
   api_key:
     secure: "TZZ8sDG34GWVs6Jp901+2ftR0AOH7ItqfxcQNuYeZ/4qUjx517dN4PPY32SoNJR5D3ymnKb4nBbiBrHJxqLiP3AOmfSjSVBvVG1pNz247fjIZsJv8TowMzE9txUDIzeVL0dURKMA6LY/ImoLJRHK00ergkd/3r2KepnFbmPiBrBE/KmdqbCruWZnk9ALJaDuBBf5LXGD3W7EcDNcG5/ODms1rtzKb6SrTlrXH66Bjsfquc7O23YB918cjkJXzyz9cEtLpqlnjyEGqN2p60bGhid4Sf7j6XLwoHfymvvKaj52hvGpbZydeQko8GKAxMabR9oV2Pv2WMgX6gMUMNTuSPeB0XztyOVVijYjo5WR1M2S9fqPlyn0GV9uQfEKJT/A448QExmBgl531qaTAn3UofaHh4VPTZM2xTvbpxKzTjk4TBqUgTrKwUufUa+eOG1UzMaJy234MgHarS/sMN5q/AYuTDsMdIPKD3zD3XY1kSNUL39yQem4Vl+Iq4qiq0b3b2fxJy4qA+sFU74Ntdp83svYPjat79nLXez4+rR40PHSIGhtbq5KsUaROetvNlocQvnB8w1nO7cyOS4fBn5S9SHhObqDgcbXgpbcQ28hWF2PR7taVNwdoCOqQBgZ6JDUXJ6lWtNiv9D8ggY+DQcSlT1pw9jleoct2pW2Q0Cqo44=" # see README
 
