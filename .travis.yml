@@ -15,6 +15,8 @@ cache:
     - npm run cy:verify
     - npm run cy:info
 dist: xenial
+env:
+  - NODE_ENV='test'
 notifications:
   email:
     on_success: change
@@ -23,11 +25,9 @@ install:
 - npm ci
 before_script:
 - psql -c 'create database "grace-shopper-test";' -U postgres
+- npm run seed
 script:
-  #   ## print all Travis environment variables for debugging
-  - $(npm bin)/print-env TRAVIS
-  - "NODE_ENV='test' npm run start"
-  - npm run seed
+  - npm run start &
   - npm run cy:run
   # after all tests finish running we need
   # to kill all background jobs (like "npm start &")
