@@ -29,7 +29,7 @@ before_script:
 - npm run build-client
 script:
   - npm run start &
-  - npm run cy:run -- --record
+  - npm run cy:run -- --record --key 58bbbb4b-1619-4eeb-8352-0a100489ad7c
   # after all tests finish running we need
   # to kill all background jobs (like "npm start &")
   - kill $(jobs -p) || true
