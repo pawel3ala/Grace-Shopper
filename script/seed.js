@@ -50,6 +50,13 @@ async function seed() {
     newCustomer.setCountry(allCountries[i])
   }
 
+  // Creating extra user that will be used in e2e tests
+  await User.create({
+    fullName: 'Joe Smith',
+    email: 'joe.smith@gmail.com',
+    password: '$ecret_p4ssw0rd'
+  })
+
   // Creates Categories
   const categories = await Promise.all([
     Category.create({name: 'Grapefruit'}),
