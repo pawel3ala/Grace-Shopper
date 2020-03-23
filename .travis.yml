@@ -26,6 +26,7 @@ install:
 before_script:
 - psql -c 'create database "grace-shopper-test";' -U postgres
 - npm run seed
+- npm run build-client
 script:
   - npm run start &
   - npm run cy:run
